@@ -1,167 +1,123 @@
-// src/app/page.tsx
+// src/app/page.tsx (BẢN FULL HOÀN CHỈNH)
 import Link from "next/link";
 import prisma from "@/lib/prisma";
-import { Playfair_Display, Inter } from 'next/font/google';
-import { Post } from '@prisma/client';
+import IconsCarousel from "@/components/IconsCarousel";
+import { Playfair_Display, IBM_Plex_Mono, Inter } from 'next/font/google';
 
-const playfair = Playfair_Display({ 
-  subsets: ['latin'], 
-  weight: ['700', '900'], 
-  style: 'italic' 
-});
-
-const inter = Inter({ 
-  subsets: ['latin'], 
-  weight: ['400', '700'] 
-});
+const playfair = Playfair_Display({ subsets: ['latin'], weight: ['700', '900'], style: 'italic' });
+const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '600'] });
+const inter = Inter({ subsets: ['latin'], weight: ['400', '600', '800'] });
 
 export const dynamic = 'force-dynamic';
 
-// Định nghĩa kiểu dữ liệu cho Post
-interface PostCard {
-  id: number;
-  slug: string;
-  title: string;
-  excerpt: string | null;
-  status: string;
-}
-
 export default async function HomePage() {
-  let posts: PostCard[] = [];
-  let dbStatus = "Checking...";
-  let errorMessage = "";
+  // 1. LẤY DỮ LIỆU CẦN THIẾT
+  const limitedEvents = await prisma.event.findMany({
+    where: { status: 'PUBLISHED', category: 'Event' },
+    take: 3,
+    orderBy: { startDate: 'asc' }
+  });
 
-  try {
-    // Kiểm tra kết nối DB và lấy bài viết với kiểu rõ ràng
-    const rawPosts = await prisma.post.findMany({
-      where: { status: 'PUBLISHED' },
-      take: 6,
-      orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        excerpt: true,
-        status: true,
-      }
-    });
-    
-    posts = rawPosts as PostCard[];
-    dbStatus = posts.length > 0 ? "CONNECTED ✅" : "CONNECTED ⚠️";
-    
-  } catch (error: any) {
-    dbStatus = "CONNECTION FAILED ❌";
-    errorMessage = error.message || "Unknown database error";
-    console.error("DB Error:", error);
-    
-    // Fallback data để trang không bị sập
-    posts = [];
-  }
+  const evergreenAttractions = await prisma.event.findMany({
+    where: { status: 'PUBLISHED', category: 'Attraction' },
+    take: 10,
+    orderBy: { hotnessScore: 'desc' }
+  });
+
+  const latestGuides = await prisma.post.findMany({
+    where: { status: 'PUBLISHED' },
+    take: 3,
+    orderBy: { createdAt: 'desc' }
+  });
 
   return (
-    <main className={`${inter.className} min-h-screen bg-black text-white selection:bg-blue-500/30`}>
-      {/* PHẦN HERO DEBUG */}
-      <section className="py-32 text-center border-b border-white/10 bg-gradient-to-b from-blue-900/20 to-black">
-        <h1 className={`${playfair.className} text-4xl md:text-7xl font-black uppercase px-4 text-white mb-6`}>
-          CYBER-NOIR HQ: {dbStatus}
-        </h1>
-        <div className="space-y-4">
-          <p className="text-blue-400 font-mono text-xl tracking-widest">
-            DATABASE REPORT: {posts.length} POSTS FOUND
-          </p>
-          {errorMessage && (
-            <p className="text-red-400 font-mono text-sm max-w-2xl mx-auto bg-red-900/20 p-4 rounded-lg">
-              ERROR: {errorMessage}
-            </p>
-          )}
+    <main className={`${inter.className} min-h-screen bg-black text-white selection:bg-blue-500/30 overflow-x-hidden`}>
+      
+      {/* 1. HERO SECTION (MERLION KHỔNG LỒ) */}
+      <section className="relative w-full h-[90vh] flex flex-col items-center justify-center overflow-hidden border-b border-white/5">
+        <div className="absolute inset-0">
+          <img 
+            src="https://images.unsplash.com/photo-1543314223-999335f0d647?q=80&w=1600&auto=format&fit=crop" 
+            className="w-full h-full object-cover opacity-40 scale-105" 
+            alt="Singapore Merlion"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/20 via-transparent to-purple-900/20"></div>
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
+          <div className={`${mono.className} mb-8 text-blue-400 text-[10px] font-black tracking-[0.6em] uppercase animate-pulse`}>
+             // Redefining Singapore Exploration
+          </div>
+          <h1 className={`${playfair.className} text-6xl md:text-[9rem] font-black leading-[0.85] tracking-tighter uppercase text-white drop-shadow-2xl mb-12`}>
+            Singapore <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">Unlocked</span>
+          </h1>
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Link href="/events" className="bg-white text-black px-10 py-5 rounded-full font-black text-sm uppercase tracking-widest hover:scale-105 transition-all">Explore Events</Link>
+            <Link href="/guides" className="bg-[#111] text-white border border-white/20 px-10 py-5 rounded-full font-black text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-all">Insider Guides</Link>
+          </div>
         </div>
       </section>
 
-      {/* MỤC INSIDER GUIDES */}
-      <section className="max-w-7xl mx-auto px-6 py-24">
-        <h2 className={`${playfair.className} text-5xl mb-12 uppercase text-white border-l-4 border-blue-600 pl-6`}>
-          Insider Guides
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {posts.length > 0 ? (
-            posts.map((post) => (
-              <Link 
-                key={post.id} 
-                href={`/guides/${post.slug}`} 
-                className="group bg-[#111] border border-white/10 rounded-[2.5rem] overflow-hidden hover:border-blue-500 transition-all p-10 shadow-2xl hover:shadow-blue-500/20"
-              >
-                <div className="mb-6">
-                  <span className="inline-block px-4 py-1 bg-blue-900/30 text-blue-400 text-xs font-black rounded-full uppercase tracking-widest">
-                    PUBLISHED
-                  </span>
+      {/* 2. UPCOMING HEADLINERS (EVENTS) */}
+      {limitedEvents.length > 0 && (
+        <section className="max-w-7xl mx-auto px-6 py-32 border-b border-white/5">
+          <div className="flex justify-between items-end mb-16 gap-6">
+            <h2 className={`${playfair.className} text-5xl md:text-6xl font-black uppercase text-white tracking-tighter`}>Upcoming Headliners</h2>
+            <Link href="/events" className="text-gray-400 text-xs font-bold uppercase tracking-widest hover:text-white transition-all border-b border-gray-600 pb-1">View Calendar →</Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            {limitedEvents.map((event) => (
+              <Link key={event.id} href={`/events/${event.slug}`} className="group relative bg-[#0a0a0a] border border-white/10 rounded-[2.5rem] overflow-hidden hover:border-blue-500/50 transition-all">
+                 <div className="h-72 overflow-hidden relative"><img src={event.imageUrl || ''} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" /></div>
+                 <div className="p-8"> <h3 className="text-2xl font-bold text-white group-hover:text-blue-300 leading-tight">{event.name}</h3> </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 3. SINGAPORE ICONS (ATTRACTIONS - SLIDER) */}
+      {evergreenAttractions.length > 0 && (
+        <section className="py-32 bg-[#050505] border-b border-white/5">
+          <div className="max-w-7xl mx-auto px-6">
+              <h2 className={`${playfair.className} text-5xl md:text-7xl font-black uppercase text-white mb-16`}>Singapore Icons</h2>
+              <IconsCarousel events={evergreenAttractions} />
+          </div>
+        </section>
+      )}
+
+      {/* 4. INSIDER GUIDES (BẮT BUỘC HIỆN KHI CÓ BÀI TRONG BẢNG POST) */}
+      {latestGuides.length > 0 && (
+        <section className="max-w-7xl mx-auto px-6 py-32">
+          <div className="flex justify-between items-end mb-16">
+            <h2 className={`${playfair.className} text-5xl md:text-6xl font-black uppercase text-white`}>Insider Guides</h2>
+            <Link href="/guides" className="text-green-500 text-xs font-bold uppercase tracking-widest border-b border-green-500 pb-1 hover:text-white hover:border-white transition-all">Read All Guides →</Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            {latestGuides.map((post) => (
+              <Link key={post.id} href={`/guides/${post.slug}`} className="group bg-[#111] border border-white/10 rounded-[2.5rem] overflow-hidden hover:border-green-500/50 transition-all duration-500">
+                <div className="h-64 overflow-hidden relative">
+                    <img src={post.imageUrl || ''} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent opacity-80" />
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-white group-hover:text-blue-400 transition-colors leading-tight">
-                  {post.title}
-                </h3>
-                <p className="text-gray-500 text-base italic line-clamp-3 leading-relaxed">
-                  {post.excerpt ? `"${post.excerpt}"` : "No excerpt available"}
-                </p>
-                <div className="mt-8 flex items-center text-xs font-black text-blue-500 uppercase tracking-widest group-hover:text-blue-300 transition-colors">
-                  Read Article <span className="ml-2 group-hover:translate-x-2 transition-transform">→</span>
+                <div className="p-8">
+                    <h3 className="text-xl font-bold mb-4 text-white group-hover:text-green-400 transition-colors leading-tight">{post.title}</h3>
                 </div>
               </Link>
-            ))
-          ) : (
-            <div className="col-span-3 p-20 border border-dashed border-white/20 rounded-[3rem] text-center bg-gradient-to-br from-white/5 to-black">
-              <div className="mb-8">
-                <div className="text-6xl mb-4">📭</div>
-                <h3 className={`${playfair.className} text-3xl text-white mb-4`}>
-                  Database Empty
-                </h3>
-              </div>
-              <p className="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed">
-                {dbStatus.includes("FAILED") 
-                  ? "Database connection failed. Check your DATABASE_URL environment variable."
-                  : "No published posts found in the database. Add some content or check post status."}
-              </p>
-              
-              {/* CTA Buttons */}
-              <div className="mt-12 flex flex-col sm:flex-row gap-6 justify-center">
-                <a 
-                  href="/api/health" 
-                  className="px-8 py-4 bg-blue-900/40 hover:bg-blue-900/60 border border-blue-700/50 rounded-full text-blue-300 font-black uppercase tracking-widest text-sm transition-all hover:scale-105"
-                >
-                  Check API Health
-                </a>
-                <button 
-                  onClick={() => window.location.reload()}
-                  className="px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/20 rounded-full text-white font-black uppercase tracking-widest text-sm transition-all"
-                >
-                  Retry Connection
-                </button>
-              </div>
-              
-              {/* Debug Info */}
-              <div className="mt-12 pt-8 border-t border-white/10">
-                <p className="text-gray-600 text-sm font-mono">
-                  Status: {dbStatus} | Posts: {posts.length} | Time: {new Date().toLocaleTimeString()}
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      )}
 
-      {/* FOOTER DEBUG */}
-      <footer className="max-w-7xl mx-auto px-6 py-12 border-t border-white/10">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-gray-600 font-mono text-sm">
-            <div className="flex items-center gap-4">
-              <div className={`w-3 h-3 rounded-full ${dbStatus.includes('✅') ? 'bg-green-500' : dbStatus.includes('⚠️') ? 'bg-yellow-500' : 'bg-red-500'}`}></div>
-              <span>DB: {dbStatus}</span>
-            </div>
-          </div>
-          <div className="text-gray-500 text-sm">
-            Build: {process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA || 'local'}
-          </div>
-        </div>
-      </footer>
+      {/* 5. TRUST BANNER */}
+      <section className="py-24 border-t border-white/5 bg-black">
+         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+            <div className="p-8 border-l border-white/10"><h3 className="text-white font-bold text-xl mb-2 uppercase tracking-tight">Curated by Locals</h3></div>
+            <div className="p-8 border-l border-white/10"><h3 className="text-white font-bold text-xl mb-2 uppercase tracking-tight">Real-Time Intel</h3></div>
+            <div className="p-8 border-l border-white/10"><h3 className="text-white font-bold text-xl mb-2 uppercase tracking-tight">Direct Deals</h3></div>
+         </div>
+      </section>
     </main>
   );
 }
