@@ -1,0 +1,131 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- ENUMS ---
+enum EventStatus {
+  DRAFT
+  ENRICHING
+  PUBLISHED
+  ARCHIVED
+}
+
+// --- AUTHOR MODEL (Hệ thống chuyên gia EEAT) ---
+model Author {
+  id          String   @id @default(cuid())
+  name        String
+  role        String
+  bio         String?  @db.Text
+  avatarUrl   String?
+  socialLinks Json?    // { twitter: "...", instagram: "..." }
+  
+  // Quan hệ ngược
+  posts       Post[]
+  events      Event[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([name])
+}
+
+// --- EVENT MODEL ---
+model Event {
+  id               Int          @id @default(autoincrement())
+  slug             String       @unique
+  name             String
+  description      String?      @db.Text
+  imageUrl         String?
+  startDate        DateTime?
+  endDate          DateTime?
+  status           EventStatus  @default(DRAFT)
+  enrichedContent  Json?
+
+  // Quan hệ với Author
+  authorId         String?
+  author           Author?      @relation(fields: [authorId], references: [id])
+
+  // Địa điểm
+  venue            String?
+  venueAddress     String?
+  postalCode       String?
+  latitude         Float?
+  longitude        Float?
+
+  // Giá & Phân loại
+  price            String?
+  currency         String?      @default("SGD")
+  isFree           Boolean?     @default(false)
+  category         String?
+  tags             String[]     @default([])
+  
+  // SEO Meta
+  metaTitle        String?
+  metaDescription  String?
+
+  // Nguồn & Affiliate
+  sourceUrl               String?
+  sourceProvider          String?
+  affiliateSearchKeywords Json?   
+  marketingPitch          String? @db.Text
+  nearbyAttractions       Json?   
+
+  // AI Enrichment
+  aiSummary        String?      @db.Text
+  aiSmartTips      Json?
+  aiFullExperience Json?
+  aiFaq            Json?
+  aiBestFor        String?
+  aiVibe           String?
+  aiDurationHint   String?
+  hotnessScore     Int?         @default(0)
+
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@index([slug])
+  @@index([startDate])
+  @@index([category])
+  @@index([hotnessScore])
+  @@index([postalCode])
+  @@index([authorId])
+}
+
+// --- POST MODEL (GUIDES) ---
+model Post {
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique
+  title       String
+  excerpt     String?  @db.Text
+  content     String   @db.Text
+  imageUrl    String?
+  category    String?  @default("Travel Guide")
+  
+  // Quan hệ với Author
+  authorId    String?
+  author      Author?  @relation(fields: [authorId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  status      String   @default("PUBLISHED")
+
+  @@index([slug])
+  @@index([authorId])
+}
+
+// --- MRT MODEL ---
+model MrtStation {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  slug      String   @unique
+  latitude  Float
+  longitude Float
+  line      String?
+}
