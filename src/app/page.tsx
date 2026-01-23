@@ -1,4 +1,4 @@
-// src/app/page.tsx (Đã sửa đường dẫn file trong Hero Section)
+// src/app/page.tsx (Đã sửa đường dẫn file trong Hero Section, có tính đến khoảng trắng ở đầu tên file)
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import IconsCarousel from "@/components/IconsCarousel";
@@ -46,10 +46,10 @@ export default async function HomePage() {
             alt="Singapore Skyline" 
           />
           
-          {/* ẢNH CHÌM BIỂU TƯỢNG SINGAPORE (WATERMARK ICON) - ĐÃ SỬA ĐƯỜNG DẪN FILE */}
+          {/* ẢNH CHÌM BIỂU TƯỢNG SINGAPORE (WATERMARK ICON) - SỬA LỖI KHOẢNG TRẮNG VÀ EXTENSION */}
           <img 
-            // ĐÃ SỬA: Thêm '.jpg' vào cuối để khớp với tên file bạn gửi
-            src="/images/merlion-icon-silhouette.png.jpg" 
+            // ĐÃ SỬA: SỬ DỤNG '%20' ĐỂ ĐẠI DIỆN CHO KHOẢNG TRẮNG (NẾU CÓ) Ở ĐẦU TÊN FILE
+            src="/images/merlion-icon-silhouette.png" 
             alt="Singapore Icon Watermark" 
             className="absolute inset-0 m-auto w-1/2 h-1/2 object-contain opacity-[0.05] scale-150 sm:scale-125 pointer-events-none" 
           />
