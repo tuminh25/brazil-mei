@@ -38,22 +38,23 @@ export default async function HomePage() {
       {/* HERO SECTION */}
       <section className="relative w-full h-[90vh] flex flex-col items-center justify-center overflow-hidden border-b border-white/5">
         <div className="absolute inset-0">
-          {/* Main Background Image - Đã chỉnh opacity từ 40% xuống 30% */}
+          
+          {/* Main Background Image - opacity 30% */}
           <img 
             src="https://images.unsplash.com/photo-1543314223-999335f60647?q=80&w=1600&auto=format&fit=crop" 
             className="w-full h-full object-cover opacity-30 scale-105" 
             alt="Singapore Skyline" 
           />
           
-          {/* ẢNH CHÌM BIỂU TƯỢNG SINGAPORE (WATERMARK ICON) - ĐÃ THÊM VÀO ĐÂY */}
+          {/* ẢNH CHÌM BIỂU TƯỢNG SINGAPORE (WATERMARK ICON) - ĐÃ SỬA VỊ TRÍ VÀ OPACITY */}
           <img 
-            src="/images/merlion-icon-silhouette.png" // Đảm bảo URL này trỏ đến file ảnh biểu tượng của bạn (trong thư mục public)
+            src="/images/merlion-icon-silhouette.png" 
             alt="Singapore Icon Watermark" 
-            // Opacity cực thấp (0.03) và scale lớn để tạo hiệu ứng chìm
-            className="absolute inset-0 m-auto w-1/2 h-1/2 object-contain opacity-[0.03] scale-150 sm:scale-125 pointer-events-none" 
+            // Opacity được tăng lên 0.05 để hiển thị rõ hơn dưới lớp gradient
+            className="absolute inset-0 m-auto w-1/2 h-1/2 object-contain opacity-[0.05] scale-150 sm:scale-125 pointer-events-none" 
           />
           
-          {/* Existing Gradients */}
+          {/* Existing Gradients - Cần nằm sau ảnh chìm trong code để che phủ nhẹ nó */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black"></div>
           <div className="absolute inset-0 bg-gradient-to-r from-blue-900/20 via-transparent to-purple-900/20"></div>
         </div>
