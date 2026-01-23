@@ -87,6 +87,7 @@ model Event {
   aiDurationHint   String?
   hotnessScore     Int?         @default(0)
 
+  // TIMESTAMPS (Chỉ khai báo 1 lần ở đây)
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
 
@@ -107,14 +108,15 @@ model Post {
   content     String   @db.Text
   imageUrl    String?
   category    String?  @default("Travel Guide")
+  status      String   @default("PUBLISHED")
   
   // Quan hệ với Author
   authorId    String?
   author      Author?  @relation(fields: [authorId], references: [id])
   
+  // TIMESTAMPS (Chỉ khai báo 1 lần ở đây)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  status      String   @default("PUBLISHED")
 
   @@index([slug])
   @@index([authorId])
