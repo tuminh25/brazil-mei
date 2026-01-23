@@ -1,4 +1,4 @@
-// src/app/page.tsx
+// src/app/page.tsx (Đã sửa đường dẫn file trong Hero Section)
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import IconsCarousel from "@/components/IconsCarousel";
@@ -35,37 +35,30 @@ export default async function HomePage() {
   return (
     <main className={`${inter.className} min-h-screen bg-black text-white selection:bg-blue-500/30 overflow-x-hidden`}>
       
-      {/* HERO SECTION - ĐÃ FIX WATERMARK */}
+      {/* HERO SECTION */}
       <section className="relative w-full h-[90vh] flex flex-col items-center justify-center overflow-hidden border-b border-white/5">
         <div className="absolute inset-0">
           
-          {/* Layer 1: Main Background Image - opacity 30% */}
+          {/* Main Background Image - opacity 30% */}
           <img 
             src="https://images.unsplash.com/photo-1543314223-999335f60647?q=80&w=1600&auto=format&fit=crop" 
-            className="w-full h-full object-cover opacity-30 scale-105 z-0" 
+            className="w-full h-full object-cover opacity-30 scale-105" 
             alt="Singapore Skyline" 
           />
           
-          {/* Layer 2: Watermark Icon - ĐÃ SỬA ĐƯỜNG DẪN */}
+          {/* ẢNH CHÌM BIỂU TƯỢNG SINGAPORE (WATERMARK ICON) */}
           <img 
             src="/images/merlion-icon-silhouette.png" 
             alt="Singapore Icon Watermark" 
-            className="absolute inset-0 m-auto w-1/2 h-1/2 object-contain opacity-[0.05] scale-150 sm:scale-125 pointer-events-none z-10" 
-            onError={(e) => {
-              console.error('Watermark failed to load');
-              e.currentTarget.style.display = 'none';
-            }}
+            className="absolute inset-0 m-auto w-1/2 h-1/2 object-contain opacity-[0.05] scale-150 sm:scale-125 pointer-events-none" 
           />
           
-          {/* Layer 3: Dark Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black z-20"></div>
-          
-          {/* Layer 4: Color Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/20 via-transparent to-purple-900/20 z-30"></div>
+          {/* Existing Gradients */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/20 via-transparent to-purple-900/20"></div>
         </div>
 
-        {/* Layer 5: Content */}
-        <div className="relative z-40 max-w-7xl mx-auto px-6 text-center">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
           <div className={`${mono.className} mb-8 text-blue-400 text-[10px] font-black tracking-[0.6em] uppercase animate-pulse`}>// Redefining Singapore Exploration</div>
           <h1 className={`${playfair.className} text-6xl md:text-[9rem] font-black leading-[0.85] tracking-tighter uppercase text-white drop-shadow-2xl mb-12`}>
             Singapore <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">Unlocked</span>
@@ -120,7 +113,7 @@ export default async function HomePage() {
          </div>
       </section>
 
-      {/* INSIDER GUIDES */}
+      {/* INSIDER GUIDES (MỚI THÊM LẠI) */}
       <section className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5">
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
           <div>
