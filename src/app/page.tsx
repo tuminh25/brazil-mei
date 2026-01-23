@@ -1,4 +1,4 @@
-// src/app/page.tsx
+// src/app/page.tsx (Đã sửa đường dẫn file trong Hero Section)
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import IconsCarousel from "@/components/IconsCarousel";
@@ -46,15 +46,15 @@ export default async function HomePage() {
             alt="Singapore Skyline" 
           />
           
-          {/* ẢNH CHÌM BIỂU TƯỢNG SINGAPORE (WATERMARK ICON) - ĐÃ SỬA VỊ TRÍ VÀ OPACITY */}
+          {/* ẢNH CHÌM BIỂU TƯỢNG SINGAPORE (WATERMARK ICON) - ĐÃ SỬA ĐƯỜNG DẪN FILE */}
           <img 
-            src="/images/merlion-icon-silhouette.png" 
+            // ĐÃ SỬA: Thêm '.jpg' vào cuối để khớp với tên file bạn gửi
+            src="/images/merlion-icon-silhouette.png.jpg" 
             alt="Singapore Icon Watermark" 
-            // Opacity được tăng lên 0.05 để hiển thị rõ hơn dưới lớp gradient
             className="absolute inset-0 m-auto w-1/2 h-1/2 object-contain opacity-[0.05] scale-150 sm:scale-125 pointer-events-none" 
           />
           
-          {/* Existing Gradients - Cần nằm sau ảnh chìm trong code để che phủ nhẹ nó */}
+          {/* Existing Gradients */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black"></div>
           <div className="absolute inset-0 bg-gradient-to-r from-blue-900/20 via-transparent to-purple-900/20"></div>
         </div>
