@@ -11,69 +11,62 @@ const inter = Inter({ subsets: ['latin'], weight: ['400', '600', '800'] });
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  // 1. HEADLINERS: Sự kiện nóng (Concert, Festival...)
+  // 1. HEADLINERS (Sự kiện ngắn hạn)
   const limitedEvents = await prisma.event.findMany({
-    where: { 
-      status: 'PUBLISHED',
-      category: { not: 'Attraction' } 
-    },
+    where: { status: 'PUBLISHED', category: { not: 'Attraction' } },
     take: 3,
     orderBy: { startDate: 'asc' }
-  });
+  }) || [];
 
-  // 2. ICONS: Địa điểm cố định (Attraction)
+  // 2. ICONS (Địa điểm Evergreen)
   const evergreenAttractions = await prisma.event.findMany({
-    where: { 
-      status: 'PUBLISHED',
-      category: 'Attraction'
-    },
+    where: { status: 'PUBLISHED', category: 'Attraction' },
     take: 10,
     orderBy: { hotnessScore: 'desc' }
-  });
+  }) || [];
 
-  // 3. GUIDES: Bài viết chuyên sâu
+  // 3. GUIDES (Bài viết chuyên sâu)
   const latestGuides = await prisma.post.findMany({
     where: { status: 'PUBLISHED' },
     take: 3,
     orderBy: { createdAt: 'desc' }
-  });
+  }) || [];
 
   return (
     <main className={`${inter.className} min-h-screen bg-black text-white selection:bg-blue-500/30 overflow-x-hidden`}>
       
-      {/* 1. HERO SECTION */}
+      {/* HERO SECTION */}
       <section className="relative w-full h-[90vh] flex flex-col items-center justify-center overflow-hidden border-b border-white/5">
         <div className="absolute inset-0">
-          <img 
-            src="https://images.unsplash.com/photo-1543314223-999335f60647?q=80&w=1600&auto=format&fit=crop" 
-            className="w-full h-full object-cover opacity-40 scale-105" 
-            alt="Singapore Merlion"
+          <img src="https://images.unsplash.com/photo-1543314223-999335f60647?q=80&w=1600&auto=format&fit=crop" className="w-full h-full object-cover opacity-30 scale-105" 
+alt="Singapore Skyline" 
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black"></div>
+          
+          {/* ẢNH CHÌM BIỂU TƯỢNG SINGAPORE - ĐÃ THÊM VÀO ĐÂY */}
+          <img 
+            src="/images/merlion-icon-silhouette.png" // **[ACTION CẦN THỰC HIỆN] Thay thế URL này bằng ảnh biểu tượng (ví dụ: Merlion) thực tế**
+            alt="Singapore Icon Watermark" 
+            // Opacity cực thấp (0.03-0.05) và scale lớn để tạo hiệu ứng chìm. Dùng m-auto để canh giữa.
+            className="absolute inset-0 m-auto w-1/2 h-1/2 object-contain opacity-[0.03] scale-150 sm:scale-125 pointer-events-none" 
+          />                  
+
+<div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black"></div>
           <div className="absolute inset-0 bg-gradient-to-r from-blue-900/20 via-transparent to-purple-900/20"></div>
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
-          <div className={`${mono.className} mb-8 text-blue-400 text-[10px] font-black tracking-[0.6em] uppercase animate-pulse`}>
-             // Redefining Singapore Exploration
-          </div>
-          
+          <div className={`${mono.className} mb-8 text-blue-400 text-[10px] font-black tracking-[0.6em] uppercase animate-pulse`}>// Redefining Singapore Exploration</div>
           <h1 className={`${playfair.className} text-6xl md:text-[9rem] font-black leading-[0.85] tracking-tighter uppercase text-white drop-shadow-2xl mb-12`}>
             Singapore <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">Unlocked</span>
           </h1>
-          
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link href="/events" className="bg-white text-black px-10 py-5 rounded-full font-black text-sm uppercase tracking-widest hover:scale-105 transition-all shadow-[0_0_40px_rgba(255,255,255,0.3)]">
-              Explore Events
-            </Link>
-            <Link href="/guides" className="bg-[#111] text-white border border-white/20 px-10 py-5 rounded-full font-black text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-all">
-              Insider Guides
-            </Link>
+            <Link href="/events" className="bg-white text-black px-10 py-5 rounded-full font-black text-sm uppercase tracking-widest hover:scale-105 transition-all">Explore Events</Link>
+            <Link href="/guides" className="bg-[#111] text-white border border-white/20 px-10 py-5 rounded-full font-black text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-all">Insider Guides</Link>
           </div>
         </div>
       </section>
 
-      {/* 2. UPCOMING HEADLINERS */}
+      {/* UPCOMING HEADLINERS */}
       <section className="max-w-7xl mx-auto px-6 py-32 border-b border-white/5">
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
           <div>
@@ -82,16 +75,11 @@ export default async function HomePage() {
           </div>
           <Link href="/events" className="text-gray-400 text-xs font-bold uppercase tracking-widest hover:text-white transition-all border-b border-gray-600 pb-1">View Calendar →</Link>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {limitedEvents.map((event) => (
-            <Link key={event.id} href={`/events/${event.slug}`} className="group relative bg-[#0a0a0a] border border-white/10 rounded-[2.5rem] overflow-hidden hover:border-blue-500/50 hover:shadow-[0_0_50px_rgba(59,130,246,0.15)] transition-all duration-500">
-               <div className="h-72 overflow-hidden relative">
-                  <img 
-                    src={event.imageUrl || 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800'} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
-                    alt="" 
-                  />
+            <Link key={event.id} href={`/events/${event.slug}`} className="group relative bg-[#0a0a0a] border border-white/10 rounded-[2.5rem] overflow-hidden hover:border-blue-500/50 transition-all">
+               <div className="h-80 overflow-hidden relative">
+                  <img src={event.imageUrl || ''} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="" />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-90" />
                   <div className="absolute top-4 right-4 bg-white text-black px-4 py-2 rounded-xl font-black text-xs uppercase tracking-widest text-center shadow-lg">
                     <p>{event.startDate ? event.startDate.getDate() : 'TBA'}</p>
@@ -107,7 +95,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 3. SINGAPORE ICONS (SLIDER) */}
+      {/* SINGAPORE ICONS (SLIDER) */}
       <section className="py-32 bg-[#050505]">
          <div className="max-w-7xl mx-auto px-6">
             <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
@@ -117,12 +105,11 @@ export default async function HomePage() {
                </div>
                <Link href="/attractions" className="bg-white/10 text-white px-8 py-4 rounded-full font-black text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-all">View All Icons →</Link>
             </div>
-            
             <IconsCarousel events={evergreenAttractions} />
          </div>
       </section>
 
-      {/* 4. INSIDER GUIDES (BÀI VIẾT) */}
+      {/* INSIDER GUIDES (MỚI THÊM LẠI) */}
       <section className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5">
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
           <div>
@@ -131,53 +118,22 @@ export default async function HomePage() {
           </div>
           <Link href="/guides" className="text-gray-400 text-xs font-bold uppercase tracking-widest hover:text-white transition-all border-b border-gray-600 pb-1">Read All Guides →</Link>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {latestGuides.map((post) => (
             <Link key={post.id} href={`/guides/${post.slug}`} className="group bg-[#111] border border-white/10 rounded-[2.5rem] overflow-hidden hover:border-green-500/50 transition-all duration-500">
                <div className="h-64 overflow-hidden relative">
-                  <img 
-                    src={post.imageUrl || 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=800'} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
-                    alt="" 
-                  />
+                  <img src={post.imageUrl || ''} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent opacity-80" />
-                  <div className="absolute top-4 left-4">
-                     <span className="px-3 py-1 bg-green-600/90 text-white text-[10px] font-black uppercase tracking-widest rounded-lg">
-                        {post.category || 'Guide'}
-                     </span>
-                  </div>
+                  <div className="absolute top-4 left-4"><span className="px-3 py-1 bg-green-600/90 text-white text-[10px] font-black uppercase tracking-widest rounded-lg">{post.category || 'Guide'}</span></div>
                </div>
                <div className="p-8">
                   <h3 className="text-xl font-bold mb-4 line-clamp-2 text-white group-hover:text-green-400 transition-colors leading-tight">{post.title}</h3>
                   <p className="text-gray-500 text-sm line-clamp-2 leading-relaxed">"{post.excerpt}"</p>
-                  <div className="mt-6 flex items-center text-[10px] font-black uppercase tracking-widest text-green-500">
-                     Read Analysis <span>→</span>
-                  </div>
                </div>
             </Link>
           ))}
         </div>
       </section>
-
-      {/* 5. TRUST BANNER */}
-      <section className="py-24 border-t border-white/5 bg-gradient-to-b from-black to-[#111]">
-         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
-            <div className="p-8 border-l border-white/10">
-               <h3 className="text-white font-bold text-xl mb-2 uppercase tracking-tight">Curated by Locals</h3>
-               <p className="text-gray-500 text-sm">Every listing verified by 25-year residents.</p>
-            </div>
-            <div className="p-8 border-l border-white/10">
-               <h3 className="text-white font-bold text-xl mb-2 uppercase tracking-tight">Real-Time Intel</h3>
-               <p className="text-gray-500 text-sm">Live updates on crowds and weather.</p>
-            </div>
-            <div className="p-8 border-l border-white/10">
-               <h3 className="text-white font-bold text-xl mb-2 uppercase tracking-tight">Direct Deals</h3>
-               <p className="text-gray-500 text-sm">Best rates via Klook & Trip.com.</p>
-            </div>
-         </div>
-      </section>
-
     </main>
   );
 }

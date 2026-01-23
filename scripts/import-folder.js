@@ -108,7 +108,7 @@ async function runBatchImport() {
         longitude: data.longitude || 0,
         price: data.price?.toString() || "TBA",
         sourceUrl: attachAffiliateTags(data.sourceUrl, 'TRIP'),
-        category: data.category || "Expert Guide",
+        category: "Attraction",
         authorId: pickAuthorId(name),
         aiSummary: data.aiSummary,
         aiSmartTips: data.aiSmartTips,
