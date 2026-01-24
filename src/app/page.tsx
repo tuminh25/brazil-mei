@@ -49,11 +49,11 @@ export default async function HomePage() {
           {/* LỚP PHỦ GRADIENT 1: Tạo độ sâu và màu nền */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black"></div>
           
-          {/* ẢNH BIỂU TƯỢNG CHÌM (WATERMARK) - Thay đổi cốt lõi */}
+          {/* ẢNH BIỂU TƯỢNG CHÌM (WATERMARK) - Đã điều chỉnh opacity về mức tinh tế */}
           <img 
-            src="https://thecaptainandthecook.com/wp-content/uploads/2025/08/IMG_2715.jpg" // URL ảnh chìm Sếp cung cấp
+            src="https://thecaptainandthecook.com/wp-content/uploads/2025/08/IMG_2715.jpg"
             alt="Singapore Icon Watermark"
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] object-contain opacity-[0.03] scale-150 blur-sm mix-blend-screen select-none pointer-events-none"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] object-contain opacity-[0.05] scale-200 blur-md select-none pointer-events-none"
           />
 
           {/* LỚP PHỦ GRADIENT 2: Hiệu ứng màu Cyber-Noir */}
