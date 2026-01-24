@@ -39,22 +39,24 @@ export default async function HomePage() {
       <section className="relative w-full h-[90vh] flex flex-col items-center justify-center overflow-hidden border-b border-white/5">
         <div className="absolute inset-0">
           
-          {/* Main Background Image - opacity 30% */}
+          {/* ẢNH NỀN GỐC - Giữ nguyên */}
           <img 
             src="https://images.unsplash.com/photo-1543314223-999335f60647?q=80&w=1600&auto=format&fit=crop" 
-            className="w-full h-full object-cover opacity-30 scale-105" 
-            alt="Singapore Skyline" 
+            className="w-full h-full object-cover opacity-40 scale-105" 
+            alt="Hero Section Background" 
           />
           
-          {/* ẢNH CHÌM BIỂU TƯỢNG SINGAPORE (WATERMARK ICON) */}
-          <img 
-            src="/images/merlion-icon-silhouette.png" 
-            alt="Singapore Icon Watermark" 
-            className="absolute inset-0 m-auto w-1/2 h-1/2 object-contain opacity-[0.05] scale-150 sm:scale-125 pointer-events-none" 
-          />
-          
-          {/* Existing Gradients */}
+          {/* LỚP PHỦ GRADIENT 1: Tạo độ sâu và màu nền */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black"></div>
+          
+          {/* ẢNH BIỂU TƯỢNG CHÌM (WATERMARK) - Thay đổi cốt lõi */}
+          <img 
+            src="https://thecaptainandthecook.com/wp-content/uploads/2025/08/IMG_2715.jpg" // URL ảnh chìm Sếp cung cấp
+            alt="Singapore Icon Watermark"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] object-contain opacity-[0.03] scale-150 blur-sm mix-blend-screen select-none pointer-events-none"
+          />
+
+          {/* LỚP PHỦ GRADIENT 2: Hiệu ứng màu Cyber-Noir */}
           <div className="absolute inset-0 bg-gradient-to-r from-blue-900/20 via-transparent to-purple-900/20"></div>
         </div>
 
