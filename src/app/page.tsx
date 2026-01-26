@@ -11,7 +11,17 @@ const inter = Inter({ subsets: ['latin'], weight: ['400', '600', '800'] });
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  // 1. HEADLINERS (Sự kiện ngắn hạn) - TRỞ VỀ VERSION CŨ
+  // 0. NEWSJACK: Bài viết tin tức nóng (ƯU TIÊN HIỂN THỊ) - GIỮ NGUYÊN QUERY
+  const latestNewsjack = await prisma.post.findFirst({
+    where: { 
+      status: 'PUBLISHED', 
+      isNewsjack: true 
+    },
+    orderBy: { createdAt: 'desc' },
+    include: { author: true }
+  }) || null;
+
+  // 1. HEADLINERS (Sự kiện ngắn hạn)
   const limitedEvents = await prisma.event.findMany({
     where: { status: 'PUBLISHED', category: { not: 'Attraction' } },
     take: 3,
@@ -25,9 +35,13 @@ export default async function HomePage() {
     orderBy: { hotnessScore: 'desc' }
   }) || [];
 
-  // 3. GUIDES (Bài viết chuyên sâu) - QUERY ĐƠN GIẢN LẠI
+  // 3. GUIDES (Bài viết chuyên sâu) - GIỮ NGUYÊN QUERY VỚI LOGIC LOẠI TRỪ NEWSJACK
   const latestGuides = await prisma.post.findMany({
-    where: { status: 'PUBLISHED' },
+    where: { 
+      status: 'PUBLISHED',
+      // Loại trừ bài Newsjack đã hiển thị ở trên - GIỮ NGUYÊN LOGIC
+      id: latestNewsjack ? { not: latestNewsjack.id } : undefined 
+    },
     take: 3,
     orderBy: { createdAt: 'desc' }
   }) || [];
