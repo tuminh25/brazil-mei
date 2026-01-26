@@ -151,7 +151,7 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
           {/* EXCERPT BOX */}
           <div className="mb-20 p-10 bg-gradient-to-r from-blue-900/20 to-transparent border-l-4 border-blue-600 rounded-r-[2rem]">
              <p className={`${playfair.className} text-2xl md:text-3xl text-white italic leading-relaxed opacity-90`}>
-               "{post.excerpt}"
+               {post.excerpt}
              </p>
           </div>
 
