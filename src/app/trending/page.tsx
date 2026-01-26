@@ -13,7 +13,8 @@ export default async function TrendingPage() {
   // Fetch tất cả bài viết Newsjack có status: 'PUBLISHED' và isNewsjack: true
   const trendingPosts = await prisma.post.findMany({
     where: { 
-      status: 'PUBLISHED', 
+      status: 'PUBLISHED',
+      category: 'Trending News'  
       isNewsjack: true 
     },
     orderBy: { createdAt: 'desc' },
