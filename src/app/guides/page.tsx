@@ -5,7 +5,13 @@ import prisma from "@/lib/prisma";
 export const dynamic = 'force-dynamic';
 
 export default async function GuidesPage() {
+  // ĐÃ SỬA: Thêm bộ lọc where để loại bỏ Newsjack
   const posts = await prisma.post.findMany({
+    where: {
+      status: 'PUBLISHED',    // 1. Chỉ lấy bài đã xuất bản
+      isNewsjack: false,      // 2. QUAN TRỌNG: Loại bỏ bài Trending News
+      category: { not: 'Trending News' } // 3. Chốt chặn an toàn thứ 2
+    },
     orderBy: { createdAt: 'desc' },
   });
 
@@ -17,7 +23,7 @@ export default async function GuidesPage() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {posts.map((post) => {
-            // MẸO CỦA KTS TRƯỞNG: Nếu ảnh bị trống hoặc là link placeholder cũ, tự đổi sang ảnh ngẫu nhiên siêu đẹp
+            // Logic xử lý ảnh
             const isMissingImage = !post.imageUrl || post.imageUrl.includes('photo-1525625239513');
             const displayImage = isMissingImage 
               ? `https://loremflickr.com/800/600/singapore,city,lifestyle/all?lock=${post.id}` 
