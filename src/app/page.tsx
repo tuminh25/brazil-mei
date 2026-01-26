@@ -39,8 +39,7 @@ export default async function HomePage() {
   const latestGuides = await prisma.post.findMany({
     where: { 
       status: 'PUBLISHED',
-      // Loại trừ bài Newsjack đã hiển thị ở trên - GIỮ NGUYÊN LOGIC
-      id: latestNewsjack ? { not: latestNewsjack.id } : undefined 
+      category: { not: 'Trending News' } // <--- THÊM DÒNG NÀY
     },
     take: 3,
     orderBy: { createdAt: 'desc' }
