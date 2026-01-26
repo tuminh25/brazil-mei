@@ -35,7 +35,7 @@ export default async function HomePage() {
     orderBy: { hotnessScore: 'desc' }
   }) || [];
 
-  // 3. GUIDES (Bài viết chuyên sâu) - GIỮ NGUYÊN QUERY VỚI LOGIC LOẠI TRỪ NEWSJACK
+  // 3. GUIDES (Bài viết chuyên sâu) - GIỮ NGUYÊN LOGIC LOẠI TRỪ NEWSJACK
   const latestGuides = await prisma.post.findMany({
     where: { 
       status: 'PUBLISHED',
