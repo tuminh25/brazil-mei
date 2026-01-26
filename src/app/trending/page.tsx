@@ -10,8 +10,8 @@ const inter = Inter({ subsets: ['latin'], weight: ['400', '600', '800'] });
 export const dynamic = 'force-dynamic';
 
 export default async function TrendingPage() {
-  // Fetch tất cả bài viết Newsjack
-  const newsjackPosts = await prisma.post.findMany({
+  // Fetch tất cả bài viết Newsjack có status: 'PUBLISHED' và isNewsjack: true
+  const trendingPosts = await prisma.post.findMany({
     where: { 
       status: 'PUBLISHED', 
       isNewsjack: true 
@@ -23,10 +23,10 @@ export default async function TrendingPage() {
   return (
     <main className={`${inter.className} min-h-screen bg-black text-white selection:bg-red-500/30 overflow-x-hidden`}>
       
-      {/* HERO SECTION - TRENDING NEWS */}
-      <section className="relative w-full h-[60vh] flex flex-col items-center justify-center overflow-hidden border-b border-red-500/20">
+      {/* HERO SECTION */}
+      <section className="relative w-full h-[70vh] flex flex-col items-center justify-center overflow-hidden border-b border-red-500/30">
         <div className="absolute inset-0">
-          {/* Background Image */}
+          {/* Background Image with Red/Orange Theme */}
           <img 
             src="https://images.unsplash.com/photo-1605000797499-95a51c5269ae?q=80&w=1600&auto=format&fit=crop" 
             className="w-full h-full object-cover opacity-30 scale-110" 
@@ -35,17 +35,15 @@ export default async function TrendingPage() {
           
           {/* Gradient Overlays */}
           <div className="absolute inset-0 bg-gradient-to-b from-black via-black/70 to-black"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-red-900/30 via-transparent to-orange-900/30"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-red-900/40 via-transparent to-orange-900/40"></div>
           
-          {/* Animated Pulse Effect */}
-          <div className="absolute inset-0">
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          </div>
+          {/* Animated Elements */}
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
-          <div className={`${mono.className} mb-6 text-red-400 text-[10px] font-black tracking-[0.6em] uppercase animate-pulse`}>// REAL-TIME ANALYSIS</div>
+          <div className={`${mono.className} mb-6 text-red-400 text-[10px] font-black tracking-[0.6em] uppercase animate-pulse`}>// REAL-TIME NEWS ANALYSIS</div>
           <h1 className={`${playfair.className} text-5xl md:text-[8rem] font-black leading-[0.85] tracking-tighter uppercase text-white drop-shadow-2xl mb-8`}>
             Trending <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-500">Newsjack</span>
           </h1>
@@ -61,7 +59,7 @@ export default async function TrendingPage() {
               View All Guides
             </Link>
             <Link 
-              href="#newsjack-grid" 
+              href="#news-grid" 
               className="bg-red-600/30 border border-red-500/50 text-white px-8 py-4 rounded-full font-black text-sm uppercase tracking-widest hover:bg-red-600 hover:border-red-600 transition-all"
             >
               Explore Trending
@@ -71,7 +69,7 @@ export default async function TrendingPage() {
       </section>
 
       {/* CONTENT SECTION */}
-      <div id="newsjack-grid" className="max-w-7xl mx-auto px-6 py-32">
+      <div id="news-grid" className="max-w-7xl mx-auto px-6 py-32">
         {/* HEADER */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-6">
           <div>
@@ -108,9 +106,9 @@ export default async function TrendingPage() {
         </div>
 
         {/* NEWSJACK POSTS GRID */}
-        {newsjackPosts.length > 0 ? (
+        {trendingPosts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {newsjackPosts.map((post) => (
+            {trendingPosts.map((post) => (
               <Link 
                 key={post.id} 
                 href={`/guides/${post.slug}`}
@@ -186,7 +184,7 @@ export default async function TrendingPage() {
             ))}
           </div>
         ) : (
-          /* EMPTY STATE */
+          /* EMPTY STATE - "No Trending News Yet" */
           <div className="text-center py-32 border border-red-500/20 rounded-[3rem] bg-gradient-to-br from-[#1a0a0a] to-transparent">
             <div className="max-w-md mx-auto">
               <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-red-900/30 to-orange-900/30 flex items-center justify-center">
