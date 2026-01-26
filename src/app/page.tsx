@@ -1,4 +1,4 @@
-// src/app/page.tsx (Đã sửa đường dẫn file trong Hero Section)
+// src/app/page.tsx
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import IconsCarousel from "@/components/IconsCarousel";
@@ -11,7 +11,7 @@ const inter = Inter({ subsets: ['latin'], weight: ['400', '600', '800'] });
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  // 1. HEADLINERS (Sự kiện ngắn hạn)
+  // 1. HEADLINERS (Sự kiện ngắn hạn) - TRỞ VỀ VERSION CŨ
   const limitedEvents = await prisma.event.findMany({
     where: { status: 'PUBLISHED', category: { not: 'Attraction' } },
     take: 3,
@@ -25,7 +25,7 @@ export default async function HomePage() {
     orderBy: { hotnessScore: 'desc' }
   }) || [];
 
-  // 3. GUIDES (Bài viết chuyên sâu)
+  // 3. GUIDES (Bài viết chuyên sâu) - QUERY ĐƠN GIẢN LẠI
   const latestGuides = await prisma.post.findMany({
     where: { status: 'PUBLISHED' },
     take: 3,
@@ -39,24 +39,20 @@ export default async function HomePage() {
       <section className="relative w-full h-[90vh] flex flex-col items-center justify-center overflow-hidden border-b border-white/5">
         <div className="absolute inset-0">
           
-          {/* ẢNH NỀN GỐC - Giữ nguyên */}
           <img 
             src="https://images.unsplash.com/photo-1543314223-999335f60647?q=80&w=1600&auto=format&fit=crop" 
             className="w-full h-full object-cover opacity-40 scale-105" 
             alt="Hero Section Background" 
           />
           
-          {/* LỚP PHỦ GRADIENT 1: Tạo độ sâu và màu nền */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black"></div>
           
-          {/* ẢNH BIỂU TƯỢNG CHÌM (WATERMARK) - Đã điều chỉnh opacity về mức tinh tế */}
           <img 
             src="https://thecaptainandthecook.com/wp-content/uploads/2025/08/IMG_2715.jpg"
             alt="Singapore Icon Watermark"
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] object-contain opacity-[0.05] scale-200 blur-md select-none pointer-events-none"
           />
 
-          {/* LỚP PHỦ GRADIENT 2: Hiệu ứng màu Cyber-Noir */}
           <div className="absolute inset-0 bg-gradient-to-r from-blue-900/20 via-transparent to-purple-900/20"></div>
         </div>
 

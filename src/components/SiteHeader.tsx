@@ -12,6 +12,17 @@ export default function SiteHeader() {
           <nav className="hidden md:flex items-center gap-8 text-[11px] font-bold uppercase tracking-[0.15em]">
             <Link href="/events" className="text-gray-300 hover:text-white transition">All Events</Link>
             <Link href="/guides" className="text-gray-300 hover:text-blue-400 transition">Insider Guides</Link>
+            {/* THÊM MỤC TRENDING NEWSJACK */}
+            <Link 
+              href="/trending" 
+              className="text-red-400 hover:text-red-300 transition flex items-center gap-2"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+              </span>
+              TRENDING
+            </Link>
           </nav>
         </div>
         

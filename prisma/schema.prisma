@@ -23,6 +23,7 @@ model Author {
   name        String
   role        String
   bio         String?  @db.Text
+  email       String    @unique @default("placeholder@sgeventshub.com")
   avatarUrl   String?
   socialLinks Json?    // { twitter: "...", instagram: "..." }
   
@@ -114,12 +115,16 @@ model Post {
   authorId    String?
   author      Author?  @relation(fields: [authorId], references: [id])
   
-  // TIMESTAMPS (Chỉ khai báo 1 lần ở đây)
+  // Thêm trường mới cho Newsjacking
+  isNewsjack  Boolean? @default(false) // <--- THAY ĐỔI MỚI: Trường Newsjack
+  
+  // TIMESTAMPS
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([slug])
   @@index([authorId])
+  @@index([isNewsjack]) // <--- THAY ĐỔI MỚI: Thêm index cho query nhanh hơn
 }
 
 // --- MRT MODEL ---
