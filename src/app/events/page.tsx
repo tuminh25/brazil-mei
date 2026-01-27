@@ -72,8 +72,9 @@ export default async function EventsPage({ searchParams }: { searchParams: Promi
   const events = await prisma.event.findMany({
   where: { 
     status: 'PUBLISHED',
-    category: { not: 'Attraction' } // QUAN TRỌNG: LOẠI BỎ USS, ZOO...
-  },
+    category: { not: 'Attraction' },
+startDate: { gte: new Date() } // Chặn các bài cũ
+},
 orderBy: sortBy === "trending" ? { hotnessScore: "desc" } : sortBy === "upcoming" ? { startDate: "asc" } : { createdAt: "desc" },
     take: 60,
     select: { id: true, slug: true, name: true, imageUrl: true, startDate: true, venue: true, price: true, category: true, hotnessScore: true }

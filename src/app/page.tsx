@@ -12,17 +12,19 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0; 
 
 export default async function HomePage() {
-  let limitedEvents: any[] = [];
-  let evergreenAttractions: any[] = [];
-  let latestGuides: any[] = [];
+  const now = new Date(); // Lấy thời gian hiện tại
 
-  try {
-    // 1. HEADLINERS (Sự kiện ngắn hạn)
-    limitedEvents = await prisma.event.findMany({
-      where: { status: 'PUBLISHED', category: 'Event' },
-      take: 6,
-      orderBy: { startDate: 'asc' }
-    });
+  // 1. HEADLINERS: Chỉ lấy sự kiện CHƯA DIỄN RA
+  const limitedEvents = await prisma.event.findMany({
+    where: { 
+      status: 'PUBLISHED',
+      category: { not: 'Attraction' },
+      // Lệnh bài: Chỉ lấy những sự kiện có ngày lớn hơn hoặc bằng hôm nay
+      startDate: { gte: now } 
+    },
+    take: 3,
+    orderBy: { startDate: 'asc' } // Sắp xếp: Gần nhất hiện trước
+  }) || [];
 
     // 2. ICONS (Địa điểm Evergreen)
     evergreenAttractions = await prisma.event.findMany({
