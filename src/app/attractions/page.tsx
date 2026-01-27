@@ -6,7 +6,8 @@ import { Playfair_Display, Inter } from 'next/font/google';
 const playfair = Playfair_Display({ subsets: ['latin'], weight: ['700', '900'], style: 'italic' });
 const inter = Inter({ subsets: ['latin'], weight: ['400', '600'] });
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'; // <--- ĐÂY LÀ "LỆNH BÀI" QUAN TRỌNG NHẤT
+export const revalidate = 0;           // Ép không lưu cache giây nào cả
 
 export default async function AttractionsPage() {
   const attractions = await prisma.event.findMany({

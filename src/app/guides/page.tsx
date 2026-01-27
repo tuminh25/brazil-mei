@@ -2,7 +2,9 @@
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'; // <--- ĐÂY LÀ "LỆNH BÀI" QUAN TRỌNG NHẤT
+export const revalidate = 0;           // Ép không lưu cache giây nào cả
+
 
 export default async function GuidesPage() {
   // ĐÃ SỬA: Thêm bộ lọc where để loại bỏ Newsjack

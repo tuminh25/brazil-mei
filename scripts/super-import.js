@@ -142,7 +142,7 @@ async function runImport() {
           aiDurationHint: safeTruncate(item.aiDurationHint, 100),
           marketingPitch: marketingPitch,
           nearbyAttractions: item.nearbyAttractions,
-          status: 'DRAFT', // NẠP VÀO KHO
+          status: 'PUBLISHED', // NẠP VÀO KHO
           updatedAt: new Date()
         };
 

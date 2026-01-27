@@ -9,6 +9,7 @@ const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '600'] });
 const inter = Inter({ subsets: ['latin'], weight: ['400', '600', '800'] });
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0; 
 
 export default async function HomePage() {
   // 0. NEWSJACK: Bài viết tin tức nóng (ƯU TIÊN HIỂN THỊ) - GIỮ NGUYÊN QUERY

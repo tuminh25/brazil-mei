@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0; 
 
 export const metadata = {
   title: "Singapore Events | SG Events Hub",
