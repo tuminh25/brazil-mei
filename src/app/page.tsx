@@ -36,10 +36,14 @@ export default async function HomePage() {
 
   // 3. GUIDES: Lấy 3 bài mới nhất
   const latestGuides = await prisma.post.findMany({
-    where: { status: 'PUBLISHED' },
-    take: 3,
-    orderBy: { createdAt: 'desc' }
-  }) || [];
+  where: { 
+    status: 'PUBLISHED',
+    // Sếp có thể lọc bài theo ý muốn ở đây
+  },
+  take: 3, // Chỉ lấy 3 bài mới nhất hiện ra Home
+  orderBy: { createdAt: 'desc' },
+  include: { author: true } // Lấy luôn tác giả cho uy tín
+}) || [];
 
   return (
     <main className={`${inter.className} min-h-screen bg-black text-white selection:bg-blue-500/30 overflow-x-hidden`}>
