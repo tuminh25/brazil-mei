@@ -75,7 +75,7 @@ async function run() {
             content: cleanContent, // Đã map từ description
             imageUrl: finalImage,
             category: item.category || "Expert Guide",
-            status: "PUBLISHED",
+            status: "DRAFT",
             authorId: 'author_3' // Gán mặc định cho Jax (Music/Nightlife) vì đây là bài Music
           }
         });
