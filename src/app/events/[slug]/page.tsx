@@ -56,7 +56,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
   if (!event) notFound();
 
   // Chốt chặn 3: Lấy bài liên quan an toàn
-  let relatedEvents = [];
+  let relatedEvents: any[] = [];
   try {
     relatedEvents = await prisma.event.findMany({
       where: { status: 'PUBLISHED', slug: { not: slug } },
