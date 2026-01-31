@@ -9,21 +9,40 @@ const cheerio = require('cheerio');
 const prisma = new PrismaClient();
 const QUEUE_DIR = path.join(__dirname, '../content-queue'); 
 
-// CẤU HÌNH AFFILIATE
 const KLOOK_AID = '105111';
 const TRIP_ALLIANCE_ID = '7367361';
 const TRIP_SID = '278066643';
 
-// ... (CÁC HÀM BỔ TRỢ GIỮ NGUYÊN) ...
+// --- HÀM TỰ ĐỘNG ĐẢM BẢO TÁC GIẢ TỒN TẠI ---
+async function ensureAuthorsExist() {
+  console.log('👥 Đang kiểm tra danh sách tác giả...');
+  const authors = [
+    { id: 'author_1', name: 'Desmond Ho', role: 'Chief Editor & 25-Year Local', bio: 'Living in Singapore since 1998. Expert in travel and local gems.', avatarUrl: 'https://images.unsplash.com/photo-1556157382-97eda2d62296?w=400' },
+    { id: 'author_2', name: 'Sarah Tan', role: 'Family & Kids Editor', bio: 'Mom of two. Expert in playgrounds and family-friendly hacks.', avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400' },
+    { id: 'author_3', name: 'Jax', role: 'Nightlife & Trends Scout', bio: 'Chasing the best beats and hidden nightlife spots in SG.', avatarUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400' }
+  ];
+
+  for (const a of authors) {
+    await prisma.author.upsert({
+      where: { id: a.id },
+      update: { name: a.name, role: a.role, bio: a.bio, avatarUrl: a.avatarUrl },
+      create: a
+    });
+  }
+  console.log('✅ Hệ thống tác giả đã sẵn sàng.');
+}
+
 function generateSlug(text) {
   return text.toString().toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').substring(0, 100);
 }
+
 function pickAuthorId(title) {
   const t = (title || "").toLowerCase();
-  if (t.includes('kid') || t.includes('family')) return 'author_2';
-  if (t.includes('night') || t.includes('party')) return 'author_3';
+  if (t.includes('kid') || t.includes('family') || t.includes('zoo') || t.includes('oceanarium')) return 'author_2';
+  if (t.includes('night') || t.includes('party') || t.includes('bike') || t.includes('concert')) return 'author_3';
   return 'author_1';
 }
+
 async function fetchMetaImage(url) {
   if (!url || !url.startsWith('http')) return null;
   try {
@@ -32,109 +51,74 @@ async function fetchMetaImage(url) {
     return $('meta[property="og:image"]').attr('content') || null;
   } catch (e) { return null; }
 }
+
 function attachAffiliateTags(url, type) {
     if (!url || !url.startsWith('http')) return url;
     const separator = url.includes('?') ? '&' : '?';
-    if (type === 'KLOOK' && url.includes('klook.com') && !url.includes('aid=')) return `${url}${separator}aid=${KLOOK_AID}&utm_medium=affiliate-alwayson&utm_source=non-network&utm_campaign=${KLOOK_AID}`;
-    if (type === 'TRIP' && url.includes('trip.com') && !url.includes('Allianceid=')) return `${url}${separator}Allianceid=${TRIP_ALLIANCE_ID}&SID=${TRIP_SID}`;
+    if (url.includes('klook.com')) return `${url}${separator}aid=${KLOOK_AID}&utm_medium=affiliate-alwayson&utm_source=non-network&utm_campaign=${KLOOK_AID}`;
+    if (url.includes('trip.com')) return `${url}${separator}Allianceid=${TRIP_ALLIANCE_ID}&SID=${TRIP_SID}`;
     return url;
 }
 
 async function runBatchImport() {
-  // LẤY TÊN FILE TỪ LỆNH CỦA SẾP
-  const targetFile = process.argv[2]; 
+  try {
+    console.log('🚀 KHỞI ĐỘNG CỖ MÁY V21.0...');
+    
+    // BƯỚC QUAN TRỌNG: TỰ TẠO TÁC GIẢ NẾU THIẾU
+    await ensureAuthorsExist();
 
-  if (targetFile) {
-    console.log(`🎯 CHẾ ĐỘ TEST: Đang chỉ định chạy file "${targetFile}"...`);
-  } else {
-    console.log(`🚀 CHẾ ĐỘ HÀNG LOẠT: Đang quét toàn bộ thư mục...`);
-  }
+    if (!fs.existsSync(QUEUE_DIR)) return console.error("❌ Folder content-queue trống!");
 
-  if (!fs.existsSync(QUEUE_DIR)) {
-    console.error("❌ Lỗi: Không tìm thấy thư mục 'content-queue'");
-    return;
-  }
+    const files = fs.readdirSync(QUEUE_DIR).filter(file => file.endsWith('.json'));
+    console.log(`📊 Tìm thấy ${files.length} file.`);
 
-  let files = [];
-  if (targetFile) {
-    // Nếu Sếp chỉ định file, chỉ chạy file đó
-    if (fs.existsSync(path.join(QUEUE_DIR, targetFile))) {
-        files = [targetFile];
-    } else {
-        console.error(`❌ Lỗi: Không tìm thấy file "${targetFile}" trong thư mục content-queue`);
-        return;
-    }
-  } else {
-    // Nếu không chỉ định, chạy hết các file .json
-    files = fs.readdirSync(QUEUE_DIR).filter(file => file.endsWith('.json'));
-  }
-
-  console.log(`📊 Tìm thấy ${files.length} file để xử lý.`);
-
-  for (const file of files) {
-    const filePath = path.join(QUEUE_DIR, file);
-    try {
-      console.log(`\n📄 Đang xử lý file: ${file}`);
-      const rawContent = fs.readFileSync(filePath, 'utf8');
-      
-      // Xử lý linh hoạt JSON
-      let data;
+    for (const file of files) {
       try {
-          data = JSON.parse(rawContent);
-      } catch (jsonErr) {
-          throw new Error("Lỗi cú pháp JSON. Sếp check lại dấu phẩy hoặc ngoặc kép!");
-      }
-      
-      if (Array.isArray(data)) data = data[0]; 
+        const rawContent = fs.readFileSync(path.join(QUEUE_DIR, file), 'utf8');
+        let data = JSON.parse(rawContent);
+        if (Array.isArray(data)) data = data[0];
 
-      const name = data.name || data.title;
-      if (!name) throw new Error("File thiếu tên bài viết");
+        const name = data.name || data.title;
+        const slug = data.slug || generateSlug(name);
+        const authorId = pickAuthorId(name);
 
-      const slug = data.slug || generateSlug(name);
-      let imageUrl = await fetchMetaImage(data.sourceUrl);
-      if (!imageUrl) imageUrl = `https://loremflickr.com/1200/800/singapore,travel/all?lock=${name.length}`;
+        console.log(`\n📄 Đang xử lý: ${name}`);
 
-      const finalPitch = `${data.marketingPitch || ''}\n\n🔗 Book: ${attachAffiliateTags(data.sourceUrl, 'KLOOK')}`;
-      
-      const eventData = {
-        slug: slug,
-        name: name,
-        description: (data.description || data.content || "").split(/From an EEAT/i)[0].trim(),
-        imageUrl: imageUrl,
-        startDate: data.startDate ? new Date(data.startDate) : new Date(),
-        venue: data.venue || "Singapore",
-        venueAddress: data.venueAddress || "",
-        latitude: data.latitude || 0,
-        longitude: data.longitude || 0,
-        price: data.price?.toString() || "TBA",
-        sourceUrl: attachAffiliateTags(data.sourceUrl, 'TRIP'),
-        category: "Attraction",
-        authorId: pickAuthorId(name),
-        aiSummary: data.aiSummary,
-        aiSmartTips: data.aiSmartTips,
-        aiFaq: data.aiFaq,
-        marketingPitch: finalPitch,
-        nearbyAttractions: data.nearbyAttractions,
-        
-        // VẪN ĐỂ DRAFT ĐỂ AN TOÀN KHI TEST
-        status: 'DRAFT', 
-        updatedAt: new Date()
-      };
+        let imageUrl = await fetchMetaImage(data.sourceUrl);
+        if (!imageUrl) imageUrl = `https://loremflickr.com/1200/800/singapore,city/all?lock=${name.length}`;
 
-      await prisma.event.upsert({
-        where: { slug: slug },
-        update: eventData,
-        create: eventData
-      });
+        const eventData = {
+          slug: slug,
+          name: name,
+          description: (data.description || data.content || "").split(/From an EEAT/i)[0].trim(),
+          imageUrl: imageUrl,
+          startDate: data.startDate ? new Date(data.startDate) : new Date(),
+          venue: data.venue || "Singapore",
+          price: data.price?.toString() || "TBA",
+          sourceUrl: attachAffiliateTags(data.sourceUrl),
+          category: "Events",
+          authorId: authorId, // <--- BÂY GIỜ CHẮC CHẮN SẼ CÓ ID NÀY
+          aiSummary: data.aiSummary || data.excerpt,
+          aiFaq: data.aiFaq || [],
+          aiBestFor: data.aiBestFor || "",
+          aiVibe: data.aiVibe || "",
+          marketingPitch: data.marketingPitch || "",
+          status: 'PUBLISHED', // ĐĂNG LUÔN ĐỂ KIỂM TRA
+          updatedAt: new Date()
+        };
 
-      console.log(`✅ TEST THÀNH CÔNG: ${name} (Đã vào kho DRAFT)`);
+        await prisma.event.upsert({
+          where: { slug: slug },
+          update: eventData,
+          create: eventData
+        });
 
-    } catch (e) {
-      console.error(`❌ Lỗi file ${file}:`, e.message);
+        console.log(`✅ Thành công: ${name}`);
+
+      } catch (e) { console.error(`❌ Lỗi file ${file}:`, e.message); }
     }
-  }
-
-  console.log(`\n🎉 HOÀN TẤT QUY TRÌNH.`);
+    console.log('\n🎉 TẤT CẢ ĐÃ LÊN SÓNG MƯỢT MÀ!');
+  } catch (err) { console.error('💥 Lỗi hệ thống:', err.message); } finally { await prisma.$disconnect(); }
 }
 
 runBatchImport();

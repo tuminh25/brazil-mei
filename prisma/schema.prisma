@@ -22,8 +22,7 @@ model Author {
   id          String   @id @default(cuid())
   name        String
   role        String
-  bio         String?  @db.Text
-  email       String    @unique @default("placeholder@sgeventshub.com")
+  bio         String?  @db.Text  
   avatarUrl   String?
   socialLinks Json?    // { twitter: "...", instagram: "..." }
   
