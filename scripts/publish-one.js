@@ -1,32 +1,39 @@
+// scripts/publish-one.js
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-async function publishNext() {
-  console.log('🤖 ROBOT ĐANG TÌM BÀI TRONG KHO...');
+async function cleanAndPublish() {
+  const now = new Date();
+  console.log(`🤖 ROBOT ĐANG LÀM VIỆC LÚC: ${now.toLocaleString()}`);
 
-  // 1. Lấy bài cũ nhất đang chờ (First In, First Out)
+  // 1. NHIỆM VỤ QUÉT RÁC: Tự động xóa bài cũ (Trừ Attraction)
+  const deleted = await prisma.event.deleteMany({
+    where: {
+      category: { not: 'Attraction' },
+      startDate: { lt: now } // Những bài có ngày nhỏ hơn hiện tại
+    }
+  });
+  if (deleted.count > 0) console.log(`🧹 Đã dọn dẹp ${deleted.count} bài viết hết hạn.`);
+
+  // 2. NHIỆM VỤ XUẤT KHO: Tìm bài DRAFT mới nhất để đăng
   const draft = await prisma.event.findFirst({
     where: { status: 'DRAFT' },
-    orderBy: { createdAt: 'asc' } // Lấy bài nạp vào đầu tiên
+    orderBy: { createdAt: 'asc' }
   });
 
   if (!draft) {
-    console.log('zzz Kho hết hàng! Sếp ơi nạp thêm bài đi.');
+    console.log('😴 Kho hết hàng. Robot đi ngủ đây!');
     return;
   }
 
-  // 2. Kích hoạt bài viết
   await prisma.event.update({
     where: { id: draft.id },
-    data: { 
-      status: 'PUBLISHED',
-      updatedAt: new Date() // Cập nhật giờ để nó nhảy lên đầu trang chủ
-    }
+    data: { status: 'PUBLISHED', updatedAt: now }
   });
 
-  console.log(`✅ ĐÃ ĐĂNG: ${draft.name}`);
+  console.log(`✅ ĐÃ ĐĂNG BÀI MỚI: ${draft.name}`);
 }
 
-publishNext()
+cleanAndPublish()
   .catch(e => console.error(e))
   .finally(async () => await prisma.$disconnect());

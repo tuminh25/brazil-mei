@@ -1,103 +1,73 @@
-// src/app/events/page.tsx
+// src/app/events/page.tsx (BẢN V41.0 - CHỐT HẠ LOGIC THỜI GIAN)
 import prisma from "@/lib/prisma";
 import Link from "next/link";
+import { Playfair_Display, Inter, IBM_Plex_Mono } from 'next/font/google';
+
+const playfair = Playfair_Display({ subsets: ['latin'], weight: ['700', '900'], style: 'italic' });
+const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '700', '800'] });
+const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '600'] });
 
 export const dynamic = 'force-dynamic';
-export const revalidate = 0; 
-
-export const metadata = {
-  title: "Singapore Events | SG Events Hub",
-  description: "Discover trending activities in Singapore with AI-powered insights.",
-};
-
-export type SortOption = "trending" | "upcoming" | "newest";
-
-function formatEventDate(d: Date | null) {
-  if (!d) return "Date TBA";
-  return new Date(d).toLocaleDateString("en-SG", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
-}
-
-function normalizeSort(input?: string | null): SortOption {
-  if (input === "upcoming" || input === "newest" || input === "trending") return input;
-  return "trending";
-}
-
-// HÀM TẠO ẢNH THÔNG MINH DỰA TRÊN THỂ LOẠI
-function getSmartPlaceholder(name: string, category: string | null) {
-    // Dùng chính cái tên sự kiện làm "khóa" để mỗi bài ra 1 ảnh khác nhau
-    const id = name.length % 10; 
-    const keywords = ['singapore-city', 'concert', 'festival', 'museum', 'nightlife', 'party', 'stadium', 'marina-bay', 'art-gallery', 'tourism'];
-    return `https://loremflickr.com/800/600/${keywords[id]}/all?lock=${name.length}`;
-}
-
-function EventCard({ event }: { event: any }) {
-  const isTrending = (event.hotnessScore ?? 0) >= 70;
-  
-  // LOGIC CHỐNG TRÙNG: Nếu ảnh trong DB trống, dùng ảnh thông minh
-  const displayImage = event.imageUrl && event.imageUrl.startsWith('http') 
-    ? event.imageUrl 
-    : getSmartPlaceholder(event.name, event.category);
-
-  return (
-    <Link
-      href={`/events/${event.slug}`}
-      className="group flex flex-col bg-[#111827] border border-white/5 rounded-2xl overflow-hidden hover:border-blue-500/50 hover:shadow-[0_0_40px_rgba(59,130,246,0.15)] transition-all duration-300"
-    >
-      <div className="relative h-56 w-full overflow-hidden">
-        <img src={displayImage} alt={event.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#111827] via-transparent to-transparent opacity-80" />
-        <div className="absolute top-4 left-4 flex flex-col gap-2">
-          {isTrending && <span className="bg-red-600 text-white text-[9px] font-black px-2 py-1 rounded uppercase">🔥 Trending</span>}
-          <span className="bg-blue-600 text-white text-[9px] font-black px-2 py-1 rounded uppercase">{event.category || 'Singapore'}</span>
-        </div>
-      </div>
-      <div className="p-6 flex-1 flex flex-col">
-        <h3 className="text-xl font-bold text-white mb-2 line-clamp-2 leading-snug group-hover:text-blue-400">{event.name}</h3>
-        <div className="space-y-1 mt-2 mb-6">
-          <p className="text-xs text-gray-400">📅 {formatEventDate(event.startDate)}</p>
-          <p className="text-xs text-gray-400 line-clamp-1">📍 {event.venue || 'Venue TBA'}</p>
-        </div>
-        <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
-          <div className="text-sm font-black text-blue-400">{event.price && event.price !== '0' ? `SGD ${event.price}` : 'FREE ENTRY'}</div>
-          <div className="text-[10px] font-black uppercase text-white/50 group-hover:text-white">DETAILS →</div>
-        </div>
-      </div>
-    </Link>
-  );
-}
 
 export default async function EventsPage({ searchParams }: { searchParams: Promise<{ sort?: string | null }> }) {
   const resolved = await searchParams;
-  const sortBy = normalizeSort(resolved.sort);
+  const sortParam = resolved.sort || "trending";
+  const now = new Date();
+
+  // LẤY DỮ LIỆU: CHỈ LẤY BÀI TƯƠNG LAI
   const events = await prisma.event.findMany({
-  where: { 
-    status: 'PUBLISHED',
-    category: { not: 'Attraction' },
-startDate: { gte: new Date() } // Chặn các bài cũ
-},
-orderBy: sortBy === "trending" ? { hotnessScore: "desc" } : sortBy === "upcoming" ? { startDate: "asc" } : { createdAt: "desc" },
+    where: { 
+      status: 'PUBLISHED',
+      category: { not: 'Attraction' },
+      startDate: { gte: now } // 🛡️ LÁ CHẮN: CHỈ HIỆN SỰ KIỆN SẮP DIỄN RA
+    },
+    orderBy: sortParam === "upcoming" ? { startDate: "asc" } : sortParam === "newest" ? { createdAt: "desc" } : { hotnessScore: "desc" },
     take: 60,
     select: { id: true, slug: true, name: true, imageUrl: true, startDate: true, venue: true, price: true, category: true, hotnessScore: true }
-  });
+  }) || [];
 
   return (
-    <main className="min-h-screen bg-black text-white">
-      <section className="bg-[#0a0f1a] border-b border-white/5 pt-16 pb-12">
-        <div className="mx-auto max-w-7xl px-6">
-          <h1 className="text-5xl font-black tracking-tighter mb-4 uppercase">SG Events Hub</h1>
-          <p className="text-gray-400 text-lg mb-8 max-w-2xl font-medium">Trending Singapore activities, powered by AI insider insights.</p>
-          <div className="flex gap-4">
+    <main className={`${inter.className} min-h-screen bg-black text-white py-24 px-6`}>
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-20 border-l-4 border-blue-600 pl-8">
+          <p className={`${mono.className} text-blue-500 text-xs font-black uppercase tracking-[0.4em] mb-4`}>// Live Intelligence</p>
+          <h1 className={`${playfair.className} text-6xl md:text-8xl font-black uppercase tracking-tighter italic leading-none`}>Upcoming <br/> Headliners</h1>
+          
+          <div className="flex gap-4 mt-10">
              {["trending", "upcoming", "newest"].map((s) => (
-                <Link key={s} href={`/events?sort=${s}`} className={`px-5 py-2 rounded-full text-sm font-bold border transition ${sortBy === s ? 'bg-white text-black border-white' : 'bg-white/5 text-white border-white/10 hover:bg-white/10'}`}>{s.toUpperCase()}</Link>
+                <Link key={s} href={`/events?sort=${s}`} className={`px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest border transition-all ${sortParam === s ? 'bg-white text-black border-white' : 'bg-white/5 text-gray-500 border-white/10 hover:border-blue-500 hover:text-white'}`}>{s}</Link>
              ))}
           </div>
         </div>
-      </section>
-      <section className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {events.map((event) => <EventCard key={event.id} event={event} />)}
-        </div>
-      </section>
+
+        {events.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            {events.map((event) => (
+              <Link key={event.id} href={`/events/${event.slug}`} className="group flex flex-col bg-[#0a0a0a] border border-white/10 rounded-[2.5rem] overflow-hidden hover:border-blue-500/50 hover:shadow-[0_0_50px_rgba(59,130,246,0.1)] transition-all duration-500">
+                 <div className="h-72 overflow-hidden relative">
+                    <img src={event.imageUrl || 'https://images.unsplash.com/photo-1525625239513-39bc131f9979?w=800'} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80" alt="" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
+                    <div className="absolute top-6 right-6 bg-white text-black px-4 py-2 rounded-xl font-black text-xs uppercase text-center shadow-2xl">
+                      <p>{event.startDate ? new Date(event.startDate).getDate() : '??'}</p>
+                      <p className="text-[9px] border-t border-black/10 mt-1 pt-1">{event.startDate ? new Date(event.startDate).toLocaleString('en-US', { month: 'short' }) : 'TBA'}</p>
+                    </div>
+                 </div>
+                 <div className="p-10 -mt-12 relative z-10">
+                    <h2 className="text-2xl font-bold mb-6 line-clamp-2 text-white group-hover:text-blue-300 transition-colors leading-tight">{event.name}</h2>
+                    <div className="flex justify-between items-center pt-6 border-t border-white/5">
+                       <span className="text-green-400 font-black tracking-tighter text-lg">{event.price && event.price !== '0' ? `SGD ${event.price}` : 'FREE ENTRY'}</span>
+                       <span className="text-[10px] font-black uppercase text-blue-500">Analyze →</span>
+                    </div>
+                 </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-40 border border-dashed border-white/10 rounded-[3rem]">
+            <p className="text-gray-500 font-bold uppercase tracking-widest text-xl italic italic">No upcoming headliners found. Everything has passed or is being updated.</p>
+          </div>
+        )}
+      </div>
     </main>
   );
 }
