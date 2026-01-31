@@ -11,7 +11,7 @@ async function main() {
   // 1. TÌM HOẶC TẠO TÁC GIẢ (Author)
   // Author cần thiết để bài viết hiển thị đúng trên UI
   const authorDesmond = await prisma.author.upsert({
-    where: { email: 'desmond@sgeventshub.com' }, // Dùng email cố định để tránh tạo trùng lặp
+    where: { id: 'author_1' }, // Chuyển sang dùng ID mà chúng ta đã định nghĩa
     update: {},
     create: {
       id: 'desmond-news-analyst',
