@@ -1,94 +1,92 @@
-// scripts/import-guides.js
-require('dotenv').config();
 const { PrismaClient } = require('@prisma/client');
-const fs = require('fs');
-const axios = require('axios');
-const cheerio = require('cheerio');
 const prisma = new PrismaClient();
+const fs = require('fs');
+require('dotenv').config();
 
-// Hàm hút ảnh từ trang gốc (giữ nguyên tính năng xịn)
-async function fetchMetaImage(url) {
-  if (!url || !url.startsWith('http')) return null;
-  try {
-    const { data } = await axios.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' }, timeout: 5000 });
-    const $ = cheerio.load(data);
-    return $('meta[property="og:image"]').attr('content') || null;
-  } catch (e) { return null; }
-}
+async function importHtmlGuides() {
+  console.log("🚀 [SG Events Hub] Bắt đầu Import bài viết từ file .txt...");
 
-async function run() {
-  console.log('🚀 IMPORTING GUIDES (AUTO-MAPPING MODE)...');
-  
   try {
-    const filePath = 'scripts/new_guides.json';
+    // 1. Đọc file text
+    const filePath = 'scripts/new_guides.txt';
     if (!fs.existsSync(filePath)) {
-        console.error('❌ Lỗi: Không tìm thấy file scripts/new_guides.json');
-        return;
+      throw new Error("Không tìm thấy file scripts/new_guides.txt. Sếp hãy tạo nó nhé!");
     }
+    const rawContent = fs.readFileSync(filePath, 'utf8');
 
-    const rawData = fs.readFileSync(filePath, 'utf8').trim();
-    
-    // Xử lý JSON linh hoạt
-    const jsonMatch = rawData.match(/\[\s*\{[\s\S]*\}\s*\]/);
-    if (!jsonMatch) throw new Error("JSON format không hợp lệ");
-    
-    const data = JSON.parse(jsonMatch[0]);
+    // 2. Tách các bài viết nếu có nhiều bài (dùng dấu === NEXT_GUIDE ===)
+    const rawArticles = rawContent.split(/===.*===/);
 
-    for (const item of data) {
-      try {
-        console.log(`\n--- 📖 Đang xử lý: ${item.name || item.title} ---`);
+    for (let rawArticle of rawArticles) {
+      if (rawArticle.trim().length < 50) continue;
 
-        // --- BỘ CHUYỂN ĐỔI DỮ LIỆU (ADAPTER) ---
-        // Tự động map các trường từ Event sang Post
-        const title = item.title || item.name || "Untitled Guide";
-        const content = item.content || item.description || "";
-        const excerpt = item.excerpt || item.aiSummary || "";
-        
-        // Xử lý ảnh
-        let finalImage = item.imageUrl;
-        if ((!finalImage || finalImage.includes('unsplash') || finalImage.includes('esplanade')) && item.sourceUrl) {
-            // Nếu ảnh chưa ưng ý, thử đi hút ảnh mới
-           const fetched = await fetchMetaImage(item.sourceUrl);
-           if (fetched) finalImage = fetched;
-        }
-        // Fallback ảnh nếu vẫn trống
-        if (!finalImage) finalImage = `https://loremflickr.com/1200/800/singapore,concert,music/all?lock=${title.length}`;
+      // 3. Hàm trích xuất dữ liệu bằng Tag
+      const extract = (tag) => {
+        const regex = new RegExp(`\\[${tag}\\]([\\s\\S]*?)\\[\\/${tag}\\]`, 'i');
+        const match = rawArticle.match(regex);
+        return match ? match[1].trim() : null;
+      };
 
-        // LÀM SẠCH NỘI DUNG (Dọn rác EEAT/SEO)
-        const cleanContent = content.split(/From an EEAT standpoint|EEAT-wise|In terms of EEAT/i)[0].trim();
+      const title = extract("TITLE");
+      const slug = extract("SLUG") || `guide-${Date.now()}`;
+      const content = extract("CONTENT");
+      const excerpt = extract("EXCERPT");
+      const imageUrl = extract("IMAGEURL");
 
-        // Đẩy vào bảng Post
-        await prisma.post.upsert({
-          where: { slug: item.slug },
-          update: { 
-            title: title,
-            content: cleanContent, 
-            imageUrl: finalImage, 
-            excerpt: excerpt,
-            category: item.category || "Expert Guide",
-            updatedAt: new Date()
-          },
-          create: {
-            slug: item.slug,
-            title: title, // Đã map từ name
-            excerpt: excerpt, // Đã map từ aiSummary
-            content: cleanContent, // Đã map từ description
-            imageUrl: finalImage,
-            category: item.category || "Expert Guide",
-            status: "DRAFT",
-            authorId: 'author_3' // Gán mặc định cho Jax (Music/Nightlife) vì đây là bài Music
-          }
-        });
-        console.log(`✅ Thành công: ${title}`);
-      } catch (e) {
-        console.error(`❌ Lỗi bài này: ${e.message}`);
+      if (!title || !content) {
+        console.log("⚠️ Bỏ qua một mục do thiếu TITLE hoặc CONTENT.");
+        continue;
       }
+
+      // 4. Dọn dẹp nội dung (Xóa Markdown thừa, Citations, và redundant icons)
+      const cleanContent = content
+        .replace(/\*\*/g, "")
+        .replace(/\[[web:\d\s,]+\]/gi, "") // Xóa [web:1], [web:1][web:2], [web:9,14] v.v.
+        .replace(/✦/g, "")                 // Xóa icon ✦ vì CSS xử lý rồi
+        .replace(/\[\d+\]/g, "");           // Xóa các số trong ngoặc vuông khác nếu có
+
+      // 5. Tìm Tác giả Desmond
+      const author = await prisma.author.findFirst({ where: { name: { contains: "Desmond" } } });
+
+      // 6. Lưu vào bảng Post (Dùng upsert để tránh trùng lặp)
+      const post = await prisma.post.upsert({
+        where: { slug: slug },
+        update: {
+          title: title,
+          content: cleanContent,
+          excerpt: excerpt || "",
+          isNewsjack: false,
+          status: 'PUBLISHED',
+          category: 'Expert Guide',
+          authorId: author?.id || "cl7vsk9u1000008l6h2x6h6p1",
+          imageUrl: imageUrl || "https://images.unsplash.com/photo-1546708973-b339540b5162?w=1200",
+          updatedAt: new Date()
+        },
+        create: {
+          title: title,
+          slug: slug,
+          content: cleanContent,
+          excerpt: excerpt || "",
+          isNewsjack: false,
+          status: 'PUBLISHED',
+          category: 'Expert Guide',
+          authorId: author?.id || "cl7vsk9u1000008l6h2x6h6p1",
+          imageUrl: imageUrl || "https://images.unsplash.com/photo-1546708973-b339540b5162?w=1200",
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      });
+
+      console.log(`✅ Đã lên sóng: ${post.title}`);
     }
-    console.log('\n🎉 HOÀN TẤT NHẬP GUIDES!');
-  } catch (globalError) {
-    console.error('💥 Lỗi hệ thống:', globalError.message);
+
+    console.log("🎉 TẤT CẢ BÀI VIẾT ĐÃ ĐƯỢC NHẬP THÀNH CÔNG!");
+
+  } catch (error) {
+    console.error("❌ LỖI RỒI SẾP ƠI:", error.message);
   } finally {
     await prisma.$disconnect();
   }
 }
-run();
+
+importHtmlGuides();

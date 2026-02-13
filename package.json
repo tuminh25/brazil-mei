@@ -9,7 +9,9 @@
     "seed": "tsx prisma/seed.ts",
     "postinstall": "prisma generate",
     "enrich-events": "node scripts/enrichEvents.js",
-    "enrich-events:retry": "node scripts/enrichEvents.js --retry"
+    "enrich-events:retry": "node scripts/enrichEvents.js --retry",
+    "grind:news": "node scripts/autonomous-agent.js trend",
+    "grind:money": "node scripts/autonomous-agent.js money"
   },
   "dependencies": {
     "@next/third-parties": "^16.1.1",
