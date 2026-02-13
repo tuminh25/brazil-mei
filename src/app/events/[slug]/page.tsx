@@ -63,7 +63,20 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
   const finalUrl = getAffiliateLink(event.sourceUrl);
 
   return (
-    <main className={`${inter.className} min-h-screen bg-[#050505] text-gray-300 pb-32`}>
+    <main className={`${inter.className} min-h-screen bg-[#050505] text-gray-300 pb-32 relative overflow-hidden`}>
+      {/* AMBIENT GLOW BACKDROP */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        {event.imageUrl ? (
+          <img
+            src={event.imageUrl}
+            className="w-full h-full object-cover blur-[120px] opacity-[0.15] scale-150 transform-gpu"
+            alt=""
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-purple-900/20 via-blue-900/10 to-transparent blur-[120px]" />
+        )}
+      </div>
+
       <style dangerouslySetInnerHTML={{
         __html: `
         .article-body h2 { 

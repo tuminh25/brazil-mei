@@ -113,7 +113,20 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
   const displayImage = post.imageUrl || "https://images.unsplash.com/photo-1525625239513-39bc131f9979?w=1600&q=80";
 
   return (
-    <main className={`${inter.className} min-h-screen bg-[#050505] text-[#e5e7eb] pb-32 selection:bg-blue-500/30 font-sans`}>
+    <main className={`${inter.className} min-h-screen bg-[#050505] text-[#e5e7eb] pb-32 selection:bg-blue-500/30 font-sans relative overflow-hidden`}>
+      {/* AMBIENT GLOW BACKDROP */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        {post.imageUrl ? (
+          <img
+            src={post.imageUrl}
+            className="w-full h-full object-cover blur-[120px] opacity-[0.15] scale-150 transform-gpu"
+            alt=""
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-purple-900/20 via-blue-900/10 to-transparent blur-[120px]" />
+        )}
+      </div>
+
       <JsonLdSchema post={post} author={post.author} />
 
       {/* CSS NUCLEAR OVERRIDE */}
