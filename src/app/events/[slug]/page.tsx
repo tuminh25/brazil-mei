@@ -24,8 +24,8 @@ function AuthorBox({ author }: { author: any }) {
   );
 }
 
-const getAffiliateLink = (url: string | null): string => {
-  if (!url || url === "#" || url.trim() === "") return "https://www.klook.com/en-SG/city/6-singapore-things-to-do/?aid=105111";
+const getAffiliateLink = (url: string | null): string | null => {
+  if (!url || url === "#" || url.trim() === "") return null; // No fallback
   const K_ID = "105111";
   const T_AID = "7367361";
   const T_SID = "278066643";
@@ -66,14 +66,36 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
     <main className={`${inter.className} min-h-screen bg-[#050505] text-gray-300 pb-32`}>
       <style dangerouslySetInnerHTML={{
         __html: `
-        .article-body h2 { color: white !important; font-family: ${playfair.style.fontFamily} !important; font-size: 1.75rem !important; margin: 2.5rem 0 1.25rem !important; font-weight: 900; text-transform: uppercase; border-left: 4px solid #3b82f6; padding-left: 1.5rem; }
-        .article-body p { font-size: 1.125rem !important; line-height: 1.8 !important; margin-bottom: 1.75rem !important; color: #d1d5db !important; text-align: left; }
+        .article-body h2 { 
+          color: #60a5fa !important; 
+          font-family: ${playfair.style.fontFamily} !important; 
+          font-size: 1.75rem !important; 
+          margin: 3.5rem 0 1.5rem !important; 
+          font-weight: 900; 
+          text-transform: uppercase; 
+          border-left: 4px solid #3b82f6; 
+          padding-left: 1.5rem;
+          text-shadow: 0 0 10px rgba(59,130,246,0.5);
+        }
+        .article-body p { font-size: 1.125rem !important; line-height: 1.9 !important; margin-bottom: 2rem !important; color: #d1d5db !important; text-align: left; }
         .article-body strong { color: white !important; font-weight: 800; }
-        .article-body img { border-radius: 1.5rem; margin: 2.5rem 0; border: 1px solid rgba(255,255,255,0.1); }
+        .article-body img { border-radius: 1.5rem; margin: 3rem 0; border: 1px solid rgba(255,255,255,0.1); }
+        
+        /* Universal Affiliate Block Styling */
+        .affiliate-block {
+          background: rgba(255, 255, 255, 0.05) !important;
+          border: 1px solid rgba(255, 255, 255, 0.1) !important;
+          backdrop-filter: blur(12px) !important;
+          border-radius: 2rem !important;
+          padding: 2rem !important;
+          margin: 3rem 0 !important;
+        }
+        .affiliate-button-klook { background-color: #eab308 !important; color: black !important; font-weight: 900 !important; }
+        .affiliate-button-trip { background-color: #dc2626 !important; color: white !important; font-weight: 900 !important; }
       `}} />
 
       {/* HERO SECTION */}
-      <div className="relative w-full h-[65vh] flex items-end overflow-hidden">
+      <div className="relative w-full h-[70vh] flex items-end overflow-hidden">
         {event.imageUrl ? (
           <Image
             src={event.imageUrl}
@@ -81,34 +103,36 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
             fill
             priority
             unoptimized
-            className="object-cover opacity-50"
+            className="object-cover opacity-60"
             sizes="100vw"
           />
         ) : (
           <div className="absolute inset-0 bg-blue-900/20" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent"></div>
-        <div className="relative z-10 max-w-7xl mx-auto px-6 pb-16 w-full">
-          <p className={`${mono.className} text-blue-500 text-xs tracking-[0.4em] uppercase mb-4`}>// Insider Intelligence Report</p>
-          <h1 className={`${playfair.className} text-4xl md:text-6xl lg:text-7xl font-black text-white uppercase italic leading-[1.1] tracking-tighter max-w-4xl`}>
+        <div className="relative z-10 max-w-7xl mx-auto px-6 pb-20 w-full">
+          <p className={`${mono.className} text-blue-500 text-xs tracking-[0.4em] uppercase mb-6`}>// Insider Intelligence Report</p>
+          <h1 className={`${playfair.className} text-4xl md:text-6xl lg:text-8xl font-black text-white uppercase italic leading-[1.05] tracking-tighter max-w-5xl`}>
             {event.name}
           </h1>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16 mt-16">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-24 mt-24">
         {/* NỘI DUNG BÀI VIẾT */}
         <div className="lg:col-span-8">
-          <div className="mb-12 p-8 bg-blue-600/5 border border-blue-500/20 rounded-[2rem] italic text-xl text-blue-100">
-            "{event.aiSummary || event.metaDescription}"
-          </div>
+          {(event.aiSummary || event.metaDescription) && (
+            <div className="mb-16 p-10 bg-white/5 border border-white/10 backdrop-blur-md rounded-[2.5rem] italic text-2xl text-blue-100 leading-relaxed">
+              {event.aiSummary || event.metaDescription}
+            </div>
+          )}
 
-          <article className="article-body mb-12">
+          <article className="article-body mb-20">
             <div dangerouslySetInnerHTML={{ __html: event.description || "" }} />
           </article>
 
-          <div className="mt-12 pt-8 border-t border-white/5">
-            <p className="text-[10px] text-gray-500 italic leading-relaxed uppercase tracking-widest">
+          <div className="mt-20 pt-10 border-t border-white/5">
+            <p className="text-[10px] text-gray-500 italic leading-relaxed uppercase tracking-widest max-w-2xl">
               Keeping the neon lights on at SG Events Hub takes a lot of coffee and late-night scouting.
               Every booking through our partner links is a silent nod of support that helps us continue declassifying Singapore’s best spots.
             </p>
@@ -119,26 +143,50 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
 
         {/* SIDEBAR BOX */}
         <aside className="lg:col-span-4">
-          <div className="sticky top-32 space-y-8">
-            <div className="bg-[#0f0f0f] border border-white/10 p-10 rounded-[2.5rem] shadow-2xl">
-              <h3 className={`${mono.className} text-[10px] text-blue-500 font-black uppercase tracking-widest mb-8`}>Logistics Data</h3>
-              <div className="space-y-6">
+          <div className="sticky top-32 space-y-12">
+            <div className="bg-white/5 border border-white/10 p-12 rounded-[3.5rem] shadow-2xl backdrop-blur-xl">
+              <h3 className={`${mono.className} text-[10px] text-blue-500 font-black uppercase tracking-widest mb-10`}>DECODED LOGISTICS</h3>
+              <div className="space-y-8">
                 <div>
-                  <p className="text-[10px] text-gray-600 uppercase tracking-widest mb-1">Venue</p>
-                  <p className="text-white font-bold text-lg leading-tight">{event.venue}</p>
+                  <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-2">OPERATIONAL SECTOR</p>
+                  <p className="text-white font-black text-2xl leading-tight">{event.venue}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] text-gray-600 uppercase tracking-widest mb-1">Pricing</p>
-                  <p className="text-green-400 font-black text-3xl">{event.price}</p>
+                  <p className="text-[10px] text-gray-600 uppercase tracking-widest mb-2">ACCESS PRICE</p>
+                  <p className="text-green-400 font-black text-5xl tracking-tighter">{event.price}</p>
                 </div>
               </div>
-              <a href={finalUrl} target="_blank" className="block w-full mt-8 bg-blue-600 hover:bg-blue-700 text-white py-5 rounded-2xl text-center font-black uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(59,130,246,0.3)]">
-                Book Now via Partner
-              </a>
+
+              {/* DYNAMIC AFFILIATE BUTTON */}
+              {finalUrl && (() => {
+                const isKlook = event.sourceUrl?.includes("klook.com");
+                const isTrip = event.sourceUrl?.includes("trip.com");
+                let btnClass = "bg-blue-600 shadow-[0_0_30px_rgba(59,130,246,0.3)]";
+                let providerName = "BOOK NOW";
+
+                if (isKlook) {
+                  btnClass = "bg-yellow-500 text-black shadow-[0_0_30px_rgba(234,179,8,0.2)]";
+                  providerName = "BOOK ON KLOOK (TOURS)";
+                } else if (isTrip) {
+                  btnClass = "bg-red-600 text-white shadow-[0_0_30px_rgba(220,38,38,0.2)]";
+                  providerName = "BOOK ON TRIP.COM (HOTELS)";
+                }
+
+                return (
+                  <a
+                    href={finalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`block w-full mt-12 ${btnClass} hover:scale-[1.03] py-6 rounded-3xl text-center font-black uppercase tracking-[0.2em] text-xs transition-all`}
+                  >
+                    {providerName}
+                  </a>
+                );
+              })()}
             </div>
 
             {event.latitude && (
-              <div className="h-64 rounded-[2.5rem] overflow-hidden border border-white/10">
+              <div className="h-72 rounded-[3.5rem] overflow-hidden border border-white/10 shadow-3xl">
                 <InteractiveMapClient venueName={event.venue || ''} latitude={event.latitude} longitude={event.longitude} />
               </div>
             )}
