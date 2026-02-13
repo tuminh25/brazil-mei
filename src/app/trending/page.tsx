@@ -12,12 +12,9 @@ export const dynamic = 'force-dynamic';
 export default async function TrendingPage() {
   // LẤY TIN TỨC: Linh hoạt hơn để tránh sót bài
   const trendingPosts = await prisma.post.findMany({
-    where: { 
-      status: 'PUBLISHED', 
-      OR: [
-        { isNewsjack: true },
-        { category: 'Trending News' }
-      ]
+    where: {
+      isNewsjack: true,
+      status: 'PUBLISHED'
     },
     orderBy: { createdAt: 'desc' },
     include: { author: true }
@@ -26,7 +23,7 @@ export default async function TrendingPage() {
   return (
     <main className={`${inter.className} min-h-screen bg-black text-white pt-32 pb-20 selection:bg-red-500/30`}>
       <div className="max-w-7xl mx-auto px-6">
-        
+
         {/* HEADER SECTION */}
         <div className="mb-16 border-b border-white/10 pb-12 text-center md:text-left">
           <p className={`${mono.className} text-red-500 text-xs font-black uppercase tracking-[0.4em] mb-4 animate-pulse flex items-center gap-2`}>
@@ -36,7 +33,7 @@ export default async function TrendingPage() {
             Trending <span className="text-red-600 italic">News</span>
           </h1>
           <p className="mt-8 text-gray-400 max-w-2xl text-xl leading-relaxed font-medium">
-            Real-time analysis of Singapore's hottest topics. 
+            Real-time analysis of Singapore's hottest topics.
             We explain what it means for your wallet and weekend.
           </p>
         </div>
@@ -49,14 +46,14 @@ export default async function TrendingPage() {
                 <div className="flex flex-col md:flex-row gap-4">
                   {/* IMAGE */}
                   <div className="md:w-2/5 h-72 md:h-[400px] relative overflow-hidden rounded-[2rem]">
-                    <img 
-                        src={post.imageUrl || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800'} 
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-                        alt={post.title} 
+                    <img
+                      src={post.imageUrl || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800'}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      alt={post.title}
                     />
                     <div className="absolute inset-0 bg-red-950/20 group-hover:bg-transparent transition-colors"></div>
                     <div className="absolute top-6 left-6 bg-red-600 text-white text-[10px] font-black px-4 py-1.5 uppercase tracking-widest rounded-full shadow-xl">
-                        Breaking
+                      Breaking
                     </div>
                   </div>
 
@@ -67,26 +64,26 @@ export default async function TrendingPage() {
                       <div className="w-1 h-1 bg-gray-700 rounded-full"></div>
                       <span className="text-red-500 text-xs font-black uppercase tracking-widest">{post.category}</span>
                     </div>
-                    
+
                     <h2 className={`${playfair.className} text-3xl md:text-5xl font-bold text-white mb-6 group-hover:text-red-500 transition-colors leading-tight tracking-tight`}>
-                        {post.title}
+                      {post.title}
                     </h2>
-                    
+
                     <p className="text-gray-400 text-lg line-clamp-3 mb-10 leading-relaxed italic">
-                        "{post.excerpt}"
+                      "{post.excerpt}"
                     </p>
-                    
+
                     <div className="mt-auto flex items-center justify-between border-t border-white/5 pt-8">
-                       <div className="flex items-center gap-3">
-                          {post.author?.avatarUrl && <img src={post.author.avatarUrl} className="w-10 h-10 rounded-full border border-white/10 object-cover" alt=""/>}
-                          <div>
-                             <p className="text-[9px] text-gray-500 uppercase font-black tracking-widest mb-1">Analysis by</p>
-                             <p className="text-sm text-white font-black">{post.author?.name || 'Desmond Ho'}</p>
-                          </div>
-                       </div>
-                       <div className="text-red-600 font-black text-xs uppercase tracking-widest group-hover:translate-x-2 transition-transform">
-                          Read Full Report →
-                       </div>
+                      <div className="flex items-center gap-3">
+                        {post.author?.avatarUrl && <img src={post.author.avatarUrl} className="w-10 h-10 rounded-full border border-white/10 object-cover" alt="" />}
+                        <div>
+                          <p className="text-[9px] text-gray-500 uppercase font-black tracking-widest mb-1">Analysis by</p>
+                          <p className="text-sm text-white font-black">{post.author?.name || 'Desmond Ho'}</p>
+                        </div>
+                      </div>
+                      <div className="text-red-600 font-black text-xs uppercase tracking-widest group-hover:translate-x-2 transition-transform">
+                        Read Full Report →
+                      </div>
                     </div>
                   </div>
                 </div>

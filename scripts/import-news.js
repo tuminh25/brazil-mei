@@ -1,104 +1,116 @@
-// scripts/import-news.js
-require('dotenv').config();
 const { PrismaClient } = require('@prisma/client');
-const axios = require('axios');
-const cheerio = require('cheerio');
-const fs = require('fs');
-
 const prisma = new PrismaClient();
+const fs = require('fs');
+require('dotenv').config();
 
-// HÀM LẤY ẢNH TỪ LINK GỐC
-async function fetchMetaImage(url) {
-  if (!url || !url.startsWith('http')) return null;
-  try {
-    const { data } = await axios.get(url, { 
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
-      timeout: 5000 
-    });
-    const $ = cheerio.load(data);
-    return $('meta[property="og:image"]').attr('content') || null;
-  } catch (e) { return null; }
+// HTML SANITIZER (The Cleaner)
+function cleanHtml(rawHtml) {
+  if (!rawHtml) return "";
+  return rawHtml
+    .replace(/<!DOCTYPE.*?>/gi, '')
+    .replace(/<html.*?>/gi, '')
+    .replace(/<\/html>/gi, '')
+    .replace(/<head[\s\S]*?<\/head>/gi, '') // Remove head block entirely
+    .replace(/<body.*?>/gi, '')
+    .replace(/<\/body>/gi, '')
+    .trim();
 }
 
-// HÀM TẠO SLUG
-function generateSlug(text) {
-  return text.toString().toLowerCase().trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w\-]+/g, '')
-    .replace(/\-\-+/g, '-')
-    .substring(0, 100);
-}
+async function runNewsjackImport() {
+  console.log("🚀 [SG Events Hub] Khởi động Newsjack Importer V5.1 (Resilient IndexOf Strategy)...");
 
-async function runNewsImport() {
-  console.log('🚀 KHỞI ĐỘNG NEWSJACK ENGINE (PUBLISH NGAY)...');
-  
   try {
-    const filePath = 'scripts/news_queue.json';
-    if (!fs.existsSync(filePath)) {
-        console.error('❌ Không tìm thấy file scripts/news_queue.json');
-        return;
-    }
+    const filePath = 'scripts/news_queue.txt';
+    if (!fs.existsSync(filePath)) throw new Error("File scripts/news_queue.txt không tồn tại!");
 
-    const fileContent = fs.readFileSync(filePath, 'utf8').trim();
-    // Tự động tìm mảng JSON
-    const jsonMatch = fileContent.match(/\[\s*\{[\s\S]*\}\s*\]/);
-    
-    if (!jsonMatch) {
-        console.error('❌ JSON không hợp lệ. Nhớ bọc trong [...]');
-        return;
-    }
+    // BOM REMOVAL (Crucial)
+    let rawContent = fs.readFileSync(filePath, 'utf8');
+    rawContent = rawContent.replace(/^\uFEFF/, '');
 
-    const newsItems = JSON.parse(jsonMatch[0]);
+    // DEBUG LOGGING
+    console.log('--- RAW START ---', rawContent.substring(0, 50).replace(/\n/g, ' '));
 
-    for (const item of newsItems) {
-      try {
-        const title = item.title || item.name;
-        console.log(`\n--- 📰 Đang xử lý tin: ${title} ---`);
+    // Tách các bài báo bằng dấu phân cách ===
+    const rawItems = rawContent.split(/===.*===/);
 
-        // 1. Tự động lấy ảnh báo chí
-        let imageUrl = item.imageUrl;
-        if (!imageUrl || imageUrl.includes('unsplash')) {
-             const metaImg = await fetchMetaImage(item.sourceUrl);
-             if (metaImg) imageUrl = metaImg;
-             else imageUrl = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&q=80"; // Ảnh báo chí mặc định
+    for (let rawItem of rawItems) {
+      if (rawItem.trim().length < 50) continue;
+
+      const extract = (tag) => {
+        const startTag = `[${tag.toUpperCase()}]`;
+        const endTag = `[/${tag.toUpperCase()}]`;
+
+        const startIndex = rawItem.indexOf(startTag);
+        if (startIndex === -1) {
+          console.log(`❌ FAILED: Could not find ${startTag} tag.`);
+          return null;
         }
 
-        // 2. Làm sạch nội dung
-        const cleanContent = (item.content || item.description || "").split(/From an EEAT/i)[0].trim();
-        const slug = item.slug || generateSlug(title);
+        const contentStart = startIndex + startTag.length;
+        const endIndex = rawItem.indexOf(endTag, contentStart);
 
-        // 3. ĐẨY THẲNG VÀO BẢNG POST - TRẠNG THÁI PUBLISHED
-        await prisma.post.upsert({
-          where: { slug: slug },
-          update: {
-            title: title,
-            content: cleanContent,
-            excerpt: item.excerpt || item.aiSummary,
-            imageUrl: imageUrl,
-            category: 'Trending News', // <--- CỐ ĐỊNH CATEGORY
-            status: 'PUBLISHED',       // <--- XUẤT BẢN LUÔN
-            updatedAt: new Date()
-          },
-          create: {
-            slug: slug,
-            title: title,
-            content: cleanContent,
-            excerpt: item.excerpt || item.aiSummary,
-            imageUrl: imageUrl,
-            category: 'Trending News',
-            authorId: 'author_1', // Gán cho Desmond Ho (Editor)
-            status: 'PUBLISHED',
-            createdAt: new Date(),
-            updatedAt: new Date()
-          }
-        });
+        if (endIndex === -1) {
+          // CHIẾN THUẬT CỨU VÀN: Nếu thiếu Tag đóng, lấy hết phần còn lại của block
+          console.warn(`⚠️ WARNING: Missing closing tag ${endTag}. Capturing until end of block.`);
+          return rawItem.substring(contentStart).trim();
+        }
 
-        console.log(`✅ ĐÃ LÊN SÓNG: ${title}`);
+        return rawItem.substring(contentStart, endIndex).trim();
+      };
 
-      } catch (e) { console.error(`❌ Lỗi tin: ${e.message}`); }
+      const title = extract("TITLE");
+      const slug = extract("SLUG");
+      const excerpt = extract("EXCERPT");
+      const imageUrl = extract("IMAGEURL");
+      let content = extract("CONTENT");
+
+      if (!title || !slug || !content) {
+        console.log(`⚠️ BỎ QUA ITEM: Thiếu dữ liệu bắt buộc (Title, Slug, hoặc Content).`);
+        continue;
+      }
+
+      // HTML SANITIZER
+      content = cleanHtml(content);
+
+      // DATABASE SETTINGS
+      const DESMOND_ID = "author_1";
+
+      await prisma.post.upsert({
+        where: { slug: slug },
+        update: {
+          title,
+          content,
+          excerpt,
+          imageUrl,
+          isNewsjack: true,
+          category: 'Trending News',
+          status: 'PUBLISHED',
+          authorId: DESMOND_ID,
+          updatedAt: new Date(),
+        },
+        create: {
+          slug,
+          title,
+          content,
+          excerpt,
+          imageUrl,
+          isNewsjack: true,
+          category: 'Trending News',
+          status: 'PUBLISHED',
+          authorId: DESMOND_ID,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }
+      });
+
+      console.log(`✅ IMPORTED: ${title}`);
     }
-    console.log('\n🎉 ĐÃ XONG! CHECK TAB TRENDING TRÊN WEB NGAY.');
-  } catch (err) { console.error('💥 Lỗi hệ thống:', err.message); } finally { await prisma.$disconnect(); }
+    console.log("🎉 TẤT CẢ TIN TỨC TRENDING ĐÃ ĐƯỢC CẬP NHẬT THÀNH CÔNG (V5.1)!");
+  } catch (error) {
+    console.error("❌ Lỗi Import News:", error.message);
+  } finally {
+    await prisma.$disconnect();
+  }
 }
 
-runNewsImport();
+runNewsjackImport();
