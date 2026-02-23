@@ -4,6 +4,9 @@ import Image from "next/image";
 import prisma from "@/lib/prisma";
 import InteractiveMapClient from "@/components/InteractiveMapClient";
 import { Playfair_Display, Inter, IBM_Plex_Mono } from 'next/font/google';
+import AffiliateCTA from "@/components/AffiliateCTA";
+import { splitContentAfterTransport } from "@/lib/content-utils";
+
 
 const playfair = Playfair_Display({ subsets: ['latin'], weight: ['700', '900'], style: 'italic' });
 const inter = Inter({ subsets: ['latin'], weight: ['400', '700', '900'] });
@@ -134,6 +137,8 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-24 mt-24">
         {/* NỘI DUNG BÀI VIẾT */}
         <div className="lg:col-span-8">
+
+
           {(event.aiSummary || event.metaDescription) && (
             <div className="mb-16 p-10 bg-white/5 border border-white/10 backdrop-blur-md rounded-[2.5rem] italic text-2xl text-blue-100 leading-relaxed">
               {event.aiSummary || event.metaDescription}
@@ -141,13 +146,82 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
           )}
 
           <article className="article-body mb-20">
-            <div dangerouslySetInnerHTML={{ __html: event.description || "" }} />
+            {(() => {
+              const { before, after } = splitContentAfterTransport(event.description || "");
+              return (
+                <>
+                  <div dangerouslySetInnerHTML={{ __html: before }} />
+                  {after && (
+                    <section className="my-20">
+                      <AffiliateCTA
+                        className="mt-0"
+                        title="Decoded Recommendations"
+                        description="Trusted partners for your event logistics and travel needs."
+                        tripUrl={event.sourceUrl?.includes("trip.com") ? event.sourceUrl : null}
+                        klookUrl={event.sourceUrl?.includes("klook.com") ? event.sourceUrl : null}
+                      />
+                    </section>
+                  )}
+                  {after && <div dangerouslySetInnerHTML={{ __html: after }} />}
+                </>
+              );
+            })()}
           </article>
 
-          <div className="mt-20 pt-10 border-t border-white/5">
+
+          {/* SECURE YOUR ENTRY — PREMIUM CTA */}
+          <section className="relative z-20 my-16">
+            <div className="bg-[#0d0d14] border border-white/10 rounded-[2.5rem] p-10 md:p-14 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent pointer-events-none rounded-[2.5rem]" />
+              <div className="relative z-10 text-center">
+                <p className={`${mono.className} text-[10px] text-cyan-500 font-black uppercase tracking-[0.5em] mb-4`}>// DON'T MISS OUT</p>
+                <h2 className={`${playfair.className} text-4xl md:text-5xl text-white font-black uppercase mb-10 !border-none !p-0 !m-0`}>
+                  Secure Your Entry
+                </h2>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  {event.sourceUrl ? (
+                    <a
+                      href={event.sourceUrl}
+                      target="_blank"
+                      rel="nofollow noopener noreferrer"
+                      className="relative group/btn"
+                    >
+                      <div className="absolute -inset-0.5 bg-cyan-500/50 rounded-2xl blur opacity-40 group-hover/btn:opacity-100 transition" />
+                      <div className="relative bg-cyan-500 text-black font-black uppercase tracking-widest text-sm py-5 px-10 rounded-2xl hover:scale-105 transition-all shadow-[0_0_30px_rgba(6,182,212,0.5)]">
+                        🚀 GET TICKETS NOW
+                      </div>
+                    </a>
+                  ) : (
+                    <Link href="/events" className="relative group/btn">
+                      <div className="absolute -inset-0.5 bg-white/20 rounded-2xl blur opacity-0 group-hover/btn:opacity-50 transition" />
+                      <div className="relative bg-white text-black font-black uppercase tracking-widest text-sm py-5 px-10 rounded-2xl hover:scale-105 transition-all">
+                        📅 VIEW ALL EVENTS
+                      </div>
+                    </Link>
+                  )}
+                </div>
+                <Link
+                  href="/events"
+                  className={`${mono.className} inline-block mt-8 text-[10px] text-gray-500 hover:text-white uppercase tracking-widest transition-colors`}
+                >
+                  View Full Calendar →
+                </Link>
+              </div>
+            </div>
+          </section>
+
+          {/* AFFILIATE CTA SECTION: UNLOCK SINGAPORE */}
+          <section id="affiliate-cta" className="relative z-30 my-10">
+            <AffiliateCTA
+              tripUrl={event.sourceUrl?.includes("trip.com") ? event.sourceUrl : null}
+              klookUrl={event.sourceUrl?.includes("klook.com") ? event.sourceUrl : null}
+            />
+          </section>
+
+          <div className="mt-10 pt-8 border-t border-white/5">
             <p className="text-[10px] text-gray-500 italic leading-relaxed uppercase tracking-widest max-w-2xl">
               Keeping the neon lights on at SG Events Hub takes a lot of coffee and late-night scouting.
-              Every booking through our partner links is a silent nod of support that helps us continue declassifying Singapore’s best spots.
+              Every booking through our partner links is a silent nod of support that helps us continue declassifying Singapore's best spots.
             </p>
           </div>
 
@@ -206,6 +280,8 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
           </div>
         </aside>
       </div>
+
+
     </main>
   );
 }
