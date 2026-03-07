@@ -33,6 +33,15 @@ const nextConfig = {
       { protocol: 'https', hostname: '**.static-access.com' },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/events/lao-jiu-musical-2026-insider-guide-singapore-theatre',
+        destination: '/events/lao-jiu-the-musical-singapore-2026',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

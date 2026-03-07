@@ -45,8 +45,8 @@ const getAffiliateLink = (url: string | null): string | null => {
 
   if (affUrl.includes("trip.com")) {
     const urlObj = new URL(affUrl);
-    urlObj.searchParams.set("Allianceid", T_AID);
-    urlObj.searchParams.set("SID", T_SID);
+    urlObj.searchParams.set("allianceid", T_AID);
+    urlObj.searchParams.set("sid", T_SID);
     return urlObj.toString();
   }
 
@@ -62,6 +62,14 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
   });
 
   if (!event) notFound();
+
+  // ── CYBER ARCHIVE: Check if event has ended ──────────────────────────────
+  const isEventEnded = event.endDate ? event.endDate < new Date() : false;
+
+  // Extract affiliate links from enrichedContent if available
+  const enriched = event.enrichedContent as any;
+  const klookUrl = enriched?.klookUrl || (event.sourceUrl?.includes("klook.com") ? event.sourceUrl : null);
+  const tripUrl = enriched?.tripUrl || (event.sourceUrl?.includes("trip.com") ? event.sourceUrl : null);
 
   const finalUrl = getAffiliateLink(event.sourceUrl);
 
@@ -138,34 +146,46 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
         {/* NỘI DUNG BÀI VIẾT */}
         <div className="lg:col-span-8">
 
+          {/* ── CYBER ARCHIVE BANNER ─────────────────────────────────── */}
+          {isEventEnded && (
+            <div className="bg-red-900/20 border border-red-500/50 text-red-200 p-4 rounded-lg mb-6 text-center tracking-widest uppercase font-mono text-sm">
+              ⚠️ MISSION COMPLETED: This event has concluded. Time travel is currently unavailable.
+            </div>
+          )}
+
+          {event.author && (
+            <div className="flex flex-col gap-2 mb-8 p-6 bg-white/5 border border-white/10 rounded-3xl">
+              <div className="flex items-center gap-4">
+                <img src={event.author.avatarUrl || ""} className="w-12 h-12 rounded-full object-cover border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.2)]" alt="" />
+                <div className="text-sm">
+                  <p className={`${mono.className} text-[9px] text-blue-500 font-black uppercase tracking-[0.3em] mb-1`}>// Field Contributor</p>
+                  <span className="text-white font-black text-lg tracking-tight">{event.author.name}</span>
+                  <span className="text-gray-500 text-xs ml-3 border-l border-white/10 pl-3">— {event.author.role}</span>
+                </div>
+              </div>
+              <p className="text-sm text-gray-400 italic mt-4 leading-relaxed line-clamp-2">
+                {event.author.bio}
+              </p>
+              <p className={`${mono.className} text-[9px] text-gray-600 uppercase tracking-[0.2em] mt-3`}>
+                Last updated: 21 February 2026
+              </p>
+            </div>
+          )}
+
+          <div className="p-5 bg-white/5 border border-white/10 rounded-3xl mb-12 backdrop-blur-sm">
+            <p className="text-[10px] text-gray-500 italic uppercase tracking-[0.3em] leading-relaxed">
+              [Affiliate disclosure: This guide contains booking links. If you book through our partners, we may earn a small commission at no extra cost to you. This support keeps our research node operational.]
+            </p>
+          </div>
 
           {(event.aiSummary || event.metaDescription) && (
-            <div className="mb-16 p-10 bg-white/5 border border-white/10 backdrop-blur-md rounded-[2.5rem] italic text-2xl text-blue-100 leading-relaxed">
+            <div className="mb-16 p-10 bg-white/5 border border-white/10 backdrop-blur-md rounded-[2.5rem] italic text-2xl text-blue-100 leading-relaxed shadow-2xl">
               {event.aiSummary || event.metaDescription}
             </div>
           )}
 
           <article className="article-body mb-20">
-            {(() => {
-              const { before, after } = splitContentAfterTransport(event.description || "");
-              return (
-                <>
-                  <div dangerouslySetInnerHTML={{ __html: before }} />
-                  {after && (
-                    <section className="my-20">
-                      <AffiliateCTA
-                        className="mt-0"
-                        title="Decoded Recommendations"
-                        description="Trusted partners for your event logistics and travel needs."
-                        tripUrl={event.sourceUrl?.includes("trip.com") ? event.sourceUrl : null}
-                        klookUrl={event.sourceUrl?.includes("klook.com") ? event.sourceUrl : null}
-                      />
-                    </section>
-                  )}
-                  {after && <div dangerouslySetInnerHTML={{ __html: after }} />}
-                </>
-              );
-            })()}
+            <div dangerouslySetInnerHTML={{ __html: event.description || "" }} />
           </article>
 
 
@@ -179,7 +199,13 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
                   Secure Your Entry
                 </h2>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  {event.sourceUrl ? (
+                  {isEventEnded ? (
+                    <div className="relative">
+                      <div className="bg-gray-800 text-gray-500 cursor-not-allowed grayscale font-black uppercase tracking-widest text-sm py-5 px-10 rounded-2xl opacity-60">
+                        🚫 EVENT EXPIRED
+                      </div>
+                    </div>
+                  ) : event.sourceUrl ? (
                     <a
                       href={event.sourceUrl}
                       target="_blank"
@@ -213,8 +239,8 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
           {/* AFFILIATE CTA SECTION: UNLOCK SINGAPORE */}
           <section id="affiliate-cta" className="relative z-30 my-10">
             <AffiliateCTA
-              tripUrl={event.sourceUrl?.includes("trip.com") ? event.sourceUrl : null}
-              klookUrl={event.sourceUrl?.includes("klook.com") ? event.sourceUrl : null}
+              tripUrl={tripUrl}
+              klookUrl={klookUrl}
             />
           </section>
 
@@ -225,7 +251,6 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
             </p>
           </div>
 
-          <AuthorBox author={event.author} />
         </div>
 
         {/* SIDEBAR BOX */}
@@ -245,7 +270,11 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
               </div>
 
               {/* DYNAMIC AFFILIATE BUTTON */}
-              {finalUrl && (() => {
+              {isEventEnded ? (
+                <div className="block w-full mt-12 bg-gray-800 text-gray-500 cursor-not-allowed grayscale py-6 rounded-3xl text-center font-black uppercase tracking-[0.2em] text-xs opacity-60">
+                  EVENT EXPIRED
+                </div>
+              ) : finalUrl && (() => {
                 const isKlook = event.sourceUrl?.includes("klook.com");
                 const isTrip = event.sourceUrl?.includes("trip.com");
                 let btnClass = "bg-blue-600 shadow-[0_0_30px_rgba(59,130,246,0.3)]";

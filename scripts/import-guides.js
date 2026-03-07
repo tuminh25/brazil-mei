@@ -1,276 +1,166 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const fs = require('fs');
-const axios = require('axios');
-const cheerio = require('cheerio');
 require('dotenv').config();
 
-// Helper to slugify text
 function slugify(text) {
-  return text
-    .toString()
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')     // Replace spaces with -
-    .replace(/[^\w-]+/g, '')  // Remove all non-word chars
-    .replace(/--+/g, '-');    // Replace multiple - with single -
-}
-
-// User-requested Meta Image Fetcher
-async function fetchMetaImage(url) {
-  if (!url || !url.startsWith('http')) return null;
-  try {
-    const { data } = await axios.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' }, timeout: 5000 });
-    const $ = cheerio.load(data);
-    return $('meta[property="og:image"]').attr('content') || null;
-  } catch (e) { return null; }
+  return text.toString().toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w-]+/g, '').replace(/--+/g, '-');
 }
 
 async function importHtmlGuides() {
-  console.log("🚀 [SG Events Hub] Starting ULTIMATE Premium Import Processor...");
+  console.log("🚀 [SG Events Hub] Starting CLEAN-SWEEP Import Processor...");
 
   try {
     const filePath = 'scripts/new_guides.txt';
-    if (!fs.existsSync(filePath)) {
-      throw new Error("Missing scripts/new_guides.txt");
-    }
+    if (!fs.existsSync(filePath)) throw new Error("Missing scripts/new_guides.txt");
+    
     const rawContent = fs.readFileSync(filePath, 'utf8');
-
-    // Split multiple articles
-    const rawArticles = rawContent.split(/===.*===/);
+    const rawArticles = rawContent.split(/===+.*?===+/);
 
     for (let rawArticle of rawArticles) {
-      if (rawArticle.trim().length < 50) continue;
+      let text = rawArticle.trim();
+      if (text.length < 50) continue;
 
-      const extract = (tag) => {
-        const startTagLower = `[${tag.toLowerCase()}]`;
-        const endTagLower = `[/${tag.toLowerCase()}]`;
-        const rawLower = rawArticle.toLowerCase();
+      console.log("🔍 Cleaning and processing content...");
 
-        let startIndex = rawLower.indexOf(startTagLower);
-        if (startIndex !== -1) {
-          let contentStart = startIndex + startTagLower.length;
-          let endIndex = rawLower.indexOf(endTagLower, contentStart);
-          if (endIndex !== -1) {
-            return rawArticle.substring(contentStart, endIndex).trim();
-          }
+      let lines = text.split('\n').map(l => l.trim());
+      
+      let title = "";
+      let contentLines = [];
+
+      // --- [BƯỚC 1] PHÂN TÁCH TITLE VÀ LỌC BỎ METADATA ---
+      for (let line of lines) {
+        if (!line) continue;
+        const upperLine = line.toUpperCase();
+        
+        // Bỏ qua các dòng metadata và các dòng chỉ chứa ký tự đặc biệt
+        if (upperLine.startsWith("META DESCRIPTION:") || 
+            upperLine.startsWith("URL SLUG:") || 
+            upperLine.startsWith("BY ") ||
+            upperLine.startsWith("SOURCE:") ||
+            upperLine.startsWith("LAST UPDATED:") ||
+            upperLine.startsWith("AFFILIATE DISCLOSURE:") ||
+            line === "✦" || line === "•" || line === "*") {
+          continue;
         }
 
-        const labelsMap = {
-          "TITLE": ["TITLE TAG:", "TITLE:"],
-          "SLUG": ["URL SLUG:", "SLUG:"],
-          "EXCERPT": ["META DESCRIPTION:", "EXCERPT:"],
-          "IMAGEURL": ["IMAGE URL:", "IMAGEURL:"],
-          "SOURCE": ["SOURCE:", "URL:"]
-        };
-
-        const labels = labelsMap[tag.toUpperCase()] || [`${tag.toUpperCase()}:`];
-        for (let label of labels) {
-          const labelIndex = rawLower.indexOf(label.toLowerCase());
-          if (labelIndex !== -1) {
-            const lineStart = labelIndex + label.length;
-            const lineEnd = rawArticle.indexOf("\n", lineStart);
-            const value = rawArticle.substring(lineStart, lineEnd === -1 ? undefined : lineEnd).trim();
-            if (value) return value;
-          }
+        if (!title && (upperLine.startsWith("TITLE TAG:") || upperLine.startsWith("TITLE:"))) {
+          title = line.replace(/TITLE TAG:|TITLE:/i, "").trim();
+          continue;
         }
-        return null;
-      };
+        if (!title) { title = line; continue; }
 
-      let title = extract("TITLE");
-      let slug = extract("SLUG");
-      let content = extract("CONTENT");
-      let excerpt = extract("EXCERPT");
-      let imageUrl = extract("IMAGEURL");
-      const sourceUrl = extract("SOURCE");
-
-      // Fallback content extraction
-      if (!content && title) {
-        const lines = rawArticle.split("\n");
-        let metadataEndIdx = 0;
-        for (let i = 0; i < lines.length; i++) {
-          if (lines[i].includes("TITLE TAG:") || lines[i].includes("META DESCRIPTION:") || lines[i].includes("URL SLUG:")) {
-            metadataEndIdx = i + 1;
-          }
-          if (lines[i].includes("By ") && i < 10) metadataEndIdx = i + 1;
-        }
-        content = lines.slice(metadataEndIdx).join("\n").trim();
+        contentLines.push(line);
       }
 
-      if (!content || content.length < 100) continue;
+      if (!title) continue;
 
-      if (!title) {
-        const h1Match = content.match(/<h1>(.*?)<\/h1>/i);
-        if (h1Match) title = h1Match[1].trim();
+      // --- [BƯỚC 2] ĐỊNH DANH SLUG ---
+      let slug = slugify(title);
+      if (title.toLowerCase().includes('science centre')) {
+        slug = 'science-centre-singapore-guide';
       }
 
-      if (!slug && title) {
-        slug = slugify(title);
-      } else if (slug) {
-        slug = slug.replace(/^\/|\/$/g, '');
-      }
+      // --- [BƯỚC 3] LÀM SẠCH VĂN BẢN (XỬ LÝ TRIỆT ĐỂ KÝ TỰ RÁC) ---
+      let processedLines = contentLines.map(line => {
+        return line
+          .replace(/\[(Klook|Trip\.com) affiliate:.*?\]/gi, "")
+          .replace(/Verify Tickets on Klook/gi, "")
+          .replace(/Check Deals on Trip\.com/gi, "")
+          .replace(/Planning your visit\? Compare Science Centre ticket options on Klook/gi, "")
+          .replace(/or check Trip\.com for current combo deals/gi, "")
+          .replace(/✦/g, "") // Xóa dấu kim cương trong text
+          .replace(/\*\*/g, "")
+          .trim();
+      }).filter(l => l.length > 2); // Chỉ giữ lại dòng có trên 2 ký tự (loại bỏ dòng rác)
 
-      // 3. CLEANING & PREMIUM FORMATTING
-      let cleanContent = content
-        .replace(/✦/g, "")
-        .replace(/\[\d+\]/g, "")
-        .replace(/\[[web:\d\s,]+\]/gi, "")
-        .trim();
+      // --- [BƯỚC 4] CHUYỂN ĐỔI SANG HTML ---
+      let htmlBlocks = [];
+      let currentList = [];
 
-      // Affiliate BIG Cards
-      const AFFILIATE_DATA = {
-        KLOOK: {
-          name: "Verify Tickets on Klook",
-          desc: "Compare combo packages and instant mobile entry options.",
-          url: "https://www.klook.com/en-SG/city/6-singapore-things-to-do/?aid=105111&utm_medium=affiliate-alwayson&utm_source=non-network&utm_campaign=105111",
-          class: "klook",
-          icon: "⚡"
-        },
-        TRIP: {
-          name: "Check Deals on Trip.com",
-          desc: "Browse current hotel + attraction bundles and guest reviews.",
-          url: "https://www.trip.com/?Allianceid=7367361&SID=278066643",
-          class: "trip",
-          icon: "🌍"
+      for (let line of processedLines) {
+        // Nhận diện Header
+        if (line.startsWith("### ") || line.includes("FAQ") || line.startsWith("3 Things") || line.includes("difference between")) {
+          if (currentList.length > 0) {
+            htmlBlocks.push(`<ul class="list-disc pl-6 space-y-4 mb-8 text-gray-300 font-sans text-lg">${currentList.join('')}</ul>`);
+            currentList = [];
+          }
+          const hText = line.replace(/^###\s*/, "");
+          htmlBlocks.push(`<h2 class="text-3xl font-black mt-16 mb-8 text-white uppercase border-l-4 border-blue-600 pl-6 tracking-tighter">${hText}</h2>`);
+          continue;
         }
-      };
 
-      cleanContent = cleanContent.replace(/\[Klook affiliate:.*?\]/gi, () => {
-        const d = AFFILIATE_DATA.KLOOK;
-        return `\n\n<div class="premium-cta-card ${d.class}">
-          <div class="cta-icon">${d.icon}</div>
-          <div class="cta-content">
-            <h4>${d.name}</h4>
-            <p>${d.desc}</p>
+        // Nhận diện Danh sách
+        if (line.startsWith("- ") || line.startsWith("* ")) {
+          currentList.push(`<li class="leading-relaxed">${line.replace(/^[-*]\s*/, "").trim()}</li>`);
+          continue;
+        } else if (currentList.length > 0) {
+          htmlBlocks.push(`<ul class="list-disc pl-6 space-y-4 mb-8 text-gray-300 font-sans text-lg">${currentList.join('')}</ul>`);
+          currentList = [];
+        }
+
+        // Nhận diện Box thông tin (Quick Facts)
+        if (line.toLowerCase().startsWith("quick facts") || line.includes("Address:") || line.includes("Opening hours:")) {
+          htmlBlocks.push(`
+            <div class="my-12 p-8 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-sm">
+              <h3 class="text-blue-400 font-black uppercase tracking-widest text-[10px] mb-6 underline decoration-blue-500/50 underline-offset-8">Intelligence Report</h3>
+              <p class="text-sm leading-loose text-gray-400 font-mono italic">${line.replace(/\n/g, '<br/>')}</p>
+            </div>
+          `);
+          continue;
+        }
+
+        // Đoạn văn bình thường (Không bao giờ tạo thẻ trống)
+        htmlBlocks.push(`<p class="mb-8 text-xl leading-relaxed text-gray-400 text-justify font-sans">${line}</p>`);
+      }
+      
+      if (currentList.length > 0) {
+        htmlBlocks.push(`<ul class="list-disc pl-6 space-y-4 mb-8 text-gray-300 font-sans text-lg">${currentList.join('')}</ul>`);
+      }
+
+      let finalHtml = htmlBlocks.join('\n');
+
+      // --- [BƯỚC 5] CHÈN Ô PREMIUM CHO SCIENCE CENTRE ---
+      if (slug === 'science-centre-singapore-guide') {
+        const affiliateUrl = `https://us.trip.com/travel-guide/attraction/singapore/science-centre-singapore-13086709/?locale=en-XX&curr=USD&_gl=1*5kz0m6*_gcl_aw*R0NMLjE3NjY0NTg4NjguQ2p3S0NBaUE5YVBLQmhCaEVpd0F5ejgySjY0MG1xT1Z4Nzd6andja0RuekllZXQ3aThXRmNFSFFrcGpGeXJ2aDVockFtaTF6NzRRaUN4b0NlcWdRQXZEX0J3RQ..*_gcl_au*MjEzOTI2NDkwOS4xNzY0MTM3NDk2`;
+        
+        finalHtml += `
+        <div class="mt-20 p-12 bg-gradient-to-br from-blue-600 to-indigo-900 rounded-[3rem] text-center shadow-2xl relative overflow-hidden group">
+          <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+          <div class="relative z-10">
+            <h3 class="text-3xl md:text-5xl font-black mb-6 text-white uppercase tracking-tighter">Ready to Explore?</h3>
+            <p class="text-blue-100 mb-10 text-lg opacity-80 max-w-xl mx-auto">Get instant mobile tickets and skip the queue at Science Centre Singapore via Trip.com.</p>
+            <a href="${affiliateUrl}" target="_blank" class="inline-block bg-white text-blue-900 px-12 py-5 rounded-2xl font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl">
+               BOOK ON TRIP.COM
+            </a>
           </div>
-          <a href="${d.url}" target="_blank" rel="nofollow" class="cta-link">GO TO KLOOK</a>
-        </div>\n\n`;
-      });
-      cleanContent = cleanContent.replace(/\[Trip\.com affiliate:.*?\]/gi, () => {
-        const d = AFFILIATE_DATA.TRIP;
-        return `\n\n<div class="premium-cta-card ${d.class}">
-          <div class="cta-icon">${d.icon}</div>
-          <div class="cta-content">
-            <h4>${d.name}</h4>
-            <p>${d.desc}</p>
-          </div>
-          <a href="${d.url}" target="_blank" rel="nofollow" class="cta-link">GO TO TRIP.COM</a>
-        </div>\n\n`;
-      });
-
-      // 3. CLEANING & SEMANTIC BLOCK CONVERSION
-      let contentBlocks = cleanContent.split(/\n\s*\n/);
-
-      cleanContent = contentBlocks.map(block => {
-        let b = block.trim();
-        if (!b) return "";
-
-        // If it's already a premium card, return as is
-        if (b.startsWith("<div class=\"premium-cta-card\"")) return b;
-        // If it's already got block tags, return as is
-        if (b.startsWith("<p>") || b.startsWith("<h") || b.startsWith("<div") || b.startsWith("<ul")) return b;
-
-        // Detect "Quick Facts" block
-        if (b.toLowerCase().startsWith("quick facts") || b.includes("Address:") || b.includes("Opening hours:")) {
-          const lines = b.split("\n").filter(l => l.trim().length > 0);
-          const blockTitle = lines[0];
-          const listItems = lines.slice(1).map(l => {
-            const [key, ...val] = l.split(":");
-            if (val.length > 0) return `<li><span class="key">${key.trim()}</span><span class="val">${val.join(":").trim()}</span></li>`;
-            return `<li>${l.trim()}</li>`;
-          }).join("");
-          return `<div class="data-grid-box"><h3>${blockTitle}</h3><ul>${listItems}</ul></div>`;
-        }
-
-        // Detect Pricing / Tickets
-        if (b.toLowerCase().startsWith("tickets") || b.includes("SGD")) {
-          return `<div class="pricing-box">${b.split("\n").map(l => `<p>${l.trim()}</p>`).join("")}</div>`;
-        }
-
-        // Headers
-        if (b.startsWith("### ")) return `<h3>${b.substring(4).trim()}</h3>`;
-        if (b.startsWith("## ")) return `<h2>${b.substring(3).trim()}</h2>`;
-        if (b.startsWith("# ")) return `<h1>${b.substring(2).trim()}</h1>`;
-
-        // Lists
-        if (b.startsWith("- ") || b.startsWith("* ")) {
-          const items = b.split("\n").map(line => `<li>${line.replace(/^[-*]\s*/, "").trim()}</li>`).join("");
-          return `<ul>${items}</ul>`;
-        }
-
-        // Standard Paragraph
-        return `<p>${b.replace(/\n/g, " ")}</p>`;
-      }).join("\n\n");
-
-
-      cleanContent = cleanContent.replace(/\*\*/g, "");
-
-      if (!excerpt) {
-        excerpt = cleanContent.replace(/<[^>]*>/g, "").substring(0, 160).trim() + "...";
+        </div>`;
       }
 
-      // Guest Author Logic
-      let guestAuthor = null;
-      let authorBio = "";
-      const authorLineMatch = rawArticle.match(/By (.*?) — (.*)/);
-      if (authorLineMatch) {
-        guestAuthor = authorLineMatch[1].trim();
-        authorBio = authorLineMatch[2].trim();
-      }
-
-      if (guestAuthor && cleanContent.includes(guestAuthor)) {
-        cleanContent = cleanContent.replace(/<p>(Sarah has visited.*?)<\/p>/, (match, p1) => {
-          return `<div class="author-intro-box">
-               <div class="intro-badge">Guest Insight</div>
-               <p>${p1}</p>
-               <div class="intro-footer">— ${guestAuthor}, ${authorBio}</div>
-             </div>`;
-        });
-      }
-
-      if (guestAuthor) {
-        cleanContent = `<div class="guest-author-byline">Written by ${guestAuthor}</div>\n` + cleanContent;
-      }
-
-      // Image Fetching
-      if ((!imageUrl || imageUrl.includes('unsplash')) && sourceUrl) {
-        const fetched = await fetchMetaImage(sourceUrl);
-        if (fetched) imageUrl = fetched;
-      }
-
-      const DESMOND_ID = "author_1";
-
+      // --- [BƯỚC 6] LƯU VÀO DB ---
       const post = await prisma.post.upsert({
         where: { slug: slug },
         update: {
           title: title,
-          content: cleanContent,
-          excerpt: excerpt,
+          content: finalHtml,
+          excerpt: title,
           status: 'PUBLISHED',
-          category: 'Expert Guide',
-          authorId: DESMOND_ID,
-          imageUrl: imageUrl || "https://images.unsplash.com/photo-1546708973-b339540b5162?w=1200",
+          imageUrl: slug.includes('science-centre') ? "https://www.science.edu.sg/images/default-source/navigation-bar-2023/scs-evening-(blue-lighting)-(1)344fff417e0a428e92b8823579137e0c.jpg" : "https://images.unsplash.com/photo-1546708973-b339540b5162?w=1200",
           updatedAt: new Date()
         },
         create: {
           title: title,
           slug: slug,
-          content: cleanContent,
-          excerpt: excerpt,
+          content: finalHtml,
+          excerpt: title,
           status: 'PUBLISHED',
-          category: 'Expert Guide',
-          authorId: DESMOND_ID,
-          imageUrl: imageUrl || "https://images.unsplash.com/photo-1546708973-b339540b5162?w=1200",
-          createdAt: new Date(),
-          updatedAt: new Date()
+          authorId: "author_1",
+          imageUrl: slug.includes('science-centre') ? "https://www.science.edu.sg/images/default-source/navigation-bar-2023/scs-evening-(blue-lighting)-(1)344fff417e0a428e92b8823579137e0c.jpg" : "https://images.unsplash.com/photo-1546708973-b339540b5162?w=1200",
         }
       });
 
-      console.log(`✅ IMPORTED: ${post.title} (Slug: ${post.slug})`);
+      console.log(`✅ CLEANED & UPDATED: ${post.title}`);
     }
-
-    console.log("🎉 SUCCESS: All premium guides processed!");
-
   } catch (error) {
     console.error("❌ ERROR:", error.message);
   } finally {
