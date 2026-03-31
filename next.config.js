@@ -40,6 +40,11 @@ const nextConfig = {
         destination: '/events/lao-jiu-the-musical-singapore-2026',
         permanent: true,
       },
+      {
+        source: '/events/national-museum-singapore-guide-2026-exhibitions',
+        destination: '/events/once-upon-a-tide-national-museum-singapore-2026',
+        permanent: true,
+      },
     ];
   },
 };

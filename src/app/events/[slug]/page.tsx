@@ -64,7 +64,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
   if (!event) notFound();
 
   // ── CYBER ARCHIVE: Check if event has ended ──────────────────────────────
-  const isEventEnded = event.endDate ? event.endDate < new Date() : false;
+  const isEventEnded = event.endDate ? new Date(event.endDate).getTime() < Date.now() : false;
 
   // Extract affiliate links from enrichedContent if available
   const enriched = event.enrichedContent as any;
