@@ -1,5 +1,5 @@
 // src/app/events/page.tsx (BẢN V41.0 - CHỐT HẠ LOGIC THỜI GIAN)
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Playfair_Display, Inter, IBM_Plex_Mono } from 'next/font/google';
 

@@ -1,5 +1,5 @@
 // src/app/attractions/page.tsx
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Playfair_Display, Inter } from 'next/font/google';
 

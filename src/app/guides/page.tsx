@@ -1,6 +1,6 @@
 // src/app/guides/page.tsx
 import Link from "next/link";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { Playfair_Display, Inter } from 'next/font/google';
 
 const playfair = Playfair_Display({ subsets: ['latin'], weight: ['700', '900'], style: 'italic' });

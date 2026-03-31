@@ -1,6 +1,6 @@
 // src/app/events/this-weekend/page.tsx
 
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
 import EventCard from "@/components/EventCard";
 

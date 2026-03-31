@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import InteractiveMapClient from "@/components/InteractiveMapClient";
 import { Playfair_Display, Inter, IBM_Plex_Mono } from 'next/font/google';
 import AffiliateCTA from "@/components/AffiliateCTA";

@@ -1,6 +1,6 @@
 // src/app/events/for/couples/page.tsx
 
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import type { Metadata } from 'next'
 import EventCard from '@/components/EventCard'
 import EventSchema from '@/components/EventSchema'

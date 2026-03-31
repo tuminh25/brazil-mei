@@ -1,5 +1,5 @@
 // src/lib/data-access/events.ts
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 export type SortOption = "trending" | "upcoming" | "newest";
 

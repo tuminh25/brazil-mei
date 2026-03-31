@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { revalidatePath } from 'next/cache';
 
 interface Event {
-  id: string;
-  title: string;
-  description: string;
+  id: number;
+  name: string;
+  description: string | null;
 }
 
 export default function EditForm({ event, id }: { event: Event; id: string }) {
@@ -25,9 +25,9 @@ export default function EditForm({ event, id }: { event: Event; id: string }) {
 
   return (
     <div className="p-8 max-w-2xl mx-auto">
-      <h1>Edit {data.title}</h1>
+      <h1>Edit {data.name}</h1>
       <textarea
-        value={data.description}
+        value={data.description || ''}
         onChange={(e) => setData({ ...data, description: e.target.value })}
         className="w-full p-4 border rounded mb-4 h-40"
       />
