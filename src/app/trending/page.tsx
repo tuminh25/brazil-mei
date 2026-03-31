@@ -10,15 +10,22 @@ const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '600'] });
 export const dynamic = 'force-dynamic';
 
 export default async function TrendingPage() {
+  console.log("Trending Page Rendering... [VERCEL DEBUG]");
+  
   // LẤY TIN TỨC: Linh hoạt hơn để tránh sót bài
-  const trendingPosts = await prisma.post.findMany({
-    where: {
-      isNewsjack: true,
-      status: 'PUBLISHED'
-    },
-    orderBy: { createdAt: 'desc' },
-    include: { author: true }
-  });
+  let trendingPosts: any[] = [];
+  try {
+    trendingPosts = await prisma.post.findMany({
+      where: {
+        isNewsjack: true,
+        status: 'PUBLISHED'
+      },
+      orderBy: { createdAt: 'desc' },
+      include: { author: true }
+    });
+  } catch (error) {
+    console.error("Trending Page DB Error:", error);
+  }
 
   return (
     <main className={`${inter.className} min-h-screen bg-black text-white pt-32 pb-20 selection:bg-red-500/30`}>

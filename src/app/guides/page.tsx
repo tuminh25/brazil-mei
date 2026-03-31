@@ -9,16 +9,22 @@ const inter = Inter({ subsets: ['latin'], weight: ['400', '600', '800'] });
 export const dynamic = 'force-dynamic';
 
 export default async function GuidesPage() {
+  console.log("Guides Page Rendering... [VERCEL DEBUG]");
+  
   // 1. LẤY TẤT CẢ BÀI VIẾT LÀ EXPERT GUIDE
-  const posts = await prisma.post.findMany({
-    where: { 
-      status: 'PUBLISHED',
-      category: 'Expert Guide' 
-    },
-    orderBy: { createdAt: 'desc' },
-    include: { author: true }
-  }) || [];
-
+  let posts: any[] = [];
+  try {
+    posts = await prisma.post.findMany({
+      where: { 
+        status: 'PUBLISHED',
+        category: 'Expert Guide' 
+      },
+      orderBy: { createdAt: 'desc' },
+      include: { author: true }
+    });
+  } catch (error) {
+    console.error("Guides Page DB Error:", error);
+  }
   return (
     <main className={`${inter.className} min-h-screen bg-[#050505] text-white py-20 px-6`}>
       <div className="max-w-7xl mx-auto">
