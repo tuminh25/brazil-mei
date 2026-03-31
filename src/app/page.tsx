@@ -9,32 +9,50 @@ const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '600'] });
 const inter = Inter({ subsets: ['latin'], weight: ['400', '700', '900'] });
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function HomePage() {
+  console.log("HomePage Rendering... [VERCEL DEBUG]");
+
   // 1. HEADLINERS: Sự kiện ngắn hạn (Events)
-  const limitedEvents = await prisma.event.findMany({
-    where: { status: 'PUBLISHED', category: 'Event' },
-    take: 3,
-    orderBy: { startDate: 'asc' }
-  }) || [];
+  let limitedEvents: any[] = [];
+  try {
+    limitedEvents = await prisma.event.findMany({
+      where: { status: 'PUBLISHED', category: 'Event' },
+      take: 3,
+      orderBy: { startDate: 'asc' }
+    });
+  } catch (error) {
+    console.error("HomePage DB Error (limitedEvents):", error);
+  }
 
   // 2. ICONS: Địa điểm Evergreen
-  const evergreenAttractions = await prisma.event.findMany({
-    where: { status: 'PUBLISHED', category: 'Attraction' },
-    take: 10,
-    orderBy: { hotnessScore: 'desc' }
-  }) || [];
+  let evergreenAttractions: any[] = [];
+  try {
+    evergreenAttractions = await prisma.event.findMany({
+      where: { status: 'PUBLISHED', category: 'Attraction' },
+      take: 10,
+      orderBy: { hotnessScore: 'desc' }
+    });
+  } catch (error) {
+    console.error("HomePage DB Error (evergreenAttractions):", error);
+  }
 
-  // 3. INSIDER GUIDES: CHỈ LẤY ĐÚNG 3 BÀI "Expert Guide" (Music, Itinerary, Oceanarium)
-  const expertGuides = await prisma.post.findMany({
-    where: {
-      status: 'PUBLISHED',
-      category: 'Expert Guide' // <--- Lọc chính xác ở đây
-    },
-    take: 3,
-    orderBy: { createdAt: 'desc' },
-    include: { author: true }
-  }) || [];
+  // 3. INSIDER GUIDES: CHỈ LẤY ĐÚNG 3 BÀI "Expert Guide"
+  let expertGuides: any[] = [];
+  try {
+    expertGuides = await prisma.post.findMany({
+      where: {
+        status: 'PUBLISHED',
+        category: 'Expert Guide' // <--- Lọc chính xác ở đây
+      },
+      take: 3,
+      orderBy: { createdAt: 'desc' },
+      include: { author: true }
+    });
+  } catch (error) {
+    console.error("HomePage DB Error (expertGuides):", error);
+  }
 
   return (
     <main className={`${inter.className} min-h-screen bg-black text-white selection:bg-blue-500/30 overflow-x-hidden`}>
