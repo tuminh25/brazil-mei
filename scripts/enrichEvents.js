@@ -114,4 +114,12 @@ async function main() {
     await setTimeout(AI_API_CONFIG.delayBetweenRequests);
   }
 }
-main();
+main()
+  .catch(e => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+    console.log("🔌 Database disconnected.");
+  });

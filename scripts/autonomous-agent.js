@@ -70,4 +70,9 @@ async function runAgent(mode) {
 }
 
 const args = process.argv.slice(2);
-runAgent(args[0] === 'money' ? 'money' : 'trend');
+runAgent(args[0] === 'money' ? 'money' : 'trend')
+  .catch(console.error)
+  .finally(async () => {
+    await prisma.$disconnect();
+    console.log("🔌 Database disconnected.");
+  });

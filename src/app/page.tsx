@@ -8,8 +8,7 @@ const playfair = Playfair_Display({ subsets: ['latin'], weight: ['700', '900'], 
 const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '600'] });
 const inter = Inter({ subsets: ['latin'], weight: ['400', '700', '900'] });
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 3600; // Cache for 1 hour to save Neon CU-hrs
 
 export default async function HomePage() {
   console.log("HomePage Rendering... [VERCEL DEBUG]");

@@ -242,7 +242,7 @@ async function superImportHtmlEvents() {
       });
 
       // Default author if none detected
-      let authorId = "author_jamie";
+      let authorId = "author_1";
 
       const updateData = {
         name,

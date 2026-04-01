@@ -87,30 +87,23 @@ async function runBatchImport() {
         let imageUrl = await fetchMetaImage(data.sourceUrl);
         if (!imageUrl) imageUrl = `https://loremflickr.com/1200/800/singapore,city/all?lock=${name.length}`;
 
-        const eventData = {
+        const postData = {
           slug: slug,
-          name: name,
-          description: (data.description || data.content || "").split(/From an EEAT/i)[0].trim(),
+          title: name,
+          content: (data.description || data.content || "").split(/From an EEAT/i)[0].trim(),
           imageUrl: imageUrl,
-          startDate: data.startDate ? new Date(data.startDate) : new Date(),
-          venue: data.venue || "Singapore",
-          price: data.price?.toString() || "TBA",
-          sourceUrl: attachAffiliateTags(data.sourceUrl),
-          category: "Events",
-          authorId: authorId, // <--- BÂY GIỜ CHẮC CHẮN SẼ CÓ ID NÀY
-          aiSummary: data.aiSummary || data.excerpt,
-          aiFaq: data.aiFaq || [],
-          aiBestFor: data.aiBestFor || "",
-          aiVibe: data.aiVibe || "",
-          marketingPitch: data.marketingPitch || "",
-          status: 'PUBLISHED', // ĐĂNG LUÔN ĐỂ KIỂM TRA
+          excerpt: data.aiSummary || data.excerpt || name,
+          category: "Expert Guide",
+          authorId: authorId,
+          isNewsjack: false,
+          status: 'PUBLISHED',
           updatedAt: new Date()
         };
 
-        await prisma.event.upsert({
+        await prisma.post.upsert({
           where: { slug: slug },
-          update: eventData,
-          create: eventData
+          update: postData,
+          create: postData
         });
 
         console.log(`✅ Thành công: ${name}`);

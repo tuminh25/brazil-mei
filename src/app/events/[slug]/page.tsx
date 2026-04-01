@@ -12,7 +12,16 @@ const playfair = Playfair_Display({ subsets: ['latin'], weight: ['700', '900'], 
 const inter = Inter({ subsets: ['latin'], weight: ['400', '700', '900'] });
 const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '600'] });
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  const events = await prisma.event.findMany({
+    where: { status: 'PUBLISHED' },
+    select: { slug: true },
+    take: 100 // Pre-render top 100 events
+  });
+  return events.map((event: { slug: string }) => ({ slug: event.slug }));
+}
 
 function AuthorBox({ author }: { author: any }) {
   if (!author) return null;
