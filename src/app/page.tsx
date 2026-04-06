@@ -15,7 +15,11 @@ export default async function HomePage() {
   let essentials: any[] = [];
   try {
     essentials = await prisma.post.findMany({
-      where: { status: 'PUBLISHED', category: 'Evergreen' },
+      where: {
+        status: 'PUBLISHED',
+        category: 'Evergreen',
+        isNewsjack: false
+      },
       take: 6,
       orderBy: { createdAt: 'desc' },
       include: { author: true }
@@ -39,6 +43,8 @@ export default async function HomePage() {
   } catch (error) {
     console.error("HomePage DB Error (latestUpdates):", error);
   }
+
+  const IMAGE_FALLBACK = "https://images.unsplash.com/photo-1525625239513-39bc131f9979?q=80&w=1600&auto=format&fit=crop";
 
   return (
     <main className={`${inter.className} min-h-screen bg-black text-white selection:bg-blue-500/30 overflow-x-hidden`}>
@@ -128,64 +134,77 @@ export default async function HomePage() {
 
         {/* ESSENTIALS GRID */}
         {essentials.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {essentials.map((post, i) => (
-              <Link
-                key={post.id}
-                href={`/guides/${post.slug}`}
-                className={`group relative bg-[#0a0a0a] border border-white/8 rounded-[2rem] overflow-hidden hover:border-cyan-500/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_30px_60px_rgba(6,182,212,0.12)] flex flex-col ${i === 0 ? 'md:col-span-2 lg:col-span-2' : ''}`}
-              >
-                {/* IMAGE */}
-                <div className={`overflow-hidden relative ${i === 0 ? 'h-[420px]' : 'h-72'}`}>
-                  <img
-                    src={post.imageUrl || 'https://images.unsplash.com/photo-1525625239513-39bc131f9979?w=1200'}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    alt={post.title}
-                  />
-                  {/* GRADIENT OVERLAY */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-90" />
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+              {essentials.map((post, i) => (
+                <Link
+                  key={post.id}
+                  href={`/guides/${post.slug}`}
+                  className={`group relative bg-[#0a0a0a] border border-white/8 rounded-[2rem] overflow-hidden hover:border-cyan-500/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_30px_60px_rgba(6,182,212,0.12)] flex flex-col ${i === 0 ? 'md:col-span-2 lg:col-span-2' : ''}`}
+                >
+                  {/* IMAGE */}
+                  <div className={`overflow-hidden relative ${i === 0 ? 'h-[420px]' : 'h-72'}`}>
+                    <img
+                      src={post.imageUrl || IMAGE_FALLBACK}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      alt={post.title}
+                    />
+                    {/* GRADIENT OVERLAY */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-90" />
 
-                  {/* VERIFIED INSIDER BADGE */}
-                  <div className={`${mono.className} absolute top-5 left-5 flex items-center gap-2 bg-black/80 backdrop-blur-md px-4 py-2 rounded-full border border-cyan-500/30`}>
-                    <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full" />
-                    <span className="text-cyan-400 text-[9px] font-black uppercase tracking-[0.2em]">Verified Insider</span>
+                    {/* VERIFIED INSIDER BADGE */}
+                    <div className={`${mono.className} absolute top-5 left-5 flex items-center gap-2 bg-black/80 backdrop-blur-md px-4 py-2 rounded-full border border-cyan-500/30`}>
+                      <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full" />
+                      <span className="text-cyan-400 text-[9px] font-black uppercase tracking-[0.2em]">Verified Insider</span>
+                    </div>
+
+                    {/* CATEGORY TAG */}
+                    <div className={`${mono.className} absolute top-5 right-5 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10`}>
+                      <span className="text-gray-400 text-[9px] font-black uppercase tracking-widest">Evergreen</span>
+                    </div>
                   </div>
 
-                  {/* CATEGORY TAG */}
-                  <div className={`${mono.className} absolute top-5 right-5 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10`}>
-                    <span className="text-gray-400 text-[9px] font-black uppercase tracking-widest">Evergreen</span>
-                  </div>
-                </div>
-
-                {/* CONTENT */}
-                <div className="p-8 flex-1 flex flex-col">
-                  <h3 className={`font-black mb-3 text-white group-hover:text-cyan-300 transition-colors tracking-tight leading-tight ${i === 0 ? 'text-3xl' : 'text-xl'}`}>
-                    {post.title}
-                  </h3>
-                  <p className="text-gray-500 text-sm leading-relaxed line-clamp-2 mb-6 flex-1">
-                    {post.excerpt}
-                  </p>
-                  <div className="flex items-center justify-between pt-5 border-t border-white/5">
-                    <div className="flex items-center gap-3">
-                      {post.author?.avatarUrl && (
-                        <img
-                          src={post.author.avatarUrl}
-                          className="w-7 h-7 rounded-full border border-white/10"
-                          alt={post.author.name}
-                        />
-                      )}
-                      <span className={`${mono.className} text-[9px] text-gray-600 font-black uppercase tracking-widest`}>
-                        {post.author?.name || 'SG Insider'}
+                  {/* CONTENT */}
+                  <div className="p-8 flex-1 flex flex-col">
+                    <h3 className={`font-black mb-3 text-white group-hover:text-cyan-300 transition-colors tracking-tight leading-tight ${i === 0 ? 'text-3xl' : 'text-xl'}`}>
+                      {post.title}
+                    </h3>
+                    <p className="text-gray-500 text-sm leading-relaxed line-clamp-2 mb-6 flex-1">
+                      {post.excerpt}
+                    </p>
+                    <div className="flex items-center justify-between pt-5 border-t border-white/5">
+                      <div className="flex items-center gap-3">
+                        {post.author?.avatarUrl && (
+                          <img
+                            src={post.author.avatarUrl}
+                            className="w-7 h-7 rounded-full border border-white/10"
+                            alt={post.author.name}
+                          />
+                        )}
+                        <span className={`${mono.className} text-[9px] text-gray-600 font-black uppercase tracking-widest`}>
+                          {post.author?.name || 'SG Insider'}
+                        </span>
+                      </div>
+                      <span className={`${mono.className} text-cyan-500 text-[9px] font-black uppercase tracking-widest group-hover:text-cyan-300 transition-colors`}>
+                        Read Guide →
                       </span>
                     </div>
-                    <span className={`${mono.className} text-cyan-500 text-[9px] font-black uppercase tracking-widest group-hover:text-cyan-300 transition-colors`}>
-                      Read Guide →
-                    </span>
                   </div>
-                </div>
+                </Link>
+              ))}
+            </div>
+
+            {/* EXPLORE ALL BUTTON */}
+            <div className="flex justify-center">
+              <Link
+                href="/guides"
+                className={`${mono.className} group relative px-16 py-6 border border-white/20 rounded-full font-black uppercase tracking-[0.3em] text-xs text-white transition-all hover:border-cyan-500 hover:text-cyan-400 hover:shadow-[0_0_30px_rgba(6,182,212,0.3)] overflow-hidden`}
+              >
+                <span className="relative z-10 italic">Explore All Guides →</span>
+                <div className="absolute inset-0 bg-cyan-500/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
               </Link>
-            ))}
-          </div>
+            </div>
+          </>
         ) : (
           <div className="text-center py-32 text-gray-600">
             <p className={`${mono.className} text-xs uppercase tracking-widest`}>Content loading — check back soon.</p>
@@ -225,15 +244,13 @@ export default async function HomePage() {
                   href={`/guides/${post.slug}`}
                   className="group flex gap-5 p-6 bg-[#0d0d0d] border border-white/5 rounded-[1.5rem] hover:border-orange-500/30 transition-all duration-300"
                 >
-                  {post.imageUrl && (
-                    <div className="w-20 h-20 rounded-[1rem] overflow-hidden flex-shrink-0">
-                      <img
-                        src={post.imageUrl}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        alt=""
-                      />
-                    </div>
-                  )}
+                  <div className="w-20 h-20 rounded-[1rem] overflow-hidden flex-shrink-0 bg-white/5 relative">
+                    <img
+                      src={post.imageUrl || IMAGE_FALLBACK}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      alt=""
+                    />
+                  </div>
                   <div className="flex-1 min-w-0">
                     <div className={`${mono.className} flex items-center gap-2 mb-2`}>
                       <span className="w-1.5 h-1.5 bg-orange-400 rounded-full" />
