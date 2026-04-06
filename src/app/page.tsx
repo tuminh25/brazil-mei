@@ -20,7 +20,7 @@ export default async function HomePage() {
         category: 'Evergreen',
         isNewsjack: false
       },
-      take: 9,
+      take: 8,
       orderBy: { createdAt: 'desc' },
       include: { author: true }
     });
@@ -136,14 +136,14 @@ export default async function HomePage() {
         {essentials.length > 0 ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20 items-stretch">
-              {essentials.map((post) => (
+              {essentials.map((post, i) => (
                 <Link
                   key={post.id}
                   href={`/guides/${post.slug}`}
-                  className="group relative bg-[#0a0a0a] border border-white/8 rounded-[2rem] overflow-hidden hover:border-cyan-500/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_30px_60px_rgba(6,182,212,0.12)] flex flex-col h-full"
+                  className={`group relative bg-[#0a0a0a] border border-white/8 rounded-[2rem] overflow-hidden hover:border-cyan-500/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_30px_60px_rgba(6,182,212,0.12)] flex flex-col h-full ${i === 0 ? 'md:col-span-2 lg:col-span-2' : ''}`}
                 >
                   {/* IMAGE */}
-                  <div className="overflow-hidden relative h-72">
+                  <div className={`overflow-hidden relative ${i === 0 ? 'h-[440px]' : 'h-72'}`}>
                     <img
                       src={post.imageUrl || IMAGE_FALLBACK}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
@@ -166,12 +166,14 @@ export default async function HomePage() {
 
                   {/* CONTENT */}
                   <div className="p-8 flex-1 flex flex-col">
-                    <h3 className="font-black mb-3 text-white group-hover:text-cyan-300 transition-colors tracking-tight leading-tight text-xl">
+                    <h3 className={`font-black mb-3 text-white group-hover:text-cyan-300 transition-colors tracking-tight leading-tight ${i === 0 ? 'text-4xl' : 'text-xl'}`}>
                       {post.title}
                     </h3>
-                    <p className="text-gray-500 text-sm leading-relaxed line-clamp-2 mb-6 flex-1">
-                      {post.excerpt}
-                    </p>
+                    {post.excerpt && post.excerpt.trim() !== "" && (
+                      <p className={`text-gray-500 text-sm leading-relaxed mb-6 flex-1 ${i === 0 ? 'line-clamp-3' : 'line-clamp-2'}`}>
+                        {post.excerpt}
+                      </p>
+                    )}
                     <div className="flex items-center justify-between pt-5 border-t border-white/5">
                       <div className="flex items-center gap-3">
                         {post.author?.avatarUrl && (
