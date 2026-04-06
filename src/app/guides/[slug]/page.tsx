@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Playfair_Display, Inter, IBM_Plex_Mono } from 'next/font/google';
 import AffiliateCTA from "@/components/AffiliateCTA";
-import { splitContentAfterTransport } from "@/lib/content-utils";
 
 const playfair = Playfair_Display({ subsets: ['latin'], weight: ['700', '900'], style: ['italic', 'normal'] });
 const inter = Inter({ subsets: ['latin'], weight: ['400', '700', '900'] });
@@ -105,7 +104,7 @@ function InsiderIntelligenceBox({ post }: { post: any }) {
             <div className="relative">
               {/* QUOTE MARK DECOR */}
               <span className="absolute -top-8 -left-6 text-6xl text-white/5 font-serif select-none">“</span>
-              <p className="text-gray-300 text-lg md:text-xl leading-[1.8] italic font-medium relative z-10">
+              <p className="text-gray-300 text-lg md:text-xl leading-[2] italic font-medium relative z-10">
                 {post.secretTip || '—'}
               </p>
             </div>
@@ -503,27 +502,19 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
 
           {/* MAIN ARTICLE CONTENT */}
           <article className="cyber-article max-w-none mb-12">
-            {(() => {
-              const { before, after } = splitContentAfterTransport(post.content);
-              return (
-                <>
-                  <div dangerouslySetInnerHTML={{ __html: before }} />
-                  {after && (
-                    <section className="my-24">
-                      <AffiliateCTA
-                        className="mt-0"
-                        tripUrl={post.tripUrl}
-                        klookUrl={post.klookUrl}
-                        title="Premium Intelligence"
-                        description="Access vetted booking channels for guaranteed entry and elite stay options."
-                      />
-                    </section>
-                  )}
-                  {after && <div dangerouslySetInnerHTML={{ __html: after }} />}
-                </>
-              );
-            })()}
+            <div dangerouslySetInnerHTML={{ __html: post.content }} />
           </article>
+
+          {/* PREMIUM ARTICLE CTA */}
+          <section className="my-24">
+            <AffiliateCTA
+              className="mt-0"
+              tripUrl={post.tripUrl}
+              klookUrl={post.klookUrl}
+              title="Premium Intelligence"
+              description="Access vetted booking channels for guaranteed entry and elite stay options."
+            />
+          </section>
 
           {/* ★ PREMIUM CTA BOX ★ */}
           <section className="relative z-20 my-16">
