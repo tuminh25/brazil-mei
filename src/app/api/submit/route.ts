@@ -2,6 +2,32 @@
 import { NextResponse } from 'next/server';
 import { prisma } from "@/lib/prisma";
 
+// GET handler to fetch existing post data by slug
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const slug = searchParams.get('slug');
+
+    if (!slug) {
+      return NextResponse.json({ error: 'Missing slug parameter' }, { status: 400 });
+    }
+
+    const post = await prisma.post.findUnique({
+      where: { slug },
+      include: { author: true }
+    });
+
+    if (!post) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    }
+
+    return NextResponse.json(post);
+  } catch (error: any) {
+    console.error('Fetch API Error:', error);
+    return NextResponse.json({ error: '❌ Server error while fetching post.' }, { status: 500 });
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -15,6 +41,8 @@ export async function POST(req: Request) {
       insiderPrice,
       bestTime,
       secretTip,
+      tripUrl,
+      klookUrl,
     } = body;
 
     // Validate required fields
@@ -29,32 +57,34 @@ export async function POST(req: Request) {
     const cleanText = description.replace(/<[^>]*>/g, '');
     const autoExcerpt = excerpt || (cleanText.length > 160 ? cleanText.substring(0, 160) + '...' : cleanText);
 
-    // All submissions go to the Post model
-    const post = await prisma.post.create({
-      data: {
-        title: name,
-        slug: slug.toLowerCase().replace(/\s+/g, '-'),
-        imageUrl: imageUrl || 'https://images.unsplash.com/photo-1525625239513-39bc131f9979?w=1200',
-        content: description,
-        excerpt: autoExcerpt,
-        category: normalizedCategory,
-        status: 'PUBLISHED',
-        isNewsjack: normalizedCategory === 'News',
-        // Insider Intelligence fields (Evergreen only)
-        insiderPrice: normalizedCategory === 'Evergreen' ? (insiderPrice || null) : null,
-        bestTime: normalizedCategory === 'Evergreen' ? (bestTime || null) : null,
-        secretTip: normalizedCategory === 'Evergreen' ? (secretTip || null) : null,
-      },
+    const slugToUse = slug.toLowerCase().replace(/\s+/g, '-');
+
+    // Use upsert to create or update based on the unique slug
+    const postData = {
+      title: name,
+      slug: slugToUse,
+      imageUrl: imageUrl || 'https://images.unsplash.com/photo-1525625239513-39bc131f9979?w=1200',
+      content: description,
+      excerpt: autoExcerpt,
+      category: normalizedCategory,
+      status: 'PUBLISHED',
+      isNewsjack: normalizedCategory === 'News',
+      insiderPrice: normalizedCategory === 'Evergreen' ? (insiderPrice || null) : null,
+      bestTime: normalizedCategory === 'Evergreen' ? (bestTime || null) : null,
+      secretTip: normalizedCategory === 'Evergreen' ? (secretTip || null) : null,
+      tripUrl: tripUrl || null,
+      klookUrl: klookUrl || null,
+    };
+
+    const post = await prisma.post.upsert({
+      where: { slug: slugToUse },
+      update: postData,
+      create: postData,
     });
 
     return NextResponse.json({ success: true, slug: post.slug });
   } catch (error: any) {
     console.error('Submit API Error:', error);
-
-    if (error.code === 'P2002') {
-      return NextResponse.json({ error: '❌ Slug already exists. Choose a unique URL.' }, { status: 409 });
-    }
-
     return NextResponse.json({ error: '❌ Server error. Please try again.' }, { status: 500 });
   }
 }

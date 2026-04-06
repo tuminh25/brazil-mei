@@ -516,56 +516,6 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
             />
           </section>
 
-          {/* ★ PREMIUM CTA BOX ★ */}
-          <section className="relative z-20 my-16">
-            <div className="bg-[#0a0a12] border border-white/10 rounded-[2.5rem] p-10 md:p-16 relative overflow-hidden">
-              {/* GLOW BACKGROUND */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/8 via-cyan-500/5 to-transparent pointer-events-none rounded-[2.5rem]" />
-              <div className="absolute top-0 right-0 w-80 h-80 bg-blue-600/10 blur-[80px] rounded-full -mr-20 -mt-20 pointer-events-none" />
-
-              <div className="relative z-10 text-center">
-                <p className={`${mono.className} text-[10px] text-cyan-500 font-black uppercase tracking-[0.5em] mb-4`}>
-                  // PLAN YOUR TRIP
-                </p>
-                <h2 className={`${playfair.className} text-4xl md:text-6xl text-white font-black uppercase mb-4 !border-none !p-0 !m-0 mb-4`}>
-                  Ready to Explore<br />Singapore?
-                </h2>
-                <p className="text-gray-500 text-sm mb-12 max-w-md mx-auto">
-                  Book via our trusted partners for the best available rates — vetted and verified by our team.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <a
-                    href="https://www.trip.com/?allianceid=7367361&sid=278066643"
-                    target="_blank"
-                    rel="nofollow noopener noreferrer"
-                    className="relative group/btn"
-                  >
-                    <div className="absolute -inset-0.5 bg-blue-500/30 rounded-2xl blur opacity-0 group-hover/btn:opacity-100 transition" />
-                    <div className="relative bg-white text-black font-black uppercase tracking-widest text-xs py-5 px-10 rounded-2xl hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-                      🏨 CHECK HOTEL PRICES
-                    </div>
-                  </a>
-                  <a
-                    href="https://www.klook.com/en-SG/?aid=105111"
-                    target="_blank"
-                    rel="nofollow noopener noreferrer"
-                    className="relative group/btn"
-                  >
-                    <div className="absolute -inset-0.5 bg-[#ff5b00]/40 rounded-2xl blur opacity-0 group-hover/btn:opacity-100 transition" />
-                    <div className="relative bg-[#ff5b00] text-white font-black uppercase tracking-widest text-xs py-5 px-10 rounded-2xl hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,91,0,0.3)]">
-                      🎟 BOOK TOP ACTIVITIES
-                    </div>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* SECONDARY AFFILIATE CTA */}
-          <section id="affiliate-cta" className="relative z-30 my-10">
-            <AffiliateCTA />
-          </section>
-
           <div className="mt-10 pt-10 border-t border-white/5 text-center">
             <p className={`${mono.className} text-[10px] text-gray-700 italic leading-relaxed uppercase tracking-[0.3em] max-w-2xl mx-auto`}>
               Support the Hub: bookings via these links help fund our ongoing research.
