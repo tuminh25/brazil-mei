@@ -12,12 +12,17 @@ const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '600'] });
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
-  const posts = await prisma.post.findMany({
-    where: { status: 'PUBLISHED' },
-    select: { slug: true },
-    take: 100
-  });
-  return posts.map((post: { slug: string }) => ({ slug: post.slug }));
+  try {
+    const posts = await prisma.post.findMany({
+      where: { status: 'PUBLISHED' },
+      select: { slug: true },
+      take: 100
+    });
+    return posts.map((post: { slug: string }) => ({ slug: post.slug }));
+  } catch (error) {
+    console.error("Build Error: generateStaticParams failed.", error);
+    return []; // Return empty array to allow build to continue
+  }
 }
 
 const getAffiliateLink = (url: string | null, type: 'klook' | 'trip'): string => {
