@@ -6,8 +6,6 @@ import { Playfair_Display, Inter, IBM_Plex_Mono } from 'next/font/google';
 import AffiliateCTA from "@/components/AffiliateCTA";
 import { splitContentAfterTransport } from "@/lib/content-utils";
 
-
-// 1. FONT CHỮ CAO CẤP
 const playfair = Playfair_Display({ subsets: ['latin'], weight: ['700', '900'], style: ['italic', 'normal'] });
 const inter = Inter({ subsets: ['latin'], weight: ['400', '700', '900'] });
 const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '600'] });
@@ -18,7 +16,7 @@ export async function generateStaticParams() {
   const posts = await prisma.post.findMany({
     where: { status: 'PUBLISHED' },
     select: { slug: true },
-    take: 100 // Pre-render top 100 guides
+    take: 100
   });
   return posts.map((post: { slug: string }) => ({ slug: post.slug }));
 }
@@ -30,7 +28,9 @@ const getAffiliateLink = (url: string | null, type: 'klook' | 'trip'): string =>
 
   let base = url?.trim();
   if (!base || base === "#") {
-    base = type === 'klook' ? "https://www.klook.com/en-SG/city/6-singapore-things-to-do/" : "https://www.trip.com/";
+    base = type === 'klook'
+      ? "https://www.klook.com/en-SG/city/6-singapore-things-to-do/"
+      : "https://www.trip.com/";
   }
 
   try {
@@ -50,13 +50,66 @@ const getAffiliateLink = (url: string | null, type: 'klook' | 'trip'): string =>
   }
 };
 
-// 2. COMPONENT: AUTHOR BOX (GIAO DIỆN GLASSMORPHISM)
+// INSIDER INTELLIGENCE BOX
+function InsiderIntelligenceBox({ post }: { post: any }) {
+  const hasData = post.insiderPrice || post.bestTime || post.secretTip;
+  if (!hasData) return null;
+
+  return (
+    <div className="my-16 relative">
+      {/* HEADER BADGE */}
+      <div className="absolute -top-4 left-8 z-10 flex items-center gap-2 bg-blue-600 px-5 py-2 rounded-full">
+        <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+        <span className={`${mono.className} text-white text-[9px] font-black uppercase tracking-[0.25em]`}>
+          Insider Intelligence
+        </span>
+      </div>
+
+      <div className="bg-[#000] border border-blue-500/20 rounded-[2.5rem] p-10 pt-14 shadow-[inset_0_0_80px_rgba(59,130,246,0.05),0_0_0_1px_rgba(59,130,246,0.1)]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 md:divide-x divide-white/5">
+
+          {/* PRICE */}
+          <div className="px-0 md:px-8 pb-8 md:pb-0 border-b md:border-b-0 border-white/5 first:pl-0 last:pr-0">
+            <div className={`${mono.className} text-[9px] text-blue-400 font-black uppercase tracking-[0.3em] mb-3 flex items-center gap-2`}>
+              <span className="text-lg">💰</span> Admission Price
+            </div>
+            <p className="text-white font-bold text-lg leading-snug">
+              {post.insiderPrice || '—'}
+            </p>
+          </div>
+
+          {/* BEST TIME */}
+          <div className="px-0 md:px-8 py-8 md:py-0 border-b md:border-b-0 border-white/5">
+            <div className={`${mono.className} text-[9px] text-blue-400 font-black uppercase tracking-[0.3em] mb-3 flex items-center gap-2`}>
+              <span className="text-lg">🕐</span> Best Time to Visit
+            </div>
+            <p className="text-white font-bold text-lg leading-snug">
+              {post.bestTime || '—'}
+            </p>
+          </div>
+
+          {/* SECRET TIP */}
+          <div className="px-0 md:px-8 pt-8 md:pt-0 last:pr-0">
+            <div className={`${mono.className} text-[9px] text-blue-400 font-black uppercase tracking-[0.3em] mb-3 flex items-center gap-2`}>
+              <span className="text-lg">🤫</span> Secret Insider Tip
+            </div>
+            <p className="text-cyan-300 text-sm leading-relaxed italic font-medium">
+              {post.secretTip || '—'}
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// AUTHOR BOX
 function AuthorBox({ author }: { author: any }) {
   if (!author) return null;
   return (
     <div className="mt-24 p-10 bg-[#111] border border-white/10 rounded-[3rem] shadow-2xl relative overflow-hidden group">
-      <div className="absolute top-0 right-0 w-40 h-40 bg-blue-600/10 blur-3xl rounded-full -mr-10 -mt-10 group-hover:bg-blue-600/20 transition-all"></div>
-
+      <div className="absolute top-0 right-0 w-40 h-40 bg-blue-600/10 blur-3xl rounded-full -mr-10 -mt-10 group-hover:bg-blue-600/20 transition-all" />
       <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
         <img
           src={author.avatarUrl || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200"}
@@ -67,8 +120,6 @@ function AuthorBox({ author }: { author: any }) {
           <p className={`${mono.className} text-blue-500 text-[10px] font-black uppercase tracking-[0.3em] mb-2`}>{author.role || "Expert Writer"}</p>
           <h3 className={`${playfair.className} text-3xl font-black text-white mb-3`}>{author.name}</h3>
           <p className="text-gray-400 text-sm leading-relaxed max-w-xl">{author.bio}</p>
-
-          {/* Social Icons */}
           {author.socialLinks && (
             <div className="flex justify-center md:justify-start gap-4 mt-4 opacity-60 hover:opacity-100 transition-opacity">
               <span className="text-xs text-gray-500 uppercase tracking-widest">Connect with me</span>
@@ -80,7 +131,7 @@ function AuthorBox({ author }: { author: any }) {
   );
 }
 
-// 3. COMPONENT: JSON-LD SCHEMA (CHO GOOGLE HIỂU)
+// JSON-LD SCHEMA
 function JsonLdSchema({ post, author }: { post: any; author: any }) {
   const schema = {
     "@context": "https://schema.org",
@@ -107,31 +158,35 @@ function JsonLdSchema({ post, author }: { post: any; author: any }) {
 export default async function GuideDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  // 4. LẤY DỮ LIỆU BÀI VIẾT + TÁC GIẢ
   const post = await prisma.post.findUnique({
     where: { slug },
-    include: { author: true } // Lấy thông tin tác giả
+    include: { author: true }
   });
 
   if (!post) notFound();
 
-  // Lấy bài viết liên quan
   const relatedPosts = await prisma.post.findMany({
-    where: { NOT: { slug: slug }, authorId: post.authorId }, // Ưu tiên bài cùng tác giả
+    where: {
+      NOT: { slug: slug },
+      status: 'PUBLISHED',
+      category: 'Evergreen',
+    },
     take: 2,
-    select: { title: true, slug: true, excerpt: true }
+    orderBy: { createdAt: 'desc' },
+    select: { title: true, slug: true, excerpt: true, imageUrl: true }
   });
 
   const displayImage = post.imageUrl || "https://images.unsplash.com/photo-1525625239513-39bc131f9979?w=1600&q=80";
 
   return (
     <main className={`${inter.className} min-h-screen bg-[#050505] text-[#e5e7eb] pb-32 selection:bg-blue-500/30 font-sans relative overflow-hidden`}>
+
       {/* AMBIENT GLOW BACKDROP */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         {post.imageUrl ? (
           <img
             src={post.imageUrl}
-            className="w-full h-full object-cover blur-[120px] opacity-[0.15] scale-150 transform-gpu"
+            className="w-full h-full object-cover blur-[120px] opacity-[0.12] scale-150 transform-gpu"
             alt=""
           />
         ) : (
@@ -141,74 +196,67 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
 
       <JsonLdSchema post={post} author={post.author} />
 
-      {/* CSS NUCLEAR OVERRIDE: Cyber-Noir Aesthetic */}
+      {/* PREMIUM ARTICLE STYLES */}
       <style dangerouslySetInnerHTML={{
         __html: `
-        /* Typography & Rhythm */
         .cyber-article { font-family: ${inter.style.fontFamily}; }
-        .cyber-article p { 
-          font-size: 1.4rem; 
-          line-height: 2; 
-          margin-bottom: 2.5rem; 
-          color: #9ca3af; 
-          text-align: justify; 
+        .cyber-article p {
+          font-size: 1.25rem;
+          line-height: 2;
+          margin-bottom: 2.5rem;
+          color: #9ca3af;
+          text-align: justify;
           position: relative;
         }
-        .cyber-article p::before { 
-          content: '✦'; 
-          color: #3b82f6; 
-          margin-right: 15px; 
-          font-weight: bold; 
+        .cyber-article p::before {
+          content: '✦';
+          color: #3b82f6;
+          margin-right: 15px;
+          font-weight: bold;
           opacity: 0.6;
         }
-        
-        .cyber-article h2 { 
-          color: white !important; 
-          font-family: ${playfair.style.fontFamily}; 
-          font-size: 3.5rem; 
-          margin: 6rem 0 3rem; 
-          border-left: 8px solid #3b82f6; 
-          padding-left: 2rem; 
-          text-transform: uppercase; 
+        .cyber-article h2 {
+          color: white !important;
+          font-family: ${playfair.style.fontFamily};
+          font-size: 3rem;
+          margin: 5rem 0 2.5rem;
+          border-left: 6px solid #3b82f6;
+          padding-left: 1.75rem;
+          text-transform: uppercase;
           letter-spacing: -0.02em;
-          line-height: 1;
+          line-height: 1.1;
         }
-        
-        .cyber-article h3 { 
-          color: #60a5fa !important; 
-          font-size: 2rem; 
-          margin: 4rem 0 2rem; 
-          font-weight: 900; 
-          text-transform: none;
+        .cyber-article h3 {
+          color: #60a5fa !important;
+          font-size: 1.75rem;
+          margin: 3.5rem 0 1.5rem;
+          font-weight: 900;
         }
-        
-        .cyber-article ul { list-style: none; padding: 0; margin-bottom: 4rem; }
-        .cyber-article li { 
-          font-size: 1.3rem; 
-          color: #d1d5db; 
-          margin-bottom: 1.5rem; 
-          padding-left: 2.5rem; 
-          position: relative; 
-          line-height: 1.6;
+        .cyber-article ul { list-style: none; padding: 0; margin-bottom: 3.5rem; }
+        .cyber-article li {
+          font-size: 1.2rem;
+          color: #d1d5db;
+          margin-bottom: 1.25rem;
+          padding-left: 2.5rem;
+          position: relative;
+          line-height: 1.7;
         }
-        .cyber-article li::before { 
-          content: '⚡'; 
-          position: absolute; 
-          left: 0; 
-          color: #3b82f6; 
+        .cyber-article li::before {
+          content: '⚡';
+          position: absolute;
+          left: 0;
+          color: #3b82f6;
           font-weight: bold;
         }
-        
         .cyber-article strong { color: white; font-weight: 900; }
-        
-        /* GUEST AUTHOR BLOCK */
-        .guest-author-byline { 
-          font-family: ${mono.style.fontFamily}; 
-          text-transform: uppercase; 
-          font-size: 0.75rem; 
-          color: #3b82f6; 
-          letter-spacing: 0.25rem; 
-          margin-bottom: 4rem; 
+
+        .guest-author-byline {
+          font-family: ${mono.style.fontFamily};
+          text-transform: uppercase;
+          font-size: 0.75rem;
+          color: #3b82f6;
+          letter-spacing: 0.25rem;
+          margin-bottom: 4rem;
           font-weight: 900;
           border-left: 4px solid #3b82f6;
           padding: 0.5rem 0 0.5rem 1.5rem;
@@ -216,7 +264,6 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
           opacity: 0.8;
         }
 
-        /* PREMIUM CTA CARDS */
         .premium-cta-card {
           position: relative;
           display: flex;
@@ -238,12 +285,12 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
         }
         .premium-cta-card.klook::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #ff5b000a, transparent); pointer-events: none; }
         .premium-cta-card.trip::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #0035801a, transparent); pointer-events: none; }
-        
+
         .cta-icon { font-size: 2.5rem; opacity: 0.8; }
         .cta-content { flex: 1; }
         .cta-content h4 { font-family: ${playfair.style.fontFamily}; font-size: 1.75rem; color: white; margin: 0 0 0.5rem 0; font-weight: 900 !important; border: none !important; padding: 0 !important; }
         .cta-content p { color: #9ca3af; font-size: 0.95rem; margin: 0 !important; }
-        
+
         .cta-link {
           background: white;
           color: black !important;
@@ -259,7 +306,6 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
         .premium-cta-card.klook .cta-link { background: #ff5b00; color: white !important; }
         .cta-link:hover { transform: scale(1.05) translateY(-2px); }
 
-        /* DATA GRID & PRICING */
         .data-grid-box {
           background: #000;
           border: 1px solid rgba(255,255,255,0.1);
@@ -268,24 +314,18 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
           margin: 6rem 0;
           box-shadow: inset 0 0 60px rgba(59,130,246,0.05);
         }
-        .data-grid-box h3 { 
-          text-align: center; 
-          text-transform: uppercase; 
-          letter-spacing: 0.5em; 
-          font-size: 0.75rem; 
-          color: #3b82f6; 
+        .data-grid-box h3 {
+          text-align: center;
+          text-transform: uppercase;
+          letter-spacing: 0.5em;
+          font-size: 0.75rem;
+          color: #3b82f6;
           margin-bottom: 3.5rem !important;
           border: none !important;
         }
         .data-grid-box ul { display: grid; grid-template-cols: 1fr; gap: 2rem; padding: 0 !important; list-style: none !important; }
         @media (min-width: 768px) { .data-grid-box ul { grid-template-cols: 1fr 1fr; } }
-        .data-grid-box li { 
-          display: flex; 
-          flex-direction: column; 
-          gap: 0.5rem; 
-          padding: 0 !important;
-          padding-left: 0 !important;
-        }
+        .data-grid-box li { display: flex; flex-direction: column; gap: 0.5rem; padding: 0 !important; padding-left: 0 !important; }
         .data-grid-box li::before { display: none !important; }
         .data-grid-box li .key { color: #6b7280; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.2em; font-weight: 900; }
         .data-grid-box li .val { color: white; font-weight: 500; font-size: 1.1rem; }
@@ -336,45 +376,99 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
         .cyber-article { animation: cinematicIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
       `}} />
 
-      {/* HERO SECTION */}
-      <div className="relative w-full h-[70vh] flex flex-col items-center justify-center overflow-hidden border-b border-white/5 bg-gray-900">
-        <img src={displayImage} className="absolute inset-0 w-full h-full object-cover opacity-40 scale-105" alt={post.title} />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/20 to-[#050505]"></div>
-        <div className="relative z-10 text-center px-6 max-w-5xl">
-          <Link href="/guides" className={`${mono.className} mb-12 inline-block text-blue-400 text-xs tracking-[0.4em] uppercase hover:text-white transition`}>
-            ← System Directory
+      {/* ══════════════════════════════════════════════════════ */}
+      {/* HERO — FULL-SCREEN, HIGH-RES */}
+      {/* ══════════════════════════════════════════════════════ */}
+      <div className="relative w-full h-screen flex flex-col items-center justify-end overflow-hidden border-b border-white/5">
+        {/* FULL-BLEED HIGH-RES BACKGROUND IMAGE */}
+        <img
+          src={displayImage}
+          className="absolute inset-0 w-full h-full object-cover"
+          alt={post.title}
+        />
+
+        {/* CINEMATIC GRADIENTS */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-black/50 to-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
+
+        {/* BACK LINK */}
+        <div className="absolute top-10 left-10 z-20">
+          <Link
+            href="/guides"
+            className={`${mono.className} flex items-center gap-2 text-[10px] text-white/60 uppercase tracking-[0.4em] hover:text-white transition bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10`}
+          >
+            ← All Guides
           </Link>
-          <h1 className={`${playfair.className} text-6xl md:text-[8rem] leading-[0.9] text-white font-black tracking-tighter drop-shadow-2xl mb-12 italic`}>
+        </div>
+
+        {/* VERIFIED INSIDER BADGE — TOP RIGHT */}
+        <div className="absolute top-10 right-10 z-20">
+          <div className={`${mono.className} flex items-center gap-2 bg-black/60 backdrop-blur-md px-5 py-2.5 rounded-full border border-cyan-500/40`}>
+            <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
+            <span className="text-cyan-400 text-[9px] font-black uppercase tracking-[0.3em]">✦ Verified Insider</span>
+          </div>
+        </div>
+
+        {/* HERO CONTENT — BOTTOM ALIGNED */}
+        <div className="relative z-10 w-full max-w-5xl mx-auto px-6 pb-20 text-center">
+          {/* CATEGORY */}
+          <p className={`${mono.className} text-cyan-400 text-[10px] font-black uppercase tracking-[0.5em] mb-6`}>
+            {post.category || 'Evergreen Guide'} · Singapore
+          </p>
+
+          {/* TITLE */}
+          <h1 className={`${playfair.className} text-5xl md:text-[7rem] leading-[0.9] text-white font-black tracking-tighter drop-shadow-2xl mb-10 italic`}>
             {post.title}
           </h1>
 
-          {/* AUTHOR BYLINE ON HERO */}
+          {/* AUTHOR BYLINE */}
           {post.author && !post.content.includes("guest-author-byline") && (
-            <div className="flex items-center justify-center gap-5">
-              <img src={post.author.avatarUrl || ''} className="w-12 h-12 rounded-full border-2 border-blue-500/30" alt="" />
+            <div className="flex items-center justify-center gap-4">
+              <img
+                src={post.author.avatarUrl || ''}
+                className="w-10 h-10 rounded-full border-2 border-blue-500/40"
+                alt=""
+              />
               <div className="text-left">
-                <p className={`${mono.className} text-[10px] text-gray-500 uppercase tracking-widest font-black`}>Lead Investigator</p>
-                <p className="text-white font-black text-lg">{post.author.name}</p>
+                <p className={`${mono.className} text-[9px] text-gray-500 uppercase tracking-widest font-black`}>Lead Investigator</p>
+                <p className="text-white font-black text-base">{post.author.name}</p>
               </div>
             </div>
           )}
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-20 mt-32 relative z-20">
+      {/* ══════════════════════════════════════════════════════ */}
+      {/* MAIN CONTENT LAYOUT */}
+      {/* ══════════════════════════════════════════════════════ */}
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-20 mt-24 relative z-20">
 
         {/* LEFT SIDEBAR: STICKY TOC */}
         <aside className="lg:col-span-3 hidden lg:block">
           <div className="sticky top-32 p-10 bg-white/3 rounded-[3rem] border border-white/10 backdrop-blur-xl">
-            <p className={`${mono.className} text-[10px] text-blue-500 font-black uppercase tracking-[0.3em] mb-8`}>Node Mapping</p>
+            <p className={`${mono.className} text-[10px] text-blue-500 font-black uppercase tracking-[0.3em] mb-8`}>Contents</p>
             <div className="space-y-6 text-xs font-black text-gray-500 uppercase tracking-widest">
-              <p className="hover:text-blue-400 cursor-pointer transition flex items-center gap-3"><span className="w-1.5 h-1.5 bg-blue-500/30 rounded-full"></span> 01 Overview</p>
-              <p className="hover:text-blue-400 cursor-pointer transition flex items-center gap-3"><span className="w-1.5 h-1.5 bg-blue-500/30 rounded-full"></span> 02 Intelligence</p>
-              <p className="hover:text-blue-400 cursor-pointer transition flex items-center gap-3"><span className="w-1.5 h-1.5 bg-blue-500/30 rounded-full"></span> 03 Extraction</p>
+              <p className="hover:text-cyan-400 cursor-pointer transition flex items-center gap-3">
+                <span className="w-1.5 h-1.5 bg-cyan-500/40 rounded-full" /> 01 Overview
+              </p>
+              <p className="hover:text-cyan-400 cursor-pointer transition flex items-center gap-3">
+                <span className="w-1.5 h-1.5 bg-cyan-500/40 rounded-full" /> 02 Insider Intel
+              </p>
+              <p className="hover:text-cyan-400 cursor-pointer transition flex items-center gap-3">
+                <span className="w-1.5 h-1.5 bg-cyan-500/40 rounded-full" /> 03 Book Now
+              </p>
             </div>
             <div className="mt-12 pt-10 border-t border-white/5">
-              <p className={`${mono.className} text-[9px] text-gray-600 mb-2 uppercase`}>Timestamp</p>
-              <p className="text-white font-mono text-xs">{new Date(post.createdAt).toLocaleDateString('en-SG', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+              <p className={`${mono.className} text-[9px] text-gray-600 mb-1 uppercase`}>Published</p>
+              <p className="text-white font-mono text-xs">
+                {new Date(post.createdAt).toLocaleDateString('en-SG', { day: '2-digit', month: 'short', year: 'numeric' })}
+              </p>
+              {post.insiderPrice && (
+                <div className="mt-6">
+                  <p className={`${mono.className} text-[9px] text-gray-600 mb-1 uppercase`}>Admission</p>
+                  <p className="text-cyan-400 font-bold text-sm">{post.insiderPrice}</p>
+                </div>
+              )}
             </div>
           </div>
         </aside>
@@ -382,15 +476,19 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
         {/* CENTER: MAIN CONTENT */}
         <div className="lg:col-span-8 lg:col-start-4">
 
+          {/* EXCERPT LEAD */}
+          {post.excerpt && (
+            <div className="mb-16 p-10 bg-gradient-to-br from-blue-600/10 to-transparent border-l-[6px] border-blue-600 rounded-r-[3rem] shadow-[0_20px_50px_rgba(59,130,246,0.08)]">
+              <p className={`${playfair.className} text-2xl md:text-3xl text-white italic leading-relaxed font-black opacity-95`}>
+                {post.excerpt}
+              </p>
+            </div>
+          )}
 
+          {/* ★ INSIDER INTELLIGENCE BOX ★ */}
+          <InsiderIntelligenceBox post={post} />
 
-          {/* EXCERPT BOX: HIGH END BLU PRINT */}
-          <div className="mb-24 p-12 bg-gradient-to-br from-blue-600/10 to-transparent border-l-[6px] border-blue-600 rounded-r-[3rem] shadow-[0_20px_50px_rgba(59,130,246,0.1)]">
-            <p className={`${playfair.className} text-3xl md:text-4xl text-white italic leading-relaxed font-black opacity-95`}>
-              {post.excerpt}
-            </p>
-          </div>
-
+          {/* MAIN ARTICLE CONTENT */}
           <article className="cyber-article max-w-none mb-12">
             {(() => {
               const { before, after } = splitContentAfterTransport(post.content);
@@ -412,15 +510,23 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
             })()}
           </article>
 
-          {/* READY TO EXPLORE — PREMIUM CTA */}
+          {/* ★ PREMIUM CTA BOX ★ */}
           <section className="relative z-20 my-16">
-            <div className="bg-[#0d0d14] border border-white/10 rounded-[2.5rem] p-10 md:p-14 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent pointer-events-none rounded-[2.5rem]" />
+            <div className="bg-[#0a0a12] border border-white/10 rounded-[2.5rem] p-10 md:p-16 relative overflow-hidden">
+              {/* GLOW BACKGROUND */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/8 via-cyan-500/5 to-transparent pointer-events-none rounded-[2.5rem]" />
+              <div className="absolute top-0 right-0 w-80 h-80 bg-blue-600/10 blur-[80px] rounded-full -mr-20 -mt-20 pointer-events-none" />
+
               <div className="relative z-10 text-center">
-                <p className={`${mono.className} text-[10px] text-blue-500 font-black uppercase tracking-[0.5em] mb-4`}>// PLAN YOUR TRIP</p>
-                <h2 className={`${playfair.className} text-4xl md:text-5xl text-white font-black uppercase mb-10 !border-none !p-0 !m-0`}>
-                  Ready to Explore Singapore?
+                <p className={`${mono.className} text-[10px] text-cyan-500 font-black uppercase tracking-[0.5em] mb-4`}>
+                  // PLAN YOUR TRIP
+                </p>
+                <h2 className={`${playfair.className} text-4xl md:text-6xl text-white font-black uppercase mb-4 !border-none !p-0 !m-0 mb-4`}>
+                  Ready to Explore<br />Singapore?
                 </h2>
+                <p className="text-gray-500 text-sm mb-12 max-w-md mx-auto">
+                  Book via our trusted partners for the best available rates — vetted and verified by our team.
+                </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <a
                     href="https://www.trip.com/?allianceid=7367361&sid=278066643"
@@ -429,7 +535,7 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
                     className="relative group/btn"
                   >
                     <div className="absolute -inset-0.5 bg-blue-500/30 rounded-2xl blur opacity-0 group-hover/btn:opacity-100 transition" />
-                    <div className="relative bg-white text-black font-black uppercase tracking-widest text-sm py-5 px-10 rounded-2xl hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)]">
+                    <div className="relative bg-white text-black font-black uppercase tracking-widest text-xs py-5 px-10 rounded-2xl hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">
                       🏨 CHECK HOTEL PRICES
                     </div>
                   </a>
@@ -440,7 +546,7 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
                     className="relative group/btn"
                   >
                     <div className="absolute -inset-0.5 bg-[#ff5b00]/40 rounded-2xl blur opacity-0 group-hover/btn:opacity-100 transition" />
-                    <div className="relative bg-[#ff5b00] text-white font-black uppercase tracking-widest text-sm py-5 px-10 rounded-2xl hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,91,0,0.4)]">
+                    <div className="relative bg-[#ff5b00] text-white font-black uppercase tracking-widest text-xs py-5 px-10 rounded-2xl hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,91,0,0.3)]">
                       🎟 BOOK TOP ACTIVITIES
                     </div>
                   </a>
@@ -449,15 +555,14 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
             </div>
           </section>
 
-          {/* BOTTOM AFFILIATE CTA: UNLOCK SINGAPORE */}
+          {/* SECONDARY AFFILIATE CTA */}
           <section id="affiliate-cta" className="relative z-30 my-10">
             <AffiliateCTA />
           </section>
 
           <div className="mt-10 pt-10 border-t border-white/5 text-center">
-            <p className={`${mono.className} text-[10px] text-gray-600 italic leading-relaxed uppercase tracking-[0.3em] max-w-2xl mx-auto`}>
-              Support the Hub: node connectivity maintained via affiliate protocols.
-              Bookings via these links fuel our research and declassifying efforts.
+            <p className={`${mono.className} text-[10px] text-gray-700 italic leading-relaxed uppercase tracking-[0.3em] max-w-2xl mx-auto`}>
+              Support the Hub: bookings via these links help fund our ongoing research.
             </p>
           </div>
 
@@ -468,19 +573,40 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
           {relatedPosts.length > 0 && (
             <div className="mt-32">
               <h3 className={`${mono.className} text-xs font-black text-gray-500 uppercase tracking-[0.4em] mb-12 text-center`}>
-                More from {post.author?.name || "The Intelligence Node"}
+                More Singapore Essentials
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {relatedPosts.map((g) => (
-                  <Link key={g.slug} href={`/guides/${g.slug}`} className="p-8 bg-white/5 rounded-[2rem] border border-white/5 hover:border-blue-500/50 transition-all group overflow-hidden relative">
-                    <div className="absolute top-0 right-0 w-20 h-20 bg-blue-600/5 blur-2xl rounded-full -mr-10 -mt-10 group-hover:bg-blue-600/10 transition-all"></div>
-                    <h4 className="text-xl font-bold text-white mb-3 leading-tight group-hover:text-blue-400 transition relative z-10">{g.title}</h4>
-                    <p className="text-gray-500 text-sm line-clamp-2 relative z-10">{g.excerpt}</p>
+                  <Link
+                    key={g.slug}
+                    href={`/guides/${g.slug}`}
+                    className="group p-0 bg-[#0a0a0a] rounded-[2rem] border border-white/5 hover:border-cyan-500/40 transition-all overflow-hidden"
+                  >
+                    {g.imageUrl && (
+                      <div className="h-40 overflow-hidden">
+                        <img
+                          src={g.imageUrl}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          alt=""
+                        />
+                      </div>
+                    )}
+                    <div className="p-8">
+                      <div className={`${mono.className} flex items-center gap-2 mb-3`}>
+                        <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full" />
+                        <span className="text-cyan-400 text-[9px] font-black uppercase tracking-widest">Verified Insider</span>
+                      </div>
+                      <h4 className="text-lg font-bold text-white mb-2 leading-tight group-hover:text-cyan-300 transition">
+                        {g.title}
+                      </h4>
+                      <p className="text-gray-600 text-sm line-clamp-2">{g.excerpt}</p>
+                    </div>
                   </Link>
                 ))}
               </div>
             </div>
           )}
+
         </div>
       </div>
     </main>

@@ -117,7 +117,12 @@ model Post {
   author      Author?  @relation(fields: [authorId], references: [id])
   
   // Thêm trường mới cho Newsjacking
-  isNewsjack  Boolean? @default(false) // <--- THAY ĐỔI MỚI: Trường Newsjack
+  isNewsjack  Boolean? @default(false)
+
+  // Insider Intelligence fields (Task 3)
+  insiderPrice  String?  @db.Text
+  bestTime      String?  @db.Text
+  secretTip     String?  @db.Text
   
   // TIMESTAMPS
   createdAt   DateTime @default(now())

@@ -5,41 +5,56 @@ import { prisma } from "@/lib/prisma";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, slug, imageUrl, description, category } = body;
+    const {
+      name,
+      slug,
+      imageUrl,
+      description,
+      excerpt,
+      category,
+      insiderPrice,
+      bestTime,
+      secretTip,
+    } = body;
 
-    // PHÂN LOẠI DATA ĐỂ LƯU VÀO ĐÚNG BẢNG
-    if (category === 'Expert Guide' || category === 'Trending') {
-      // Lưu vào bảng POST (Tin tức/Cẩm nang)
-      await prisma.post.create({
-        data: {
-          title: name,
-          slug: slug,
-          imageUrl: imageUrl,
-          content: description,
-          category: category,
-          excerpt: description.replace(/<[^>]*>/g, '').substring(0, 160) + '...',
-          status: 'PUBLISHED'
-        }
-      });
-    } else {
-      // Lưu vào bảng EVENT (Sự kiện/Attraction)
-      await prisma.event.create({
-        data: {
-          name: name,
-          slug: slug,
-          imageUrl: imageUrl,
-          description: description,
-          category: category,
-          startDate: new Date(),
-          status: 'PUBLISHED',
-          aiSummary: description.replace(/<[^>]*>/g, '').substring(0, 160) + '...',
-        }
-      });
+    // Validate required fields
+    if (!name || !slug || !description) {
+      return NextResponse.json({ error: 'Missing required fields: name, slug, description' }, { status: 400 });
     }
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ success: false }, { status: 500 });
+    // Normalize category — only Evergreen or News allowed
+    const normalizedCategory = category === 'News' ? 'News' : 'Evergreen';
+
+    // Auto-generate excerpt if not provided
+    const cleanText = description.replace(/<[^>]*>/g, '');
+    const autoExcerpt = excerpt || (cleanText.length > 160 ? cleanText.substring(0, 160) + '...' : cleanText);
+
+    // All submissions go to the Post model
+    const post = await prisma.post.create({
+      data: {
+        title: name,
+        slug: slug.toLowerCase().replace(/\s+/g, '-'),
+        imageUrl: imageUrl || 'https://images.unsplash.com/photo-1525625239513-39bc131f9979?w=1200',
+        content: description,
+        excerpt: autoExcerpt,
+        category: normalizedCategory,
+        status: 'PUBLISHED',
+        isNewsjack: normalizedCategory === 'News',
+        // Insider Intelligence fields (Evergreen only)
+        insiderPrice: normalizedCategory === 'Evergreen' ? (insiderPrice || null) : null,
+        bestTime: normalizedCategory === 'Evergreen' ? (bestTime || null) : null,
+        secretTip: normalizedCategory === 'Evergreen' ? (secretTip || null) : null,
+      },
+    });
+
+    return NextResponse.json({ success: true, slug: post.slug });
+  } catch (error: any) {
+    console.error('Submit API Error:', error);
+
+    if (error.code === 'P2002') {
+      return NextResponse.json({ error: '❌ Slug already exists. Choose a unique URL.' }, { status: 409 });
+    }
+
+    return NextResponse.json({ error: '❌ Server error. Please try again.' }, { status: 500 });
   }
 }
