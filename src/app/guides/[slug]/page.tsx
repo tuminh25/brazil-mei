@@ -56,46 +56,59 @@ function InsiderIntelligenceBox({ post }: { post: any }) {
   if (!hasData) return null;
 
   return (
-    <div className="my-16 relative">
+    <div className="my-20 relative group">
       {/* HEADER BADGE */}
-      <div className="absolute -top-4 left-8 z-10 flex items-center gap-2 bg-blue-600 px-5 py-2 rounded-full">
-        <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-        <span className={`${mono.className} text-white text-[9px] font-black uppercase tracking-[0.25em]`}>
-          Insider Intelligence
+      <div className="absolute -top-4 left-10 z-10 flex items-center gap-2 bg-blue-600 px-6 py-2.5 rounded-full shadow-[0_4px_20px_rgba(37,99,235,0.4)] transition-transform group-hover:scale-105">
+        <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
+        <span className={`${mono.className} text-white text-[10px] font-black uppercase tracking-[0.3em]`}>
+          Intelligence Report
         </span>
       </div>
 
-      <div className="bg-[#000] border border-blue-500/20 rounded-[2.5rem] p-10 pt-14 shadow-[inset_0_0_80px_rgba(59,130,246,0.05),0_0_0_1px_rgba(59,130,246,0.1)]">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 md:divide-x divide-white/5">
+      <div className="bg-[#08080a] border border-white/10 rounded-[3rem] overflow-hidden shadow-[inset_0_0_100px_rgba(59,130,246,0.03),0_20px_50px_rgba(0,0,0,0.5)]">
+        <div className="grid grid-cols-1 md:grid-cols-12 min-h-[300px]">
 
-          {/* PRICE */}
-          <div className="px-0 md:px-8 pb-8 md:pb-0 border-b md:border-b-0 border-white/5 first:pl-0 last:pr-0">
-            <div className={`${mono.className} text-[9px] text-blue-400 font-black uppercase tracking-[0.3em] mb-3 flex items-center gap-2`}>
-              <span className="text-lg">💰</span> Admission Price
+          {/* LEFT COLUMN: STATS (1/3) */}
+          <div className="md:col-span-4 p-10 md:p-12 space-y-12 flex flex-col justify-center border-b md:border-b-0 md:border-r border-white/5 bg-white/[0.01]">
+            
+            {/* PRICE */}
+            <div className="relative pl-10">
+              <span className="absolute left-0 top-0 text-2xl opacity-80">💰</span>
+              <div className={`${mono.className} text-[9px] text-blue-400 font-black uppercase tracking-[0.3em] mb-2`}>
+                Admission Price
+              </div>
+              <p className="text-white font-bold text-xl leading-tight">
+                {post.insiderPrice || '—'}
+              </p>
             </div>
-            <p className="text-white font-bold text-lg leading-snug">
-              {post.insiderPrice || '—'}
-            </p>
+
+            {/* BEST TIME */}
+            <div className="relative pl-10">
+              <span className="absolute left-0 top-0 text-2xl opacity-80">🕐</span>
+              <div className={`${mono.className} text-[9px] text-blue-400 font-black uppercase tracking-[0.3em] mb-2`}>
+                 Best Time
+              </div>
+              <p className="text-white font-bold text-xl leading-tight">
+                {post.bestTime || '—'}
+              </p>
+            </div>
           </div>
 
-          {/* BEST TIME */}
-          <div className="px-0 md:px-8 py-8 md:py-0 border-b md:border-b-0 border-white/5">
-            <div className={`${mono.className} text-[9px] text-blue-400 font-black uppercase tracking-[0.3em] mb-3 flex items-center gap-2`}>
-              <span className="text-lg">🕐</span> Best Time to Visit
+          {/* RIGHT COLUMN: SECRET TIP (2/3) */}
+          <div className="md:col-span-8 p-12 md:p-16 flex flex-col justify-center bg-gradient-to-br from-blue-600/[0.02] to-transparent relative">
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-32 bg-blue-600/30 rounded-full hidden md:block" />
+            
+            <div className={`${mono.className} text-[10px] text-cyan-400 font-black uppercase tracking-[0.4em] mb-6 flex items-center gap-3`}>
+               <span className="w-8 h-[1px] bg-cyan-400/30" /> Secret Insider Tip
             </div>
-            <p className="text-white font-bold text-lg leading-snug">
-              {post.bestTime || '—'}
-            </p>
-          </div>
-
-          {/* SECRET TIP */}
-          <div className="px-0 md:px-8 pt-8 md:pt-0 last:pr-0">
-            <div className={`${mono.className} text-[9px] text-blue-400 font-black uppercase tracking-[0.3em] mb-3 flex items-center gap-2`}>
-              <span className="text-lg">🤫</span> Secret Insider Tip
+            
+            <div className="relative">
+              {/* QUOTE MARK DECOR */}
+              <span className="absolute -top-8 -left-6 text-6xl text-white/5 font-serif select-none">“</span>
+              <p className="text-gray-300 text-lg md:text-xl leading-[1.8] italic font-medium relative z-10">
+                {post.secretTip || '—'}
+              </p>
             </div>
-            <p className="text-cyan-300 text-sm leading-relaxed italic font-medium">
-              {post.secretTip || '—'}
-            </p>
           </div>
 
         </div>
@@ -499,6 +512,8 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
                     <section className="my-24">
                       <AffiliateCTA
                         className="mt-0"
+                        tripUrl={post.tripUrl}
+                        klookUrl={post.klookUrl}
                         title="Premium Intelligence"
                         description="Access vetted booking channels for guaranteed entry and elite stay options."
                       />

@@ -11,13 +11,13 @@ export const dynamic = 'force-dynamic';
 export default async function GuidesPage() {
   console.log("Guides Page Rendering... [VERCEL DEBUG]");
   
-  // 1. LẤY TẤT CẢ BÀI VIẾT LÀ EXPERT GUIDE
+  // 1. LẤY TẤT CẢ BÀI VIẾT LÀ EVERGREEN
   let posts: any[] = [];
   try {
     posts = await prisma.post.findMany({
       where: { 
         status: 'PUBLISHED',
-        category: 'Expert Guide' 
+        category: 'Evergreen' 
       },
       orderBy: { createdAt: 'desc' },
       include: { author: true }

@@ -124,6 +124,10 @@ model Post {
   bestTime      String?  @db.Text
   secretTip     String?  @db.Text
   
+  // New Affiliate Deep Links
+  tripUrl       String?  @db.Text
+  klookUrl      String?  @db.Text
+  
   // TIMESTAMPS
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
