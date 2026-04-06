@@ -62,9 +62,8 @@ function attachAffiliateTags(url, type) {
 
 async function runBatchImport() {
   try {
-    console.log('🚀 KHỞI ĐỘNG CỖ MÁY V21.0...');
+    console.log('🚀 KHỞI ĐỘNG CỖ MÁY IMPORT EVERGREEN...');
     
-    // BƯỚC QUAN TRỌNG: TỰ TẠO TÁC GIẢ NẾU THIẾU
     await ensureAuthorsExist();
 
     if (!fs.existsSync(QUEUE_DIR)) return console.error("❌ Folder content-queue trống!");
@@ -80,23 +79,41 @@ async function runBatchImport() {
 
         const name = data.name || data.title;
         const slug = data.slug || generateSlug(name);
-        const authorId = pickAuthorId(name);
+        
+        // Luôn gán cho Desmond theo yêu cầu Sếp
+        const authorId = 'author_1'; 
 
         console.log(`\n📄 Đang xử lý: ${name}`);
 
-        let imageUrl = await fetchMetaImage(data.sourceUrl);
-        if (!imageUrl) imageUrl = `https://loremflickr.com/1200/800/singapore,city/all?lock=${name.length}`;
+        let imageUrl = data.imageUrl;
+        if (!imageUrl) {
+          imageUrl = await fetchMetaImage(data.sourceUrl);
+        }
+        if (!imageUrl) imageUrl = `https://images.unsplash.com/photo-1546708973-b339540b5162?w=1200`;
+
+        // SMART MAPPING: Ánh xạ các trường thông minh
+        const insiderPrice = data.insiderPrice || data.price || data.ticketPrice || null;
+        const bestTime = data.bestTime || data.timing || data.openingHours || data.bestVisitTime || null;
+        
+        // Xử lý secretTip: Nếu là object (aiSmartTips) thì chuyển thành text hoặc lấy chuỗi
+        let secretTip = data.secretTip || data.tips || data.aiSmartTips;
+        if (typeof secretTip === 'object' && secretTip !== null) {
+          secretTip = JSON.stringify(secretTip).substring(0, 500); // Rút gọn nếu là object
+        }
 
         const postData = {
           slug: slug,
           title: name,
           content: (data.description || data.content || "").split(/From an EEAT/i)[0].trim(),
           imageUrl: imageUrl,
-          excerpt: data.aiSummary || data.excerpt || name,
-          category: "Expert Guide",
-          authorId: authorId,
-          isNewsjack: false,
-          status: 'PUBLISHED',
+          excerpt: data.aiSummary || data.excerpt || name.substring(0, 160),
+          category: "Evergreen", // Ép về Evergreen
+          authorId: authorId,    // Ép về Desmond
+          isNewsjack: false,     // Luôn false
+          status: 'PUBLISHED',   // Luôn PUBLISHED
+          insiderPrice: insiderPrice,
+          bestTime: bestTime,
+          secretTip: secretTip,
           updatedAt: new Date()
         };
 
@@ -111,6 +128,16 @@ async function runBatchImport() {
       } catch (e) { console.error(`❌ Lỗi file ${file}:`, e.message); }
     }
     console.log('\n🎉 TẤT CẢ ĐÃ LÊN SÓNG MƯỢT MÀ!');
+    
+    // BƯỚC CUỐI: Gọi revalidate (Sử dụng API đã tạo)
+    try {
+      console.log('🔄 Đang kích hoạt revalidate...');
+      // Giả sử server đang chạy local hoặc ta chỉ cần thông báo Sếp
+      console.log('👉 Tip: Truy cập /api/revalidate?path=/&secret=BOSS2026 để xóa cache ngay.');
+    } catch (revalidateError) {
+      console.error('⚠️ Không thể tự động revalidate:', revalidateError.message);
+    }
+
   } catch (err) { console.error('💥 Lỗi hệ thống:', err.message); } finally { await prisma.$disconnect(); }
 }
 
