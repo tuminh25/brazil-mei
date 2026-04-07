@@ -87,7 +87,7 @@ export default async function HomePage() {
           </h1>
 
           <p className="text-gray-400 text-lg max-w-xl mx-auto mb-12 leading-relaxed">
-            15 masterpiece guides to Singapore's greatest attractions — crafted by insiders who live here.
+            Unfiltered masterpiece guides to Singapore's most iconic attractions — curated by local insiders.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center">

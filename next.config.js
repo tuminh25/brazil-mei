@@ -36,13 +36,23 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: '/events/lao-jiu-musical-2026-insider-guide-singapore-theatre',
-        destination: '/events/lao-jiu-the-musical-singapore-2026',
+        source: '/attractions',
+        destination: '/guides',
         permanent: true,
       },
       {
-        source: '/events/national-museum-singapore-guide-2026-exhibitions',
-        destination: '/events/once-upon-a-tide-national-museum-singapore-2026',
+        source: '/attractions/:slug*',
+        destination: '/guides',
+        permanent: true,
+      },
+      {
+        source: '/events',
+        destination: '/guides',
+        permanent: true,
+      },
+      {
+        source: '/events/:slug*',
+        destination: '/guides/:slug*',
         permanent: true,
       },
     ];
