@@ -7,8 +7,12 @@ import { Analytics } from "@vercel/analytics/react";
 import { GoogleAnalytics } from "@next/third-parties/google";
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.sgeventshub.com'),
   title: "SG Events Hub | Singapore Insider Guides",
   description: "The definitive collection of unfiltered masterpiece guides to Singapore’s greatest attractions.",
+  alternates: {
+    canonical: '/',
+  },
   icons: {
     icon: [
       { url: '/icon.png?v=2' },

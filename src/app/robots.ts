@@ -5,6 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
+      disallow: ['/admin', '/api', '/submit', '/api/revalidate'],
     },
     sitemap: 'https://www.sgeventshub.com/sitemap.xml',
   };

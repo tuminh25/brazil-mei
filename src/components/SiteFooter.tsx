@@ -13,20 +13,26 @@ export default function SiteFooter() {
         <div>
           <h4 className="text-blue-500 font-bold uppercase tracking-[0.2em] mb-6 text-[10px]">Explore</h4>
           <ul className="space-y-3 text-sm text-gray-400 font-medium">
-            <li><Link href="/events" className="hover:text-white transition">Trending Events</Link></li>
-            <li><Link href="/guides" className="hover:text-white transition">Insider Guides</Link></li>
-            <li><Link href="/events/free" className="hover:text-white transition">Free Things to Do</Link></li>
+            <li><Link href="/trending" className="hover:text-white transition">Trending Updates</Link></li>
+            <li><Link href="/guides" className="hover:text-white transition">Insider Masterpieces</Link></li>
+            <li><Link href="/guides" className="hover:text-white transition">Things to Do</Link></li>
           </ul>
         </div>
         <div>
           <h4 className="text-blue-500 font-bold uppercase tracking-[0.2em] mb-6 text-[10px]">Connect</h4>
           <ul className="space-y-3 text-sm text-gray-400 font-medium">
-            {/* ĐÃ XÓA PRIVACY POLICY */}
             <li><Link href="/contact" className="hover:text-white transition">Contact Editorial</Link></li>
             <li><Link href="/contact" className="hover:text-white transition">Partnerships</Link></li>
             <li className="text-xs pt-4 opacity-30">© 2026 SG Events Hub.</li>
           </ul>
         </div>
+      </div>
+      
+      {/* IDENTITY SHIELD DISCLAIMER */}
+      <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-white/5">
+        <p className="text-[10px] text-gray-600 uppercase tracking-widest font-medium">
+          SG Events Hub is an independent digital media platform. We are not affiliated with any physical event planning agencies in Singapore.
+        </p>
       </div>
     </footer>
   );
