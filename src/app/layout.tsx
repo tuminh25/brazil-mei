@@ -8,8 +8,11 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 
 export const metadata: Metadata = {
   title: "SG Events Hub | Singapore Insider Guides",
-  description: "Expert survival guides and trending events in Singapore.",
-  viewport: "width=device-width, initial-scale=1",
+  description: "The definitive collection of unfiltered masterpiece guides to Singapore’s greatest attractions.",
+  icons: {
+    icon: "/icon.png",
+    apple: "/apple-icon.png",
+  },
 };
 
 export const viewport: Viewport = {
