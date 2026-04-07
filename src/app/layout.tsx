@@ -10,8 +10,12 @@ export const metadata: Metadata = {
   title: "SG Events Hub | Singapore Insider Guides",
   description: "The definitive collection of unfiltered masterpiece guides to Singapore’s greatest attractions.",
   icons: {
-    icon: "/icon.png",
-    apple: "/apple-icon.png",
+    icon: [
+      { url: '/icon.png?v=2' },
+    ],
+    apple: [
+      { url: '/apple-icon.png?v=2' },
+    ],
   },
 };
 
