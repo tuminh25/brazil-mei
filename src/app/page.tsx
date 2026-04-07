@@ -18,7 +18,7 @@ export default async function HomePage() {
       where: {
         status: 'PUBLISHED',
         category: 'Evergreen',
-        isNewsjack: false
+        isNewsjack: false // Strictly non-newsjack articles for the 1+7 grid
       },
       take: 8,
       orderBy: { createdAt: 'desc' },
@@ -34,7 +34,10 @@ export default async function HomePage() {
     latestUpdates = await prisma.post.findMany({
       where: {
         status: 'PUBLISHED',
-        OR: [{ category: 'News' }, { isNewsjack: true }]
+        OR: [
+          { category: 'News' }, 
+          { isNewsjack: true } // Strictly news or newsjacked content
+        ]
       },
       take: 3,
       orderBy: { createdAt: 'desc' },
