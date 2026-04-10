@@ -210,11 +210,7 @@ export default async function HomePage() {
               </Link>
             </div>
           </>
-        ) : (
-          <div className="text-center py-32 text-gray-600">
-            <p className={`${mono.className} text-xs uppercase tracking-widest`}>Content loading — check back soon.</p>
-          </div>
-        )}
+        ) : null}
       </section>
 
       {/* ═══════════════════════════════════════════════ */}
