@@ -1,5 +1,5 @@
 // src/app/guides/[slug]/page.tsx
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Playfair_Display, Inter, IBM_Plex_Mono } from 'next/font/google';
@@ -180,7 +180,7 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
     include: { author: true }
   });
 
-  if (!post) notFound();
+  if (!post) redirect("/guides");
 
   const relatedPosts = await prisma.post.findMany({
     where: {

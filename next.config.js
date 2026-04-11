@@ -42,7 +42,7 @@ const nextConfig = {
       },
       {
         source: '/attractions/:slug*',
-        destination: '/guides',
+        destination: '/guides/:slug*',
         permanent: true,
       },
       {
