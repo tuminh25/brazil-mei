@@ -33,6 +33,14 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className="dark scroll-smooth">
+      <head>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5206605273738031"
+          crossOrigin="anonymous"
+          strategy="beforeInteractive"
+        />
+      </head>
       <body className="min-h-screen bg-black text-white antialiased">
         <div className="relative flex min-h-screen flex-col">
           <SiteHeader />
@@ -41,12 +49,6 @@ export default function RootLayout({
         </div>
         <Analytics />
         <GoogleAnalytics gaId="G-9FFS6DQMM0" />
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5206605273738031"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   );
