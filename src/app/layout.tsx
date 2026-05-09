@@ -33,15 +33,13 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className="dark scroll-smooth">
-      <head>
+      <body className="min-h-screen bg-black text-white antialiased">
         <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5206605273738031"
           crossOrigin="anonymous"
-          strategy="beforeInteractive"
+          strategy="afterInteractive"
         />
-      </head>
-      <body className="min-h-screen bg-black text-white antialiased">
         <div className="relative flex min-h-screen flex-col">
           <SiteHeader />
           <main className="flex-1">{children}</main>
