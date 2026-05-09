@@ -19,10 +19,11 @@ export default function SiteFooter() {
           </ul>
         </div>
         <div>
-          <h4 className="text-blue-500 font-bold uppercase tracking-[0.2em] mb-6 text-[10px]">Connect</h4>
+          <h4 className="text-blue-500 font-bold uppercase tracking-[0.2em] mb-6 text-[10px]">Legal & Info</h4>
           <ul className="space-y-3 text-sm text-gray-400 font-medium">
-            <li><Link href="/contact" className="hover:text-white transition">Contact Editorial</Link></li>
-            <li><Link href="/contact" className="hover:text-white transition">Partnerships</Link></li>
+            <li><Link href="/about" className="hover:text-white transition">About Us</Link></li>
+            <li><Link href="/privacy-policy" className="hover:text-white transition">Privacy Policy</Link></li>
+            <li><Link href="/contact" className="hover:text-white transition">Contact Us</Link></li>
             <li className="text-xs pt-4 opacity-30">© 2026 SG Events Hub.</li>
           </ul>
         </div>
