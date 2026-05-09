@@ -46,6 +46,11 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: '/guides/i-stumbled-on-a-rare-herbal-remedy-for-body-odor-in-hanoi-',
+        destination: '/guides',
+        permanent: true,
+      },
+      {
         source: '/events',
         destination: '/guides',
         permanent: true,
