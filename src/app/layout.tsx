@@ -5,6 +5,7 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { Analytics } from "@vercel/analytics/react";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.sgeventshub.com'),
@@ -40,6 +41,12 @@ export default function RootLayout({
         </div>
         <Analytics />
         <GoogleAnalytics gaId="G-9FFS6DQMM0" />
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5206605273738031"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
