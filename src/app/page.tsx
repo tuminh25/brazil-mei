@@ -76,7 +76,7 @@ export default async function HomePage() {
         <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
           {/* EYEBROW */}
           <p className={`${mono.className} text-blue-400 text-[10px] uppercase tracking-[0.5em] mb-8 font-black`}>
-            Singapore's Premier Insider Guide
+            Singapore Travel Planning Guide
           </p>
 
           <h1 className={`${playfair.className} text-6xl md:text-[9.5rem] font-black leading-[0.85] tracking-tighter uppercase text-white drop-shadow-2xl mb-8`}>
@@ -87,7 +87,7 @@ export default async function HomePage() {
           </h1>
 
           <p className="text-gray-400 text-lg max-w-xl mx-auto mb-12 leading-relaxed">
-            Unfiltered masterpiece guides to Singapore's most iconic attractions — curated by local insiders.
+            In-depth guides to Singapore's most iconic attractions — built for smarter trip planning.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
@@ -124,7 +124,7 @@ export default async function HomePage() {
           <div className="flex flex-col items-end gap-3">
             <div className={`${mono.className} flex items-center gap-2 text-[10px] text-cyan-400 font-black uppercase tracking-widest`}>
               <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
-              Verified Insider Content
+              Planning Guide Content
             </div>
             <Link
               href="/guides"
@@ -158,7 +158,7 @@ export default async function HomePage() {
                     {/* VERIFIED INSIDER BADGE */}
                     <div className={`${mono.className} absolute top-5 left-5 flex items-center gap-2 bg-black/80 backdrop-blur-md px-4 py-2 rounded-full border border-cyan-500/30`}>
                       <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full" />
-                      <span className="text-cyan-400 text-[9px] font-black uppercase tracking-[0.2em]">Verified Insider</span>
+                      <span className="text-cyan-400 text-[9px] font-black uppercase tracking-[0.2em]">Planning Guide</span>
                     </div>
 
                     {/* CATEGORY TAG */}
@@ -187,7 +187,7 @@ export default async function HomePage() {
                           />
                         )}
                         <span className={`${mono.className} text-[9px] text-gray-600 font-black uppercase tracking-widest`}>
-                          {post.author?.name || 'SG Insider'}
+                          {post.author?.name || 'Editor'}
                         </span>
                       </div>
                       <span className={`${mono.className} text-cyan-500 text-[9px] font-black uppercase tracking-widest group-hover:text-cyan-300 transition-colors`}>
@@ -278,8 +278,8 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-px bg-white/8 border border-white/8 rounded-[3.5rem] overflow-hidden">
           <div className="p-16 bg-black hover:bg-[#0a0a0a] transition-all">
             <div className="text-3xl mb-6">✦</div>
-            <h3 className="text-white font-black text-2xl mb-4 uppercase italic">100% Insider</h3>
-            <p className="text-gray-500 leading-relaxed">Verified by Singapore residents with 20+ years of local knowledge.</p>
+            <h3 className="text-white font-black text-2xl mb-4 uppercase italic">Research-Driven Guides</h3>
+            <p className="text-gray-500 leading-relaxed">Built from extensive source research and regular updates.</p>
           </div>
           <div className="p-16 bg-black hover:bg-[#0a0a0a] transition-all">
             <div className="text-3xl mb-6">◈</div>
