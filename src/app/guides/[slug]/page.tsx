@@ -65,7 +65,7 @@ function InsiderIntelligenceBox({ post }: { post: any }) {
       <div className="absolute -top-4 left-10 z-10 flex items-center gap-2 bg-blue-600 px-6 py-2.5 rounded-full shadow-[0_4px_20px_rgba(37,99,235,0.4)] transition-transform group-hover:scale-105">
         <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
         <span className={`${mono.className} text-white text-[10px] font-black uppercase tracking-[0.3em]`}>
-          Intelligence Report
+          Planning Report
         </span>
       </div>
 
@@ -103,7 +103,7 @@ function InsiderIntelligenceBox({ post }: { post: any }) {
             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-32 bg-blue-600/30 rounded-full hidden md:block" />
             
             <div className={`${mono.className} text-[10px] text-cyan-400 font-black uppercase tracking-[0.4em] mb-6 flex items-center gap-3`}>
-               <span className="w-8 h-[1px] bg-cyan-400/30" /> Secret Insider Tip
+               <span className="w-8 h-[1px] bg-cyan-400/30" /> Key Planning Tip
             </div>
             
             <div className="relative">
@@ -422,7 +422,7 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
         <div className="absolute top-10 right-10 z-20">
           <div className={`${mono.className} flex items-center gap-2 bg-black/60 backdrop-blur-md px-5 py-2.5 rounded-full border border-cyan-500/40`}>
             <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
-            <span className="text-cyan-400 text-[9px] font-black uppercase tracking-[0.3em]">✦ Verified Insider</span>
+            <span className="text-cyan-400 text-[9px] font-black uppercase tracking-[0.3em]">✦ Planning Guide</span>
           </div>
         </div>
 
@@ -469,7 +469,7 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
                 <span className="w-1.5 h-1.5 bg-cyan-500/40 rounded-full" /> 01 Overview
               </p>
               <p className="hover:text-cyan-400 cursor-pointer transition flex items-center gap-3">
-                <span className="w-1.5 h-1.5 bg-cyan-500/40 rounded-full" /> 02 Insider Intel
+                <span className="w-1.5 h-1.5 bg-cyan-500/40 rounded-full" /> 02 Planning Intel
               </p>
               <p className="hover:text-cyan-400 cursor-pointer transition flex items-center gap-3">
                 <span className="w-1.5 h-1.5 bg-cyan-500/40 rounded-full" /> 03 Book Now
@@ -555,7 +555,7 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
                     <div className="p-8">
                       <div className={`${mono.className} flex items-center gap-2 mb-3`}>
                         <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full" />
-                        <span className="text-cyan-400 text-[9px] font-black uppercase tracking-widest">Verified Insider</span>
+                        <span className="text-cyan-400 text-[9px] font-black uppercase tracking-widest">Planning Guide</span>
                       </div>
                       <h4 className="text-lg font-bold text-white mb-2 leading-tight group-hover:text-cyan-300 transition">
                         {g.title}
