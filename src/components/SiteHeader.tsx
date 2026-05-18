@@ -11,7 +11,7 @@ export default function SiteHeader() {
           </Link>
           <nav className="hidden md:flex items-center gap-8 text-[11px] font-bold uppercase tracking-[0.15em]">
             <Link href="/events" className="text-gray-300 hover:text-white transition">All Events</Link>
-            <Link href="/guides" className="text-gray-300 hover:text-blue-400 transition">Insider Guides</Link>
+            <Link href="/guides" className="text-gray-300 hover:text-blue-400 transition">Planning Guides</Link>
             {/* THÊM MỤC TRENDING NEWSJACK */}
             <Link 
               href="/trending" 

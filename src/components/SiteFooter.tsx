@@ -7,14 +7,14 @@ export default function SiteFooter() {
         <div className="col-span-2">
           <h2 className="text-3xl font-black text-white uppercase italic tracking-tighter mb-6">SG Events Hub</h2>
           <p className="text-gray-500 max-w-sm text-sm leading-relaxed">
-            The definitive guide to Singapore's cultural pulse. Curated by locals, trusted by travelers. We help you experience the city, not just visit it.
+            The definitive guide to Singapore's cultural pulse. Built for smarter trip planning. We help you experience the city, not just visit it.
           </p>
         </div>
         <div>
           <h4 className="text-blue-500 font-bold uppercase tracking-[0.2em] mb-6 text-[10px]">Explore</h4>
           <ul className="space-y-3 text-sm text-gray-400 font-medium">
             <li><Link href="/trending" className="hover:text-white transition">Trending Updates</Link></li>
-            <li><Link href="/guides" className="hover:text-white transition">Insider Masterpieces</Link></li>
+            <li><Link href="/guides" className="hover:text-white transition">In-Depth Guides</Link></li>
             <li><Link href="/guides" className="hover:text-white transition">Things to Do</Link></li>
           </ul>
         </div>

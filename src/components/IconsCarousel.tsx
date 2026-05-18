@@ -71,7 +71,7 @@ export default function IconsCarousel({ events }: { events: any[] }) {
                   {event.aiSummary}
                 </p>
                 <span className="bg-white text-black px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest group-hover/card:bg-blue-600 group-hover/card:text-white transition-all">
-                    Read Insider Guide
+                    Read Planning Guide
                 </span>
               </div>
           </Link>
