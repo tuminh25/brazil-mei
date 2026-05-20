@@ -47,18 +47,10 @@ export async function generateMetadata(
   }
 }
 
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
-  try {
-    const posts = await prisma.post.findMany({
-      where: { status: 'PUBLISHED' },
-      select: { slug: true },
-      take: 100
-    });
-    return posts.map((post: { slug: string }) => ({ slug: post.slug }));
-  } catch (error) {
-    console.error("Build Error: generateStaticParams failed.", error);
-    return []; // Return empty array to allow build to continue
-  }
+  return [];
 }
 
 const getAffiliateLink = (url: string | null, type: 'klook' | 'trip'): string => {
