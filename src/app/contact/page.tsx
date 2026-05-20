@@ -1,4 +1,14 @@
 import SiteHeader from "@/components/SiteHeader";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Get in Touch | SG Events Hub",
+  description: "Contact SG Events Hub for editorial submissions, advertising, partnerships, and travel planning queries.",
+  openGraph: {
+    title: "Get in Touch | SG Events Hub",
+    description: "Contact SG Events Hub for editorial submissions, advertising, partnerships, and travel planning queries.",
+  }
+};
 
 export default function ContactPage() {
   return (

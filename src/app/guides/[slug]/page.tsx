@@ -4,12 +4,48 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Playfair_Display, Inter, IBM_Plex_Mono } from 'next/font/google';
 import AffiliateCTA from "@/components/AffiliateCTA";
+import type { Metadata } from "next";
 
 const playfair = Playfair_Display({ subsets: ['latin'], weight: ['700', '900'], style: ['italic', 'normal'] });
 const inter = Inter({ subsets: ['latin'], weight: ['400', '700', '900'] });
 const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '600'] });
 
 export const revalidate = 3600;
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ slug: string }> }
+): Promise<Metadata> {
+  const { slug } = await params;
+  
+  try {
+    const post = await prisma.post.findUnique({
+      where: { slug },
+    });
+
+    if (!post) {
+      return {
+        title: "Singapore Planning Guides",
+        description: "The definitive collection of in-depth planning guides to Singapore’s greatest attractions.",
+      };
+    }
+
+    return {
+      title: post.title,
+      description: post.excerpt || undefined,
+      openGraph: {
+        title: post.title,
+        description: post.excerpt || undefined,
+        images: post.imageUrl ? [post.imageUrl] : [],
+      },
+    };
+  } catch (error) {
+    console.error("Error generating metadata for slug:", slug, error);
+    return {
+      title: "Singapore Planning Guides",
+      description: "The definitive collection of in-depth planning guides to Singapore’s greatest attractions.",
+    };
+  }
+}
 
 export async function generateStaticParams() {
   try {

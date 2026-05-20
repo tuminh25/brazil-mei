@@ -2,11 +2,21 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Playfair_Display, Inter } from 'next/font/google';
+import type { Metadata } from "next";
 
 const playfair = Playfair_Display({ subsets: ['latin'], weight: ['700', '900'], style: 'italic' });
 const inter = Inter({ subsets: ['latin'], weight: ['400', '600', '800'] });
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+  title: "Insider Guides | SG Events Hub",
+  description: "Verified Singapore travel planning intelligence and expert guides to Singapore's best attractions.",
+  openGraph: {
+    title: "Insider Guides | SG Events Hub",
+    description: "Verified Singapore travel planning intelligence and expert guides to Singapore's best attractions.",
+  }
+};
 
 export default async function GuidesPage() {
   console.log("Guides Page Rendering... [VERCEL DEBUG]");

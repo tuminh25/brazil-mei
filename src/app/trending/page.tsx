@@ -2,12 +2,22 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Playfair_Display, IBM_Plex_Mono, Inter } from 'next/font/google';
+import type { Metadata } from "next";
 
 const playfair = Playfair_Display({ subsets: ['latin'], weight: ['700', '900'], style: 'italic' });
 const inter = Inter({ subsets: ['latin'], weight: ['400', '600', '800'] });
 const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '600'] });
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+  title: "Trending Singapore Planning Guides & News | SG Events Hub",
+  description: "Real-time coverage and planning guides for Singapore's latest trending events, attractions, and hot topics.",
+  openGraph: {
+    title: "Trending Singapore Planning Guides & News | SG Events Hub",
+    description: "Real-time coverage and planning guides for Singapore's latest trending events, attractions, and hot topics.",
+  }
+};
 
 export default async function TrendingPage() {
   console.log("Trending Page Rendering... [VERCEL DEBUG]");
