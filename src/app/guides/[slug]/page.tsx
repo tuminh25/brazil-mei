@@ -24,25 +24,29 @@ export async function generateMetadata(
 
     if (!post) {
       return {
-        title: "Singapore Planning Guides",
-        description: "The definitive collection of in-depth planning guides to Singapore’s greatest attractions.",
+        title: "Singapore Resident Guides",
+        description: "Practical guides for living in Singapore — housing, transport, money, healthcare, food, and neighborhoods.",
       };
     }
 
     return {
       title: post.title,
-      description: post.excerpt || undefined,
+      description: post.excerpt || post.metaDescription || undefined,
       openGraph: {
         title: post.title,
-        description: post.excerpt || undefined,
+        description: post.excerpt || post.metaDescription || undefined,
         images: post.imageUrl ? [post.imageUrl] : [],
+      },
+      other: {
+        'article:section': post.category,
+        'article:tag': post.tags?.join(', ') || '',
       },
     };
   } catch (error) {
     console.error("Error generating metadata for slug:", slug, error);
     return {
-      title: "Singapore Planning Guides",
-      description: "The definitive collection of in-depth planning guides to Singapore’s greatest attractions.",
+      title: "Singapore Resident Guides",
+      description: "Practical guides for living in Singapore — housing, transport, money, healthcare, food, and neighborhoods.",
     };
   }
 }
@@ -81,6 +85,59 @@ const getAffiliateLink = (url: string | null, type: 'klook' | 'trip'): string =>
     return base;
   }
 };
+
+// BREADCRUMB SCHEMA
+function BreadcrumbSchema({ post }: { post: any }) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.sgeventshub.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Resident Guides",
+        "item": "https://www.sgeventshub.com/guides"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": post.category,
+        "item": `https://www.sgeventshub.com/guides?category=${post.category}`
+      },
+      {
+        "@type": "ListItem",
+        "position": 4,
+        "name": post.title,
+        "item": `https://www.sgeventshub.com/guides/${post.slug}`
+      }
+    ]
+  };
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />;
+}
+
+// ORGANIZATION SCHEMA
+function OrganizationSchema() {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "SG Events Hub",
+    "url": "https://www.sgeventshub.com",
+    "logo": "https://www.sgeventshub.com/icon.png",
+    "sameAs": [
+      "https://twitter.com/sgeventshub",
+      "https://www.facebook.com/sgeventshub",
+      "https://www.instagram.com/sgeventshub"
+    ],
+    "description": "Singapore Resident Intelligence — practical guides for housing, transport, money, healthcare, food, study, work, and neighborhood life."
+  };
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />;
+}
 
 // INSIDER INTELLIGENCE BOX
 function InsiderIntelligenceBox({ post }: { post: any }) {
@@ -176,7 +233,7 @@ function AuthorBox({ author }: { author: any }) {
   );
 }
 
-// JSON-LD SCHEMA
+// JSON-LD SCHEMA (Article)
 function JsonLdSchema({ post, author }: { post: any; author: any }) {
   const schema = {
     "@context": "https://schema.org",
@@ -186,6 +243,8 @@ function JsonLdSchema({ post, author }: { post: any; author: any }) {
     "image": post.imageUrl,
     "datePublished": post.createdAt,
     "dateModified": post.updatedAt,
+    "articleSection": post.category,
+    "keywords": post.tags?.join(', ') || '',
     "author": {
       "@type": "Person",
       "name": author?.name || "SG Events Hub Team",
@@ -210,16 +269,39 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
 
   if (!post) redirect("/guides");
 
+  // INTERNAL LINKING: Priority - Same neighborhood → Same category → Newest
   const relatedPosts = await prisma.post.findMany({
     where: {
       NOT: { slug: slug },
       status: 'PUBLISHED',
-      category: 'Evergreen',
     },
-    take: 2,
-    orderBy: { createdAt: 'desc' },
-    select: { title: true, slug: true, excerpt: true, imageUrl: true }
+    take: 6,
+    orderBy: [
+      // Priority 1: Same neighborhood AND same category
+      { neighborhood: post.neighborhood ? 'desc' : 'asc' },
+      // Priority 2: Same category
+      { category: post.category ? 'desc' : 'asc' },
+      // Priority 3: Newest
+      { createdAt: 'desc' },
+    ],
+    select: { title: true, slug: true, excerpt: true, imageUrl: true, category: true, neighborhood: true, createdAt: true },
   });
+
+  // Sort in JS for precise priority: same neighborhood + same category first
+  const sortedRelated = relatedPosts.sort((a, b) => {
+    const aSameNeighborhood = a.neighborhood === post.neighborhood;
+    const bSameNeighborhood = b.neighborhood === post.neighborhood;
+    const aSameCategory = a.category === post.category;
+    const bSameCategory = b.category === post.category;
+    
+    if (aSameNeighborhood && aSameCategory && !(bSameNeighborhood && bSameCategory)) return -1;
+    if (bSameNeighborhood && bSameCategory && !(aSameNeighborhood && aSameCategory)) return 1;
+    if (aSameNeighborhood && !bSameNeighborhood) return -1;
+    if (bSameNeighborhood && !aSameNeighborhood) return 1;
+    if (aSameCategory && !bSameCategory) return -1;
+    if (bSameCategory && !aSameCategory) return 1;
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  }).slice(0, 3);
 
   const displayImage = post.imageUrl || "https://images.unsplash.com/photo-1525625239513-39bc131f9979?w=1600&q=80";
 
@@ -239,7 +321,10 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
         )}
       </div>
 
+      {/* SCHEMAS */}
       <JsonLdSchema post={post} author={post.author} />
+      <BreadcrumbSchema post={post} />
+      <OrganizationSchema />
 
       {/* PREMIUM ARTICLE STYLES */}
       <style dangerouslySetInnerHTML={{
@@ -456,10 +541,17 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
 
         {/* HERO CONTENT — BOTTOM ALIGNED */}
         <div className="relative z-10 w-full max-w-5xl mx-auto px-6 pb-20 text-center">
-          {/* CATEGORY */}
-          <p className={`${mono.className} text-cyan-400 text-[10px] font-black uppercase tracking-[0.5em] mb-6`}>
-            {post.category || 'Evergreen Guide'} · Singapore
-          </p>
+          {/* CATEGORY & NEIGHBORHOOD */}
+          <div className="flex flex-wrap justify-center gap-2 mb-6">
+            <span className={`${mono.className} text-cyan-400 text-[10px] font-black uppercase tracking-[0.5em]`}>
+              {post.category} · Singapore
+            </span>
+            {post.neighborhood && (
+              <span className={`${mono.className} text-green-400 text-[10px] font-black uppercase tracking-[0.5em]`}>
+                {post.neighborhood}
+              </span>
+            )}
+          </div>
 
           {/* TITLE */}
           <h1 className={`${playfair.className} text-5xl md:text-[7rem] leading-[0.9] text-white font-black tracking-tighter drop-shadow-2xl mb-10 italic`}>
@@ -514,6 +606,12 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
                   <p className="text-cyan-400 font-bold text-sm">{post.insiderPrice}</p>
                 </div>
               )}
+              {post.neighborhood && (
+                <div className="mt-6">
+                  <p className={`${mono.className} text-[9px] text-gray-600 mb-1 uppercase`}>Neighborhood</p>
+                  <p className="text-green-400 font-bold text-sm">{post.neighborhood}</p>
+                </div>
+              )}
             </div>
           </div>
         </aside>
@@ -558,14 +656,14 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
           {/* AUTHOR BOX */}
           {!post.content.includes("guest-author-byline") && <AuthorBox author={post.author} />}
 
-          {/* RELATED GUIDES */}
-          {relatedPosts.length > 0 && (
+          {/* RELATED GUIDES - Auto Internal Linking */}
+          {sortedRelated.length > 0 && (
             <div className="mt-32">
               <h3 className={`${mono.className} text-xs font-black text-gray-500 uppercase tracking-[0.4em] mb-12 text-center`}>
-                More Singapore Essentials
+                More Guides You'll Find Useful
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {relatedPosts.map((g) => (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {sortedRelated.map((g, index) => (
                   <Link
                     key={g.slug}
                     href={`/guides/${g.slug}`}
@@ -580,15 +678,26 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
                         />
                       </div>
                     )}
-                    <div className="p-8">
+                    <div className="p-6">
                       <div className={`${mono.className} flex items-center gap-2 mb-3`}>
                         <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full" />
-                        <span className="text-cyan-400 text-[9px] font-black uppercase tracking-widest">Planning Guide</span>
+                        <span className="text-cyan-400 text-[9px] font-black uppercase tracking-widest">{g.category}</span>
+                        {g.neighborhood && (
+                          <>
+                            <span className="w-1 h-1 bg-gray-600 rounded-full mx-1" />
+                            <span className="text-green-400 text-[9px] font-black uppercase tracking-widest">{g.neighborhood}</span>
+                          </>
+                        )}
                       </div>
                       <h4 className="text-lg font-bold text-white mb-2 leading-tight group-hover:text-cyan-300 transition">
                         {g.title}
                       </h4>
-                      <p className="text-gray-600 text-sm line-clamp-2">{g.excerpt}</p>
+                      <p className="text-gray-500 text-sm line-clamp-2">{g.excerpt || g.title}</p>
+                      {index === 0 && g.neighborhood === post.neighborhood && g.category === post.category && (
+                        <span className="inline-block mt-3 px-2 py-1 text-[8px] font-black uppercase tracking-widest bg-green-600/20 text-green-400 rounded-full">
+                          Same neighborhood & category
+                        </span>
+                      )}
                     </div>
                   </Link>
                 ))}

@@ -101,32 +101,63 @@ model Event {
   @@index([authorId])
 }
 
-// --- POST MODEL (GUIDES) ---
+// --- ENUMS ---
+enum PostCategory {
+  HOUSING
+  TRANSPORT
+  MONEY
+  STUDY
+  HEALTHCARE
+  FOOD
+  WORK
+  LIFESTYLE
+  NEIGHBORHOOD
+  TOOLS
+  TRAVEL_GUIDE
+}
+
+enum PostStatus {
+  PUBLISHED
+  DRAFT
+  ARCHIVED
+}
+
+// --- POST MODEL (RESIDENT GUIDES) ---
 model Post {
-  id          Int      @id @default(autoincrement())
-  slug        String   @unique
+  id          Int         @id @default(autoincrement())
+  slug        String      @unique
   title       String
-  excerpt     String?  @db.Text
-  content     String   @db.Text
+  excerpt     String?     @db.Text
+  content     String      @db.Text
   imageUrl    String?
-  category    String?  @default("Travel Guide")
-  status      String   @default("PUBLISHED")
+  category    PostCategory
+  status      PostStatus  @default(PUBLISHED)
+  
+  // Neighborhood support (Phase 3)
+  neighborhood String?
+  
+  // Tags for future use
+  tags        String[]    @default([])
   
   // Quan hệ với Author
   authorId    String?
-  author      Author?  @relation(fields: [authorId], references: [id])
+  author      Author?     @relation(fields: [authorId], references: [id])
   
-  // Thêm trường mới cho Newsjacking
-  isNewsjack  Boolean? @default(false)
+  // Newsjacking support
+  isNewsjack  Boolean?    @default(false)
 
-  // Insider Intelligence fields (Task 3)
-  insiderPrice  String?  @db.Text
-  bestTime      String?  @db.Text
-  secretTip     String?  @db.Text
+  // Insider Intelligence fields
+  insiderPrice  String?   @db.Text
+  bestTime      String?   @db.Text
+  secretTip     String?   @db.Text
   
-  // New Affiliate Deep Links
-  tripUrl       String?  @db.Text
-  klookUrl      String?  @db.Text
+  // Affiliate Deep Links
+  tripUrl       String?   @db.Text
+  klookUrl      String?   @db.Text
+  
+  // SEO
+  metaTitle       String?
+  metaDescription String?
   
   // TIMESTAMPS
   createdAt   DateTime @default(now())
@@ -134,7 +165,10 @@ model Post {
 
   @@index([slug])
   @@index([authorId])
-  @@index([isNewsjack]) // <--- THAY ĐỔI MỚI: Thêm index cho query nhanh hơn
+  @@index([category])
+  @@index([neighborhood])
+  @@index([isNewsjack])
+  @@index([status])
 }
 
 // --- MRT MODEL ---

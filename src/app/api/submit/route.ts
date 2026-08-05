@@ -50,8 +50,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing required fields: name, slug, description' }, { status: 400 });
     }
 
-    // Normalize category — only Evergreen or News allowed
-    const normalizedCategory = category === 'News' ? 'News' : 'Evergreen';
+    // Normalize category — use new PostCategory enum
+    const validCategories = ['HOUSING', 'MONEY', 'TRANSPORT', 'STUDY', 'FOOD', 'HEALTHCARE', 'WORK', 'LIFESTYLE', 'NEIGHBORHOOD', 'TOOLS', 'TRAVEL_GUIDE'];
+    const normalizedCategory = validCategories.includes(category) ? category : 'TRAVEL_GUIDE';
 
     // Auto-generate excerpt if not provided
     const cleanText = description.replace(/<[^>]*>/g, '');
@@ -66,12 +67,12 @@ export async function POST(req: Request) {
       imageUrl: imageUrl || 'https://images.unsplash.com/photo-1525625239513-39bc131f9979?w=1200',
       content: description,
       excerpt: autoExcerpt,
-      category: normalizedCategory,
-      status: 'PUBLISHED',
-      isNewsjack: normalizedCategory === 'News',
-      insiderPrice: normalizedCategory === 'Evergreen' ? (insiderPrice || null) : null,
-      bestTime: normalizedCategory === 'Evergreen' ? (bestTime || null) : null,
-      secretTip: normalizedCategory === 'Evergreen' ? (secretTip || null) : null,
+      category: normalizedCategory as any, // Prisma enum cast
+      status: 'PUBLISHED' as any, // Prisma enum cast
+      isNewsjack: false, // Default to false, can be extended
+      insiderPrice: insiderPrice || null,
+      bestTime: bestTime || null,
+      secretTip: secretTip || null,
       tripUrl: tripUrl || null,
       klookUrl: klookUrl || null,
     };

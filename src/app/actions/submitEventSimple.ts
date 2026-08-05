@@ -8,7 +8,7 @@ export async function submitEventSimple(formData: FormData) {
     const slug = formData.get("slug") as string;
     const imageUrl = formData.get("imageUrl") as string;
     const description = formData.get("description") as string;
-    const category = (formData.get("category") as string) || "Evergreen";
+    const category = (formData.get("category") as string) || "TRAVEL_GUIDE";
     const secretKey = formData.get("secretKey") as string;
 
     if (secretKey !== "BOSS2026") {
@@ -30,9 +30,9 @@ export async function submitEventSimple(formData: FormData) {
         content: description,
         excerpt,
         imageUrl: imageUrl || "https://images.unsplash.com/photo-1525625239513-39bc131f9979?w=1200",
-        category: category === "News" ? "News" : "Evergreen",
+        category: category as any, // Prisma enum cast
         status: "PUBLISHED",
-        isNewsjack: category === "News",
+        isNewsjack: category === "NEWSJACK", // if you want to support newsjack category
       },
     });
 

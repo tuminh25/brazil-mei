@@ -1,0 +1,17 @@
+{
+  "topic": "How to Apply for BTO Flat in Singapore 2026",
+  "category": "HOUSING",
+  "neighborhood": "Tengah",
+  "targetKeywords": ["BTO application", "HDB flat", "Tengah BTO", "first-time buyer"],
+  "keyDataPoints": {
+    "applicationPeriod": "February 2026, May 2026, August 2026, November 2026",
+    "eligibility": "Singapore citizen, 21+, first-timer or second-timer",
+    "incomeCeiling": "$14,000 for families, $7,000 for singles",
+    "keySteps": ["Check eligibility", "Apply during launch", "Ballot", "Select flat", "Sign agreement"],
+    "waitTime": "3-5 years for Tengah"
+  },
+  "sources": [
+    "https://www.hdb.gov.sg/residential/buying-a-flat/new/overview",
+    "https://www.hdb.gov.sg/residential/buying-a-flat/new/ballot"
+  ]
+}

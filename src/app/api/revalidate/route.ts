@@ -1,5 +1,4 @@
 // src/app/api/revalidate/route.ts
-// Call: GET /api/revalidate?path=/&secret=BOSS2026
 import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -8,7 +7,7 @@ export async function GET(req: NextRequest) {
   const secret = searchParams.get('secret');
   const path = searchParams.get('path') || '/';
 
-  if (secret !== 'BOSS2026') {
+  if (secret !== process.env.REVALIDATE_SECRET) {
     return NextResponse.json({ error: 'Invalid secret' }, { status: 401 });
   }
 
@@ -18,6 +17,37 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     revalidated: true,
     path,
+    timestamp: new Date().toISOString(),
+  });
+}
+
+export async function POST(req: NextRequest) {
+  let body: { paths?: string[]; secret?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
+
+  const { paths, secret } = body;
+  if (secret !== process.env.REVALIDATE_SECRET) {
+    return NextResponse.json({ error: 'Invalid secret' }, { status: 401 });
+  }
+
+  if (!Array.isArray(paths) || paths.length === 0) {
+    return NextResponse.json({ error: 'paths must be a non-empty array' }, { status: 400 });
+  }
+
+  for (const path of paths) {
+    revalidatePath(path);
+  }
+  // Always revalidate dynamic guide and neighbourhood routes
+  revalidatePath('/guides/[slug]', 'page');
+  revalidatePath('/neighborhoods/[slug]', 'page');
+
+  return NextResponse.json({
+    revalidated: true,
+    paths,
     timestamp: new Date().toISOString(),
   });
 }
