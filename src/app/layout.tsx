@@ -5,7 +5,7 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { Analytics } from "@vercel/analytics/react";
 import { GoogleAnalytics } from "@next/third-parties/google";
-import Script from "next/script"; // <-- Đã thêm Import Script chuẩn Next.js
+
 
 
 export const metadata: Metadata = {
@@ -51,12 +51,7 @@ export default function RootLayout({
         <Analytics />
         <GoogleAnalytics gaId="G-9FFS6DQMM0" />
 
-        {/* Monetag In-Page Push Ads - Đã tích hợp mượt mà, không ảnh hưởng tốc độ load trang */}
-        <Script id="monetag-ads" strategy="afterInteractive">
-          {`
-            (function(s){s.dataset.zone='11030664',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))
-          `}
-        </Script>
+
       </body>
     </html>
   );
