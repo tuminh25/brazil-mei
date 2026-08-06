@@ -23,7 +23,7 @@ const tools = [
     icon: "🏠",
     href: "/tools/hdb-affordability",
     category: "Housing",
-    status: "Coming Soon",
+    status: "Live",
   },
   {
     name: "CPF Retirement Planner",
@@ -31,7 +31,7 @@ const tools = [
     icon: "💰",
     href: "/tools/cpf-planner",
     category: "Money",
-    status: "Coming Soon",
+    status: "Live",
   },
   {
     name: "Transport Cost Calculator",
@@ -39,7 +39,7 @@ const tools = [
     icon: "🚇",
     href: "/tools/transport-cost",
     category: "Transport",
-    status: "Coming Soon",
+    status: "Live",
   },
   {
     name: "School Distance Checker",
@@ -47,7 +47,7 @@ const tools = [
     icon: "📚",
     href: "/tools/school-finder",
     category: "Study",
-    status: "Coming Soon",
+    status: "Live",
   },
   {
     name: "Hawker Price Tracker",
@@ -55,7 +55,7 @@ const tools = [
     icon: "🍜",
     href: "/tools/hawker-prices",
     category: "Food",
-    status: "Coming Soon",
+    status: "Live",
   },
   {
     name: "Clinic & Hospital Finder",
@@ -63,7 +63,7 @@ const tools = [
     icon: "🏥",
     href: "/tools/clinic-finder",
     category: "Healthcare",
-    status: "Coming Soon",
+    status: "Live",
   },
   {
     name: "Salary Benchmark Tool",
@@ -71,7 +71,7 @@ const tools = [
     icon: "💼",
     href: "/tools/salary-benchmark",
     category: "Work",
-    status: "Coming Soon",
+    status: "Live",
   },
   {
     name: "Neighborhood Comparison",
@@ -79,7 +79,7 @@ const tools = [
     icon: "🗺️",
     href: "/tools/neighborhood-compare",
     category: "Neighborhood",
-    status: "Coming Soon",
+    status: "Live",
   },
 ];
 
