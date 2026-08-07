@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Playfair_Display, Inter, IBM_Plex_Mono } from 'next/font/google';
 import AffiliateCTA from "@/components/AffiliateCTA";
 import { TableOfContents } from "@/components/TableOfContents";
-import { addHeadingIds } from "@/lib/content-utils";
+import { addHeadingIds, findDecisionPointHeading, splitContentAtHeading } from "@/lib/content-utils";
 import { ResidentTools } from "@/components/ResidentTools";
 import type { Metadata } from "next";
 
@@ -612,12 +612,35 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
           {/* ★ INSIDER INTELLIGENCE BOX ★ */}
           <InsiderIntelligenceBox post={post} />
 
-          {/* MAIN ARTICLE CONTENT - with heading IDs for TOC navigation */}
-          <article className="editorial-article max-w-none mb-12" data-animate>
-            <div dangerouslySetInnerHTML={{ __html: addHeadingIds(post.content) }} />
-          </article>
+          {/* MAIN ARTICLE CONTENT - with contextual tool injection */}
+          {(() => {
+            const decisionPointIndex = findDecisionPointHeading(post.content, post.category);
+            if (decisionPointIndex >= 0) {
+              const { beforeHtml, afterHtml } = splitContentAtHeading(post.content, decisionPointIndex);
+              return (
+                <>
+                  <article className="editorial-article max-w-none mb-12" data-animate>
+                    <div dangerouslySetInnerHTML={{ __html: addHeadingIds(beforeHtml) }} />
+                  </article>
+                  
+                  {/* CONTEXTUAL RESIDENT TOOL - Injected at decision point */}
+                  <ResidentTools category={post.category} />
+                  
+                  <article className="editorial-article max-w-none mb-12" data-animate>
+                    <div dangerouslySetInnerHTML={{ __html: addHeadingIds(afterHtml) }} />
+                  </article>
+                </>
+              );
+            } else {
+              return (
+                <article className="editorial-article max-w-none mb-12" data-animate>
+                  <div dangerouslySetInnerHTML={{ __html: addHeadingIds(post.content) }} />
+                </article>
+              );
+            }
+          })()}
 
-          {/* USEFUL RESIDENT TOOLS - Auto-mapped by category */}
+          {/* USEFUL RESIDENT TOOLS - Auto-mapped by category (end of article) */}
           <ResidentTools category={post.category} />
 
           {/* PREMIUM ARTICLE CTA */}

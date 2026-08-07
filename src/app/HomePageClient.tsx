@@ -197,24 +197,23 @@ export default function HomePageClient({
             Practical guides for living in Singapore — housing, transport, money, food, healthcare, and neighborhood intelligence.
           </p>
           
-          {/* CTAs - Premium Button System */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center hero-cta">
-            <Link
-              href="/guides"
-              className="btn btn-primary btn-lg data-magnetic"
-              data-magnetic
-            >
-              Browse All Guides
-              <ArrowRightIcon className="w-4 h-4" />
-            </Link>
-            <Link
-              href="/neighborhoods"
-              className="btn btn-secondary btn-lg"
-            >
-              Explore Neighborhoods
-              <ArrowRightIcon className="w-4 h-4" />
-            </Link>
-          </div>
+              {/* CTAs - Premium Button System */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center hero-cta">
+              <Link
+                href="/guides"
+                className="text-[var(--color-text-tertiary)] text-xs font-bold uppercase tracking-widest hover:text-[var(--color-blue-light)] transition-colors border-b border-[var(--color-gray-800)] pb-1 inline-flex items-center gap-2"
+              >
+                Browse All Guides
+                <ArrowRightIcon className="w-3 h-3" />
+              </Link>
+              <Link
+                href="/neighborhoods"
+                className="text-[var(--color-text-tertiary)] text-xs font-bold uppercase tracking-widest hover:text-[var(--color-blue-light)] transition-colors border-b border-[var(--color-gray-800)] pb-1 inline-flex items-center gap-2"
+              >
+                Explore Neighborhoods
+                <ArrowRightIcon className="w-3 h-3" />
+              </Link>
+            </div>
           
           {/* Trust Indicators - Editorial Style */}
           <div className="mt-16 flex flex-wrap justify-center gap-8 md:gap-12 items-center text-[var(--color-text-tertiary)] hero-trust" data-animate>
@@ -440,31 +439,35 @@ export default function HomePageClient({
             </p>
           </div>
 
-          <div className="grid-editorial-5" data-animate>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" data-animate>
             {neighborhoodsWithCounts.map((hood) => (
               <Link
                 key={hood.slug}
                 href={`/neighborhoods/${hood.slug}`}
-                className="card-elevated group p-6 text-center"
+                className="card-elevated group p-6"
               >
-                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-[var(--color-black)] flex items-center justify-center group-hover:bg-[var(--color-blue)]/10 transition-colors border border-[var(--color-border)]">
-                  <span className="w-3 h-3 rounded-full" style={{ backgroundColor: `var(--color-${hood.color}-500)` }} />
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-[var(--color-black)] flex items-center justify-center flex-shrink-0 group-hover:bg-[var(--color-blue)]/10 transition-colors border border-[var(--color-border)]">
+                    <span className="w-3 h-3 rounded-full" style={{ backgroundColor: `var(--color-${hood.color}-500)` }} />
+                  </div>
+                  <div className="flex-1 min-w-0 text-left">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className={`${monoClass} font-black uppercase tracking-widest`} style={{ color: `var(--color-${hood.color}-400)`, fontSize: 'var(--text-micro)' }}>
+                        {hood.tag}
+                      </span>
+                    </div>
+                    <h3 className="text-lg font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-blue-light)] transition-colors mb-1 leading-tight">
+                      {hood.name}
+                    </h3>
+                    <p className={`${monoClass} font-black uppercase tracking-[0.2em] mb-2`} style={{ color: `var(--color-${hood.color}-400)`, fontSize: 'var(--text-micro)' }}>
+                      {hood.articleCount} Guides
+                    </p>
+                    <span className={`${monoClass} text-[var(--color-text-tertiary)] uppercase tracking-widest inline-flex items-center gap-1`} style={{ fontSize: 'var(--text-micro)' }}>
+                      Explore
+                      <ArrowRightIcon className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center justify-center gap-2 mb-3">
-                  <span className={`${monoClass} font-black uppercase tracking-widest`} style={{ color: `var(--color-${hood.color}-400)`, fontSize: 'var(--text-micro)' }}>
-                    {hood.tag}
-                  </span>
-                </div>
-                <h3 className="text-xl font-black text-[var(--color-text-primary)] group-hover:text-[var(--color-blue-light)] transition-colors mb-2">
-                  {hood.name}
-                </h3>
-                <p className={`${monoClass} font-black uppercase tracking-[0.2em] mb-2`} style={{ color: `var(--color-${hood.color}-400)`, fontSize: 'var(--text-micro)' }}>
-                  {hood.articleCount} Guides
-                </p>
-                <span className={`${monoClass} text-[var(--color-text-tertiary)] uppercase tracking-widest inline-flex items-center gap-1`} style={{ fontSize: 'var(--text-micro)' }}>
-                  Explore
-                  <ArrowRightIcon className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                </span>
               </Link>
             ))}
           </div>
@@ -495,17 +498,17 @@ export default function HomePageClient({
             </p>
           </div>
 
-          <div className="grid-editorial-8" data-animate>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-4" data-animate>
             {topicsWithCounts.map((topic) => (
               <Link
                 key={topic.value}
                 href={topic.href}
-                className="card group p-6 text-center"
+                className="card group p-5 text-center h-full"
               >
-                <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-[var(--color-black)] flex items-center justify-center group-hover:bg-[var(--color-blue)]/10 transition-colors border border-[var(--color-border)]">
-                  <TopicIcon name={topic.icon} className="w-7 h-7" style={{ color: 'var(--color-blue-light)' }} />
+                <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-[var(--color-black)] flex items-center justify-center group-hover:bg-[var(--color-blue)]/10 transition-colors border border-[var(--color-border)]">
+                  <TopicIcon name={topic.icon} className="w-6 h-6" style={{ color: 'var(--color-blue-light)' }} />
                 </div>
-                <h3 className="text-lg font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-blue-light)] transition-colors mb-2">
+                <h3 className="text-base font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-blue-light)] transition-colors mb-1 leading-tight">
                   {topic.label}
                 </h3>
                 <p className={`${monoClass} font-black uppercase tracking-[0.2em]`} style={{ color: 'var(--color-blue-light)', fontSize: 'var(--text-micro)' }}>
@@ -634,10 +637,10 @@ export default function HomePageClient({
                 </div>
                 <div className="flex items-center justify-between pt-4 border-t border-[var(--color-border)]">
                   <span className={`${monoClass} font-black uppercase tracking-widest`} style={{ 
-                    color: tool.status === 'Live' ? 'var(--color-green-light)' : 'var(--color-text-tertiary)', 
+                    color: 'var(--color-green-light)', 
                     fontSize: 'var(--text-micro)' 
                   }}>
-                    {tool.status}
+                    Available
                   </span>
                   <span className={`${monoClass} font-black uppercase tracking-widest group-hover:translate-x-1 transition-transform`} style={{ color: 'var(--color-blue-light)', fontSize: 'var(--text-micro)' }}>
                     Open Tool

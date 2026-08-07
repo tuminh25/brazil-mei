@@ -5,12 +5,13 @@ async function main() {
   const posts = await prisma.post.findMany({
     where: {
       imageUrl: {
-        contains: 'postimg'
+        contains: 'https://'
       }
     },
     select: { slug: true, imageUrl: true }
   });
-  console.log('Posts with postimg:', posts);
+  console.log('Posts with external images:', posts.length);
+  posts.forEach(p => console.log(p.slug, p.imageUrl));
   await prisma.$disconnect();
 }
 

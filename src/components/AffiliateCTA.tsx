@@ -15,8 +15,8 @@ interface AffiliateCTAProps {
 export default function AffiliateCTA({
   tripUrl,
   klookUrl,
-  title = "Unlock Singapore",
-  description = "Ready to explore? Book your experience through our partners to support SG Events Hub.",
+  title = "Premium Intelligence",
+  description = "Access vetted booking channels for guaranteed entry and elite stay options.",
   className = ""
 }: AffiliateCTAProps) {
 
@@ -87,7 +87,7 @@ export default function AffiliateCTA({
                 rel="nofollow noopener noreferrer"
                 className="btn btn-primary btn-lg w-full sm:w-auto"
               >
-                Stay on Trip.com
+                View on Trip.com
               </a>
 
               <a
@@ -96,7 +96,7 @@ export default function AffiliateCTA({
                 rel="nofollow noopener noreferrer"
                 className="btn btn-orange btn-lg w-full sm:w-auto"
               >
-                Book on Klook
+                View on Klook
               </a>
             </div>
 

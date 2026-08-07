@@ -180,7 +180,7 @@ export default function SiteFooter() {
               © 2026 Singapore Resident Hub. All rights reserved.
             </p>
             <p className="text-[var(--color-text-muted)] uppercase tracking-widest font-medium text-center md:text-right" style={{ fontSize: 'var(--text-micro)' }}>
-              Independent digital media platform. Not affiliated with any physical event planning agencies in Singapore.
+              Independent resident intelligence platform dedicated to helping people living in Singapore make smarter everyday decisions through trusted research, practical guides and interactive planning tools.
             </p>
           </div>
         </div>
