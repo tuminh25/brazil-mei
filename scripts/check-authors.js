@@ -1,16 +1,9 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-async function main() {
+async function check() {
   const authors = await prisma.author.findMany();
-  console.log("Authors:", authors);
+  console.log('Current authors:', JSON.stringify(authors, null, 2));
+  await prisma.$disconnect();
 }
-
-main()
-  .catch(e => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+check();

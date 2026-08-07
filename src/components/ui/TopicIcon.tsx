@@ -33,9 +33,10 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 interface TopicIconProps {
   name: string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
-export function TopicIcon({ name, className }: TopicIconProps) {
+export function TopicIcon({ name, className, style }: TopicIconProps) {
   const Icon = iconMap[name] || DiamondIcon;
-  return <Icon className={className} aria-hidden="true" />;
+  return <span style={style}><Icon className={className} aria-hidden="true" /></span>;
 }

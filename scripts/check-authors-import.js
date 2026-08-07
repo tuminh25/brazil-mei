@@ -11,16 +11,15 @@ async function check() {
       'skillsfuture-level-up-programme-explained-2026',
       'cdc-vouchers-2026-grocery-hawker-budgeting-families'
     ]}},
-    select: { title: true, content: true, excerpt: true, imageUrl: true, category: true, authorId: true }
+    select: { title: true, category: true, authorId: true, author: true }
   });
   
   for (const post of posts) {
     console.log('===', post.title, '===');
     console.log('Category:', post.category);
-    console.log('Author:', post.authorId);
-    console.log('Image:', post.imageUrl);
-    console.log('Excerpt starts with:', post.excerpt?.substring(0, 100));
-    console.log('Content starts with:', post.content?.substring(0, 200));
+    console.log('Author ID:', post.authorId);
+    console.log('Author Name:', post.author?.name);
+    console.log('Author Role:', post.author?.role);
     console.log('');
   }
   await prisma.$disconnect();

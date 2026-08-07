@@ -3,69 +3,159 @@ require('dotenv').config();
 const { PrismaClient } = require('@prisma/client');
 const fs = require('fs');
 const path = require('path');
-const axios = require('axios');
-const cheerio = require('cheerio');
 
 const prisma = new PrismaClient();
-const QUEUE_DIR = path.join(__dirname, '../content-queue'); 
+const QUEUE_DIR = path.join(__dirname, '../content-queue');
+
+// Danh sách category hợp lệ từ PostCategory enum (theo prisma/schema.prisma)
+const VALID_CATEGORIES = [
+  'HOUSING', 'TRANSPORT', 'MONEY', 'STUDY', 'HEALTHCARE',
+  'FOOD', 'WORK', 'LIFESTYLE', 'NEIGHBORHOOD', 'TOOLS', 'TRAVEL_GUIDE'
+];
+
+// Map content-queue category names to Prisma PostCategory enum values
+function mapCategory(category) {
+  if (!category) return 'HOUSING';
+  
+  const normalized = category.trim().toUpperCase();
+  
+  // Direct match (case-insensitive)
+  if (VALID_CATEGORIES.includes(normalized)) {
+    return normalized;
+  }
+  
+  // Map common variations from content-queue format
+  const categoryMap = {
+    'HOUSING': 'HOUSING',
+    'MONEY': 'MONEY',
+    'HEALTHCARE': 'HEALTHCARE',
+    'TRANSPORT': 'TRANSPORT',
+    'TRANSPORT & DAILY LIFE': 'TRANSPORT',
+    'WORK': 'WORK',
+    'WORK & STUDY': 'WORK',
+    'STUDY': 'STUDY',
+    'FOOD': 'FOOD',
+    'FOOD & COMMUNITY': 'FOOD',
+    'LIFESTYLE': 'LIFESTYLE',
+    'NEIGHBORHOOD': 'NEIGHBORHOOD',
+    'TOOLS': 'TOOLS',
+    'TRAVEL_GUIDE': 'TRAVEL_GUIDE',
+  };
+  
+  return categoryMap[normalized] || 'HOUSING';
+}
+
+// Map category to editorial team author ID
+function mapCategoryToAuthor(category) {
+  const normalized = mapCategory(category);
+  
+  const authorMap = {
+    'HOUSING': 'author_housing',
+    'MONEY': 'author_money',
+    'HEALTHCARE': 'author_healthcare',
+    'TRANSPORT': 'author_transport',
+    'WORK': 'author_work',
+    'STUDY': 'author_work',
+    'FOOD': 'author_food',
+    'LIFESTYLE': 'author_editorial',
+    'NEIGHBORHOOD': 'author_food',
+    'TOOLS': 'author_research',
+    'TRAVEL_GUIDE': 'author_editorial',
+  };
+  
+  return authorMap[normalized] || 'author_editorial';
+}
+
+// Clean article content: remove AI instruction sections and metadata
+function cleanArticleContent(html) {
+  if (!html) return '';
+  
+  // Remove AI metadata blocks that appear before the article title
+  // These include: Primary Keyword, Secondary Keywords, Related Keywords, Search Intent, SEO Notes, Writing Notes
+  // And the separator line: ==================================================
+  
+  // Find the first <h1> tag which marks the start of the actual article
+  const h1Index = html.indexOf('<h1>');
+  if (h1Index !== -1) {
+    // Keep only from the first <h1> onwards
+    html = html.substring(h1Index);
+  }
+  
+  // Remove everything starting from "Suggested Internal Links"
+  const suggestedLinksIndex = html.indexOf('<h2>Suggested Internal Links</h2>');
+  if (suggestedLinksIndex !== -1) {
+    html = html.substring(0, suggestedLinksIndex);
+  }
+  
+  // Remove everything starting from "Recommended Schema"
+  const recommendedSchemaIndex = html.indexOf('<h2>Recommended Schema</h2>');
+  if (recommendedSchemaIndex !== -1) {
+    html = html.substring(0, recommendedSchemaIndex);
+  }
+  
+  // Also handle case where they might be in different case
+  const suggestedLinksIndexLower = html.toLowerCase().indexOf('<h2>suggested internal links</h2>');
+  if (suggestedLinksIndexLower !== -1 && suggestedLinksIndex === -1) {
+    html = html.substring(0, suggestedLinksIndexLower);
+  }
+  
+  const recommendedSchemaIndexLower = html.toLowerCase().indexOf('<h2>recommended schema</h2>');
+  if (recommendedSchemaIndexLower !== -1 && recommendedSchemaIndex === -1) {
+    html = html.substring(0, recommendedSchemaIndexLower);
+  }
+  
+  return html.trim();
+}
 
 const KLOOK_AID = '105111';
 const TRIP_ALLIANCE_ID = '7367361';
 const TRIP_SID = '278066643';
 
-// --- HÀM TỰ ĐỘNG ĐẢM BẢO TÁC GIẢ TỒN TẠI ---
-async function ensureAuthorsExist() {
-  console.log('👥 Đang kiểm tra danh sách tác giả...');
-  const authors = [
-    { id: 'author_1', name: 'Desmond Ho', role: 'Chief Editor & 25-Year Local', bio: 'Living in Singapore since 1998. Expert in travel and local gems.', avatarUrl: 'https://images.unsplash.com/photo-1556157382-97eda2d62296?w=400' },
-    { id: 'author_2', name: 'Sarah Tan', role: 'Family & Kids Editor', bio: 'Mom of two. Expert in playgrounds and family-friendly hacks.', avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400' },
-    { id: 'author_3', name: 'Jax', role: 'Nightlife & Trends Scout', bio: 'Chasing the best beats and hidden nightlife spots in SG.', avatarUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400' }
-  ];
-
-  for (const a of authors) {
-    await prisma.author.upsert({
-      where: { id: a.id },
-      update: { name: a.name, role: a.role, bio: a.bio, avatarUrl: a.avatarUrl },
-      create: a
-    });
-  }
-  console.log('✅ Hệ thống tác giả đã sẵn sàng.');
-}
-
 function generateSlug(text) {
   return text.toString().toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').substring(0, 100);
 }
 
-function pickAuthorId(title) {
-  const t = (title || "").toLowerCase();
-  if (t.includes('kid') || t.includes('family') || t.includes('zoo') || t.includes('oceanarium')) return 'author_2';
-  if (t.includes('night') || t.includes('party') || t.includes('bike') || t.includes('concert')) return 'author_3';
-  return 'author_1';
-}
-
-async function fetchMetaImage(url) {
-  if (!url || !url.startsWith('http')) return null;
-  try {
-    const { data } = await axios.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' }, timeout: 5000 });
-    const $ = cheerio.load(data);
-    return $('meta[property="og:image"]').attr('content') || null;
-  } catch (e) { return null; }
-}
-
-function attachAffiliateTags(url, type) {
-    if (!url || !url.startsWith('http')) return url;
-    const separator = url.includes('?') ? '&' : '?';
-    if (url.includes('klook.com')) return `${url}${separator}aid=${KLOOK_AID}&utm_medium=affiliate-alwayson&utm_source=non-network&utm_campaign=${KLOOK_AID}`;
-    if (url.includes('trip.com')) return `${url}${separator}Allianceid=${TRIP_ALLIANCE_ID}&SID=${TRIP_SID}`;
-    return url;
+// Clean plain text excerpt: remove AI metadata lines
+function cleanExcerptText(text) {
+  if (!text) return '';
+  
+  // Remove lines starting with "Secondary Keywords:", "Primary Keyword:", etc.
+  // Remove separator lines
+  // Remove "From an EEAT" and everything after
+  // Remove ALL bullet points (excerpt should be a summary, not a keyword list)
+  let cleaned = text
+    .split('\n')
+    .filter(line => {
+      const trimmed = line.trim();
+      // Skip metadata header lines
+      if (trimmed.startsWith('Secondary Keywords:')) return false;
+      if (trimmed.startsWith('Primary Keyword:')) return false;
+      if (trimmed.startsWith('Related Keywords:')) return false;
+      if (trimmed.startsWith('Search Intent:')) return false;
+      if (trimmed.startsWith('SEO Notes:')) return false;
+      if (trimmed.startsWith('Writing Notes:')) return false;
+      if (trimmed === '==================================================') return false;
+      if (trimmed.startsWith('From an EEAT')) return false;
+      // Skip ALL bullet points
+      if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) return false;
+      return true;
+    })
+    .join('\n')
+    .trim();
+  
+  // Also handle "From an EEAT" in the middle of text
+  const eeatIndex = cleaned.indexOf('From an EEAT');
+  if (eeatIndex !== -1) {
+    cleaned = cleaned.substring(0, eeatIndex).trim();
+  }
+  
+  return cleaned;
 }
 
 async function runBatchImport() {
   try {
     console.log('🚀 KHỞI ĐỘNG CỖ MÁY IMPORT EVERGREEN...');
     
-    await ensureAuthorsExist();
-
     if (!fs.existsSync(QUEUE_DIR)) return console.error("❌ Folder content-queue trống!");
 
     const files = fs.readdirSync(QUEUE_DIR).filter(file => file.endsWith('.json'));
@@ -80,16 +170,30 @@ async function runBatchImport() {
         const name = data.name || data.title;
         const slug = data.slug || generateSlug(name);
         
-        // Luôn gán cho Desmond theo yêu cầu Sếp
-        const authorId = 'author_1'; 
+        // Assign author based on category for editorial team system
+        const category = mapCategory(data.category);
+        const authorId = mapCategoryToAuthor(data.category);
 
-        console.log(`\n📄 Đang xử lý: ${name}`);
+        console.log(`\n📄 Đang xử lý: ${name} | Category: ${category} | Author: ${authorId}`);
 
+        // Image: use imageUrl from JSON, otherwise category-specific placeholder
         let imageUrl = data.imageUrl;
         if (!imageUrl) {
-          imageUrl = await fetchMetaImage(data.sourceUrl);
+          const categoryPlaceholders = {
+            'HOUSING': 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200',
+            'MONEY': 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200',
+            'HEALTHCARE': 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200',
+            'TRANSPORT': 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=1200',
+            'WORK': 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1200',
+            'STUDY': 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200',
+            'FOOD': 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1200',
+            'LIFESTYLE': 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200',
+            'NEIGHBORHOOD': 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1200',
+            'TOOLS': 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200',
+            'TRAVEL_GUIDE': 'https://images.unsplash.com/photo-1525625239513-39bc131f9979?w=1200',
+          };
+          imageUrl = categoryPlaceholders[category] || 'https://images.unsplash.com/photo-1525625239513-39bc131f9979?w=1200';
         }
-        if (!imageUrl) imageUrl = `https://images.unsplash.com/photo-1546708973-b339540b5162?w=1200`;
 
         // SMART MAPPING: Ánh xạ các trường thông minh
         const insiderPrice = data.insiderPrice || data.price || data.ticketPrice || null;
@@ -101,16 +205,34 @@ async function runBatchImport() {
           secretTip = JSON.stringify(secretTip).substring(0, 500); // Rút gọn nếu là object
         }
 
+        // Clean content: remove AI instruction sections
+        const rawContentHtml = data.description || data.content || "";
+        const cleanContent = cleanArticleContent(rawContentHtml).split(/From an EEAT/i)[0].trim();
+        
+        // Clean excerpt: remove AI metadata (Secondary Keywords, etc.)
+        const rawExcerpt = data.aiSummary || data.excerpt || name.substring(0, 160);
+        let cleanExcerpt = cleanExcerptText(rawExcerpt);
+        // Fallback: if excerpt is empty after cleaning, generate from content
+        if (!cleanExcerpt) {
+          // Extract first paragraph after H1 from cleanContent
+          const firstParaMatch = cleanContent.match(/<h1[^>]*>.*?<\/h1>\s*<h2[^>]*>.*?<\/h2>\s*<p>(.*?)<\/p>/i);
+          if (firstParaMatch) {
+            cleanExcerpt = firstParaMatch[1].replace(/<[^>]*>/g, '').substring(0, 160);
+          } else {
+            cleanExcerpt = name.substring(0, 160);
+          }
+        }
+
         const postData = {
           slug: slug,
           title: name,
-          content: (data.description || data.content || "").split(/From an EEAT/i)[0].trim(),
+          content: cleanContent,
           imageUrl: imageUrl,
-          excerpt: data.aiSummary || data.excerpt || name.substring(0, 160),
-          category: "Evergreen", // Ép về Evergreen
-          authorId: authorId,    // Ép về Desmond
-          isNewsjack: false,     // Luôn false
-          status: 'PUBLISHED',   // Luôn PUBLISHED
+          excerpt: cleanExcerpt,
+          category: category,
+          authorId: authorId,    
+          isNewsjack: false,
+          status: 'PUBLISHED',
           insiderPrice: insiderPrice,
           bestTime: bestTime,
           secretTip: secretTip,
@@ -123,7 +245,7 @@ async function runBatchImport() {
           create: postData
         });
 
-        console.log(`✅ Thành công: ${name}`);
+        console.log(`✅ Thành công: ${name} | Category: ${category} | Author: ${authorId}`);
 
       } catch (e) { console.error(`❌ Lỗi file ${file}:`, e.message); }
     }
@@ -132,7 +254,6 @@ async function runBatchImport() {
     // BƯỚC CUỐI: Gọi revalidate (Sử dụng API đã tạo)
     try {
       console.log('🔄 Đang kích hoạt revalidate...');
-      // Giả sử server đang chạy local hoặc ta chỉ cần thông báo Sếp
       console.log('👉 Tip: Truy cập /api/revalidate?path=/&secret=BOSS2026 để xóa cache ngay.');
     } catch (revalidateError) {
       console.error('⚠️ Không thể tự động revalidate:', revalidateError.message);

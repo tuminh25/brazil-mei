@@ -72,61 +72,61 @@ export default async function NeighborhoodsPage() {
   );
 
   return (
-    <main className={`${inter.className} min-h-screen bg-[#050505] text-white py-20 px-6`}>
-      <div className="max-w-7xl mx-auto">
+    <main className={`${inter.className} min-h-screen bg-[var(--color-black)] text-[var(--color-text-primary)] py-20 px-6`}>
+      <div className="container-wide">
         {/* HERO */}
-        <div className="text-center mb-20">
-          <p className={`${mono.className} text-blue-400 text-xs font-black uppercase tracking-[0.4em] mb-4`}>
+        <div className="text-center mb-20 md:mb-24" data-animate>
+          <p className={`${mono.className} text-[var(--color-blue-light)] text-xs font-black uppercase tracking-[0.4em] mb-4`}>
             Resident Intelligence
           </p>
           <h1 className={`${playfair.className} text-6xl md:text-8xl font-black mb-8 tracking-tighter uppercase italic`}>
             Singapore<br />Neighborhoods
           </h1>
-          <p className="text-gray-500 max-w-2xl mx-auto text-lg leading-relaxed">
+          <p className="text-[var(--color-text-secondary)] max-w-2xl mx-auto text-lg leading-relaxed">
             Every neighborhood has its rhythm. Discover transport links, housing trends, food scenes, and local secrets for where you live — or where you're moving next.
           </p>
         </div>
 
-        {/* NEIGHBORHOOD GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* NEIGHBORHOOD GRID - Research Highlight Style */}
+        <div className="grid-editorial-5" data-animate>
           {neighborhoodStats.map((hood) => (
             <Link
               key={hood.slug}
               href={`/neighborhoods/${hood.slug}`}
-              className="group relative bg-[#0a0a0a] border border-white/10 rounded-[2.5rem] overflow-hidden hover:border-blue-500/50 transition-all duration-500 shadow-2xl"
+              className="card-elevated group overflow-hidden"
             >
-              <div className="h-64 overflow-hidden relative">
+              <div className="card-media h-64 relative">
                 <img
                   src={hood.imageUrl}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   alt={hood.name}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-90" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-black)] via-transparent to-transparent opacity-90" />
                 <div className="absolute bottom-6 left-6 right-6">
-                  <p className={`${mono.className} text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] mb-2`}>
+                  <p className={`${mono.className} text-[var(--color-blue-light)] text-[10px] font-black uppercase tracking-[0.2em] mb-2`}>
                     {hood.articleCount} Guides
                   </p>
-                  <h3 className="text-2xl md:text-3xl font-black text-white">
+                  <h3 className="text-2xl md:text-3xl font-black text-[var(--color-text-primary)]">
                     {hood.name}
                   </h3>
                 </div>
               </div>
               <div className="p-8">
-                <p className="text-gray-400 text-sm leading-relaxed mb-6 line-clamp-3">
+                <p className="text-[var(--color-text-secondary)] text-sm leading-relaxed mb-6 line-clamp-3">
                   {hood.description}
                 </p>
                 <div className="flex flex-wrap gap-2 mb-6">
                   {hood.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest bg-white/5 border border-white/10 rounded-full text-gray-400"
+                      className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest bg-[var(--color-black)] border border-[var(--color-border)] rounded-full text-[var(--color-text-tertiary)]"
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
-                <span className={`${mono.className} text-blue-500 text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-2`}>
-                  Explore {hood.name} →
+                <span className={`${mono.className} text-[var(--color-blue-light)] text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-2`}>
+                  Explore {hood.name}
                 </span>
               </div>
             </Link>
@@ -134,21 +134,21 @@ export default async function NeighborhoodsPage() {
         </div>
 
         {/* CTA SECTION */}
-        <div className="mt-24 text-center">
-          <p className={`${mono.className} text-gray-500 text-xs font-black uppercase tracking-[0.4em] mb-4`}>
+        <div className="mt-24 text-center" data-animate>
+          <p className={`${mono.className} text-[var(--color-text-tertiary)] text-xs font-black uppercase tracking-[0.4em] mb-4`}>
             More Neighborhoods Coming Soon
           </p>
           <h2 className={`${playfair.className} text-4xl md:text-5xl font-black mb-6 tracking-tighter italic`}>
             We're Mapping Every Corner of Singapore
           </h2>
-          <p className="text-gray-500 max-w-xl mx-auto mb-8 leading-relaxed">
+          <p className="text-[var(--color-text-secondary)] max-w-xl mx-auto mb-8 leading-relaxed">
             From Bukit Panjang to Bedok, Choa Chu Kang to Changi. Each neighborhood hub will have dedicated guides for housing, transport, food, schools, and daily life.
           </p>
           <Link
             href="/guides"
-            className="inline-flex items-center gap-2 px-8 py-4 border border-white/20 rounded-full font-black uppercase tracking-[0.3em] text-xs text-white transition-all hover:border-blue-500 hover:text-blue-400"
+            className="btn btn-secondary btn-md"
           >
-            Browse All Guides →
+            Browse All Guides
           </Link>
         </div>
       </div>
