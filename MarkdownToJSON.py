@@ -46,6 +46,7 @@ class Article:
     primary_keyword: str
     secondary_keywords: List[str] = field(default_factory=list)
     body_markdown: str = ""
+    image_url: str = ""
 
     @property
     def tags(self) -> List[str]:
@@ -114,6 +115,7 @@ def parse_metadata_lines(lines: List[str]) -> dict:
         "Category": "",
         "Primary Keyword": "",
         "Secondary Keywords": [],
+        "Image URL": "",
     }
 
     idx = 0
@@ -209,10 +211,16 @@ def parse_articles(md_text: str) -> List[Article]:
             if not line:
                 idx += 1
                 continue
-            if ": " in line:
-                key, value = line.split(": ", 1)
-                key = key.strip()
-                value = value.strip()
+            # Check for separator line (===) which marks end of metadata
+            if line.startswith("=") and len(line) >= 10:
+                idx += 1  # Skip the separator line
+                break
+            # Handle both ": " and ":" (colon with optional space)
+            if ":" in line:
+                # Split on first colon
+                parts = line.split(":", 1)
+                key = parts[0].strip()
+                value = parts[1].strip() if len(parts) > 1 else ""
                 if key == "Secondary Keywords":
                     secondary_collecting = True
                     keywords = [kw.strip() for kw in value.split(",") if kw.strip()] if value else []
@@ -222,7 +230,7 @@ def parse_articles(md_text: str) -> List[Article]:
                 else:
                     secondary_collecting = False
                     # Accept any key, but we only need specific ones
-                    if key in ("Article ID", "Title", "Slug", "Category", "Primary Keyword"):
+                    if key in ("Article ID", "Title", "Slug", "Category", "Primary Keyword", "Image URL"):
                         metadata[key] = value
                     # For other possible keys, ignore.
                     idx += 1
@@ -254,6 +262,7 @@ def parse_articles(md_text: str) -> List[Article]:
             primary_keyword=metadata.get("Primary Keyword", ""),
             secondary_keywords=metadata.get("Secondary Keywords", []),
             body_markdown=body,
+            image_url=metadata.get("Image URL", ""),
         )
         articles.append(article)
 
@@ -265,7 +274,7 @@ def parse_articles(md_text: str) -> List[Article]:
 # --------------------------------------------------------------------------- #
 def article_to_dict(article: Article, html_content: str, excerpt: str) -> dict:
     """Convert an Article to the required JSON‑compatible dictionary."""
-    return {
+    data = {
         "name": article.title,
         "content": html_content,
         "excerpt": excerpt,
@@ -273,6 +282,9 @@ def article_to_dict(article: Article, html_content: str, excerpt: str) -> dict:
         "tags": article.tags,
         "category": article.category,
     }
+    if article.image_url:
+        data["imageUrl"] = article.image_url
+    return data
 
 
 def validate_json(data: dict) -> bool:

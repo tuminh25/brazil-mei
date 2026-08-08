@@ -249,17 +249,33 @@ async function runBatchImport() {
 
       } catch (e) { console.error(`❌ Lỗi file ${file}:`, e.message); }
     }
-    console.log('\n🎉 TẤT CẢ ĐÃ LÊN SÓNG MƯỢT MÀ!');
-    
-    // BƯỚC CUỐI: Gọi revalidate (Sử dụng API đã tạo)
-    try {
-      console.log('🔄 Đang kích hoạt revalidate...');
-      console.log('👉 Tip: Truy cập /api/revalidate?path=/&secret=BOSS2026 để xóa cache ngay.');
-    } catch (revalidateError) {
-      console.error('⚠️ Không thể tự động revalidate:', revalidateError.message);
-    }
+        console.log('\n🎉 TẤT CẢ ĐÃ LÊN SÓNG MƯỢT MÀ!');
+        
+        // BƯỚC CUỐI: Gọi revalidate API để xóa cache homepage
+        try {
+          console.log('🔄 Đang kích hoạt revalidate...');
+          const revalidateSecret = process.env.REVALIDATE_SECRET || 'BOSS2026';
+          const response = await fetch(`http://localhost:3000/api/revalidate?path=/&secret=${revalidateSecret}`);
+          if (response.ok) {
+            const result = await response.json();
+            console.log('✅ Revalidate thành công:', result);
+          } else {
+            console.log('⚠️ Revalidate API trả về lỗi, thử lại với production URL...');
+            // Thử với production URL nếu local không chạy
+            const prodResponse = await fetch(`https://www.sgeventshub.com/api/revalidate?path=/&secret=${revalidateSecret}`);
+            if (prodResponse.ok) {
+              const prodResult = await prodResponse.json();
+              console.log('✅ Revalidate production thành công:', prodResult);
+            } else {
+              console.log('👉 Tip: Truy cập /api/revalidate?path=/&secret=BOSS2026 để xóa cache thủ công.');
+            }
+          }
+        } catch (revalidateError) {
+          console.error('⚠️ Không thể tự động revalidate:', revalidateError.message);
+          console.log('👉 Tip: Truy cập /api/revalidate?path=/&secret=BOSS2026 để xóa cache thủ công.');
+        }
 
-  } catch (err) { console.error('💥 Lỗi hệ thống:', err.message); } finally { await prisma.$disconnect(); }
+      } catch (err) { console.error('💥 Lỗi hệ thống:', err.message); } finally { await prisma.$disconnect(); }
 }
 
 runBatchImport();
