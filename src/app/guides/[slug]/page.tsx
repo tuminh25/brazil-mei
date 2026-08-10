@@ -8,6 +8,7 @@ import { TableOfContents } from "@/components/TableOfContents";
 import { addHeadingIds, findDecisionPointHeading, splitContentAtHeading } from "@/lib/content-utils";
 import { ResidentTools } from "@/components/ResidentTools";
 import type { Metadata } from "next";
+import { getVersionedImageUrl, getVersionedOgImages, getPostImageUrl } from "@/lib/image-utils";
 
 const playfair = Playfair_Display({ subsets: ['latin'], weight: ['700', '900'], style: ['italic', 'normal'] });
 const inter = Inter({ subsets: ['latin'], weight: ['400', '700', '900'] });
@@ -32,13 +33,17 @@ export async function generateMetadata(
       };
     }
 
+    // Versioned image URL for cache busting
+    const versionedImageUrl = getVersionedImageUrl(post.imageUrl, post.updatedAt);
+    const versionedOgImages = getVersionedOgImages(post.imageUrl, post.updatedAt);
+
     return {
       title: post.title,
       description: post.excerpt || post.metaDescription || undefined,
       openGraph: {
         title: post.title,
         description: post.excerpt || post.metaDescription || undefined,
-        images: post.imageUrl ? [post.imageUrl] : [],
+        images: versionedOgImages,
       },
       other: {
         'article:section': post.category,

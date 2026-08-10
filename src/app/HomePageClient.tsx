@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useEffect, useRef } from 'react';
 import { TopicIcon } from '@/components/ui/TopicIcon';
 import { ArrowRightIcon, DiamondIcon, HexagonIcon, SparkleIcon } from '@/components/ui/Icons';
+import { getVersionedImageUrl } from '@/lib/image-utils';
 
 interface HomePageClientProps {
   playfairClass: string;
@@ -262,13 +263,12 @@ export default function HomePageClient({
                 className="magazine-feature card-elevated group relative overflow-hidden"
               >
                 <div className="card-media h-[400px] md:h-[500px] relative">
-                  <Image
-                    src={todaysSingapore[0].imageUrl || IMAGE_FALLBACK}
+                  <img
+                    src={getVersionedImageUrl(todaysSingapore[0].imageUrl, todaysSingapore[0].updatedAt) || IMAGE_FALLBACK}
                     alt={todaysSingapore[0].title}
-                    fill
-                    className="object-cover"
+                    className="absolute inset-0 object-cover"
                     sizes="(max-width: 1280px) 100vw, 66vw"
-                    priority
+                    loading="eager"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-black)] via-transparent to-transparent opacity-90" />
                   <div className="absolute top-4 left-4 right-4 flex flex-wrap gap-2">
@@ -322,12 +322,12 @@ export default function HomePageClient({
                     className="card group overflow-hidden"
                   >
                     <div className="card-media h-48 md:h-56 relative">
-                      <Image
-                        src={post.imageUrl || IMAGE_FALLBACK}
+                      <img
+                        src={getVersionedImageUrl(post.imageUrl, post.updatedAt) || IMAGE_FALLBACK}
                         alt={post.title}
-                        fill
-                        className="object-cover"
+                        className="absolute inset-0 object-cover"
                         sizes="(max-width: 1280px) 50vw, 33vw"
+                        loading="lazy"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-black)] via-transparent to-transparent opacity-90" />
                       <div className="absolute top-3 left-3 right-3 flex flex-wrap gap-1.5">
@@ -368,12 +368,12 @@ export default function HomePageClient({
                       className="card group overflow-hidden"
                     >
                       <div className="card-media h-48 relative">
-                        <Image
-                          src={post.imageUrl || IMAGE_FALLBACK}
+                        <img
+                          src={getVersionedImageUrl(post.imageUrl, post.updatedAt) || IMAGE_FALLBACK}
                           alt={post.title}
-                          fill
-                          className="object-cover"
+                          className="absolute inset-0 object-cover"
                           sizes="(max-width: 768px) 100vw, 50vw"
+                          loading="lazy"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-black)] via-transparent to-transparent opacity-90" />
                         <div className="absolute top-3 left-3 right-3 flex flex-wrap gap-1.5">
@@ -543,12 +543,12 @@ export default function HomePageClient({
                   className="card-elevated group overflow-hidden"
                 >
                   <div className="card-media h-64 relative">
-                    <Image
-                      src={post.imageUrl || IMAGE_FALLBACK}
+                    <img
+                      src={getVersionedImageUrl(post.imageUrl, post.updatedAt) || IMAGE_FALLBACK}
                       alt={post.title}
-                      fill
-                      className="object-cover"
+                      className="absolute inset-0 object-cover"
                       sizes="(max-width: 1280px) 50vw, 25vw"
+                      loading="lazy"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-black)] via-transparent to-transparent opacity-90" />
                     <div className="absolute top-4 left-4 right-4 flex flex-wrap gap-2">
@@ -683,12 +683,12 @@ export default function HomePageClient({
                   className="card group flex gap-5 p-5"
                 >
                   <div className="w-20 h-20 rounded-[var(--radius-xl)] overflow-hidden flex-shrink-0 bg-[var(--color-gray-800)] relative">
-                    <Image
-                      src={post.imageUrl || IMAGE_FALLBACK}
+                    <img
+                      src={getVersionedImageUrl(post.imageUrl, post.updatedAt) || IMAGE_FALLBACK}
                       alt=""
-                      fill
-                      className="object-cover"
+                      className="absolute inset-0 object-cover"
                       sizes="80px"
+                      loading="lazy"
                     />
                   </div>
                   <div className="flex-1 min-w-0">
