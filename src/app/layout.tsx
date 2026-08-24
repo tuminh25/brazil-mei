@@ -7,7 +7,6 @@ import { Analytics } from "@vercel/analytics/react";
 import { GoogleAnalytics } from "@next/third-parties/google";
 
 
-
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.sgeventshub.com'),
   title: "SG Events Hub | Singapore Planning Guides",
@@ -29,11 +28,65 @@ export const viewport: Viewport = {
   themeColor: "#000000",
 };
 
+// Organization & WebSite JSON-LD for homepage identity
+function StructuredData() {
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "SG Events Hub",
+    "url": "https://www.sgeventshub.com",
+    "logo": "https://www.sgeventshub.com/icon.png",
+    "sameAs": [
+      "https://twitter.com/sgeventshub",
+      "https://www.facebook.com/sgeventshub",
+      "https://www.instagram.com/sgeventshub"
+    ],
+    "description": "Singapore Resident Intelligence — practical guides for housing, transport, money, healthcare, food, study, work, and neighborhood life.",
+  };
+
+  const webSiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "SG Events Hub",
+    "url": "https://www.sgeventshub.com",
+    "description": "Practical guides for living in Singapore — housing, transport, money, healthcare, food, and neighborhood intelligence.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "SG Events Hub",
+      "url": "https://www.sgeventshub.com"
+    },
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://www.sgeventshub.com/guides?search={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteSchema) }}
+      />
+    </>
+  );
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className="dark scroll-smooth">
+      <head>
+        <StructuredData />
+      </head>
       <body className="min-h-screen bg-black text-white antialiased">
         {/* Google AdSense Script - Chạy trực tiếp trong head (beforeInteractive) */}
         <script 
