@@ -10,6 +10,7 @@ const playfair = Playfair_Display({ subsets: ['latin'], weight: ['700', '900'], 
 const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '600'] });
 const inter = Inter({ subsets: ['latin'], weight: ['400', '700', '900'] });
 
+export const dynamic = 'force-static';
 export const revalidate = 3600;
 
 const IMAGE_FALLBACK = "https://images.unsplash.com/photo-1525625239513-39bc131f9979?q=80&w=1600&auto=format&fit=crop";

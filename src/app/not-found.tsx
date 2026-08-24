@@ -7,13 +7,11 @@ const inter = Inter({ subsets: ['latin'], weight: ['400', '700', '900'] });
 
 export default function NotFound() {
   return (
-    <html lang="en">
-      <head>
-        <title>Page Not Found | SG Events Hub</title>
-        <meta name="robots" content="noindex" />
-      </head>
-      <body className={`${inter.className} min-h-screen bg-black text-white flex items-center justify-center px-6`}>
-        <main className="max-w-md mx-auto text-center">
+    <>
+      <title>Page Not Found | SG Events Hub</title>
+      <meta name="robots" content="noindex" />
+      <main className={`${inter.className} min-h-screen bg-black text-white flex items-center justify-center px-6`}>
+        <div className="max-w-md mx-auto text-center">
           <p className={`${mono.className} text-[var(--color-blue-light)] text-[10px] font-black uppercase tracking-[0.4em] mb-4`}>
             404 — Not Found
           </p>
@@ -21,7 +19,7 @@ export default function NotFound() {
             Page Not Found
           </h1>
           <p className="text-[var(--color-text-secondary)] text-lg mb-10 leading-relaxed">
-            The page you're looking for doesn't exist or has been moved.
+            The page you&apos;re looking for doesn&apos;t exist or has been moved.
           </p>
           <nav className="space-y-4" aria-label="Recovery navigation">
             <Link
@@ -62,10 +60,10 @@ export default function NotFound() {
             </div>
           </nav>
           <p className={`${mono.className} text-[var(--color-text-muted)] text-[10px] uppercase tracking-[0.3em] mt-10`}>
-            SG Events Hub — Singapore Resident Intelligence
+            SG Events Hub \u2014 Singapore Resident Intelligence
           </p>
-        </main>
-      </body>
-    </html>
+        </div>
+      </main>
+    </>
   );
 }
