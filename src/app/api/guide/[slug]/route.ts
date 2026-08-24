@@ -101,8 +101,10 @@ export async function GET(
       });
     }
 
-    // For HTML requests, let Next.js handle it (will hit the guide page)
-    return NextResponse.next();
+    // For HTML requests, rewrite to the guide page so Next.js handles it properly
+    const url = request.nextUrl.clone();
+    url.pathname = `/guides/${slug}`;
+    return NextResponse.rewrite(url);
   } catch (error) {
     console.error('Guide API Error:', error);
     if (wantsMd) {
