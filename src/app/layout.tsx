@@ -9,10 +9,16 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.sgeventshub.com'),
-  title: "SG Events Hub | Singapore Planning Guides",
-  description: "The definitive collection of in-depth planning guides to Singapore’s greatest attractions.",
+  title: {
+    default: "SG Events Hub | Singapore Resident Intelligence",
+    template: "%s | SG Events Hub",
+  },
+  description: "Practical guides for living in Singapore — housing, transport, money, healthcare, food, and neighborhood intelligence.",
   alternates: {
     canonical: '/',
+    types: {
+      'application/rss+xml': '/rss.xml',
+    },
   },
   icons: {
     icon: [
@@ -22,10 +28,50 @@ export const metadata: Metadata = {
       { url: '/apple-icon.png?v=2' },
     ],
   },
+  openGraph: {
+    type: 'website',
+    locale: 'en_SG',
+    url: 'https://www.sgeventshub.com/',
+    siteName: 'SG Events Hub',
+    title: 'SG Events Hub | Singapore Resident Intelligence',
+    description: 'Practical guides for living in Singapore — housing, transport, money, healthcare, food, and neighborhood intelligence.',
+    images: [
+      {
+        url: '/icon.png?v=2',
+        width: 512,
+        height: 512,
+        alt: 'SG Events Hub - Singapore Resident Intelligence',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@sgeventshub',
+    creator: '@sgeventshub',
+    title: 'SG Events Hub | Singapore Resident Intelligence',
+    description: 'Practical guides for living in Singapore — housing, transport, money, healthcare, food, and neighborhood intelligence.',
+    images: ['/icon.png?v=2'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  other: {
+    'theme-color': '#000000',
+  },
 };
 
 export const viewport: Viewport = {
   themeColor: "#000000",
+  width: 'device-width',
+  initialScale: 1,
 };
 
 // Organization & WebSite JSON-LD for homepage identity

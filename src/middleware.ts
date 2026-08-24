@@ -34,11 +34,23 @@ function wantsMarkdown(request: NextRequest): boolean {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
+  // Markdown negotiation for real guides
   if (wantsMarkdown(request) && pathname.startsWith('/guides/') && !pathname.startsWith('/guides?') && !pathname.includes('/api/')) {
     const slug = pathname.replace('/guides/', '');
     if (slug && !slug.includes('/')) {
       const url = request.nextUrl.clone();
       url.pathname = `/api/markdown/guides/${slug}`;
+      return NextResponse.rewrite(url);
+    }
+  }
+  
+  // For simple clients (bots, curl, agents), serve static HTML for guides
+  // This ensures clean 404 HTML for non-existent guides and proper HTML for real ones
+  if (isSimpleClient(request) && pathname.startsWith('/guides/') && !pathname.startsWith('/guides?') && !pathname.includes('/api/')) {
+    const slug = pathname.replace('/guides/', '');
+    if (slug && !slug.includes('/')) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/api/guide/${slug}`;
       return NextResponse.rewrite(url);
     }
   }
