@@ -8,7 +8,7 @@ import { TableOfContents } from "@/components/TableOfContents";
 import { addHeadingIds, findDecisionPointHeading, splitContentAtHeading } from "@/lib/content-utils";
 import { ResidentTools } from "@/components/ResidentTools";
 import PaidProductCTA from "@/components/PaidProductCTA";
-import { TRANSPORT_CALCULATOR_PRODUCT } from "@/config/products";
+import { getProductByArticleSlug } from "@/config/products";
 import type { Metadata } from "next";
 import { getVersionedImageUrl, getVersionedOgImages, getPostImageUrl } from "@/lib/image-utils";
 
@@ -621,9 +621,10 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
 
           {/* MAIN ARTICLE CONTENT - with contextual tool injection */}
           {(() => {
-            // Paid product sales block — ONLY for the transport calculator article:
-            // injected right before the "Common Mistakes" H2 (after Side-by-Side).
-            if (post.slug === TRANSPORT_CALCULATOR_PRODUCT.articleSlug) {
+            // Paid product sales block — injected for articles that have a matching product.
+            // Injected right before the "Common Mistakes" H2 (after Side-by-Side for transport, or equivalent for others).
+            const product = getProductByArticleSlug(post.slug);
+            if (product) {
               const decisionPointIndex = findDecisionPointHeading(post.content, post.category);
               const { beforeHtml, afterHtml } = decisionPointIndex >= 0
                 ? splitContentAtHeading(post.content, decisionPointIndex)
@@ -645,7 +646,7 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
                     <div dangerouslySetInnerHTML={{ __html: addHeadingIds(midHtml) }} />
                   </article>
 
-                  <PaidProductCTA />
+                  <PaidProductCTA productKey={product.key} />
 
                   {tailHtml && (
                     <article className="editorial-article max-w-none mb-12" data-animate>

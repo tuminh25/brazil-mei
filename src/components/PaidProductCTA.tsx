@@ -3,22 +3,63 @@
 // Visually consistent with AffiliateCTA (gradient border card, mono badges,
 // Playfair editorial heading). Server component — no client JS.
 import { Playfair_Display, IBM_Plex_Mono } from 'next/font/google';
-import { TRANSPORT_CALCULATOR_PRODUCT, getPayPalCheckoutUrl } from "@/config/products";
+import { ALL_PRODUCTS, getPayPalCheckoutUrl, type ProductConfig } from "@/config/products";
 
 const playfair = Playfair_Display({ subsets: ['latin'], weight: ['700', '900'], style: ['italic', 'normal'] });
 const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '600'] });
 
-const VALUE_BULLETS = [
-  "Personalised cost comparison — your numbers, not national averages",
-  "1-year and 10-year total cost view",
-  "Break-even analysis: when a car beats MRT + Grab for you",
-  "Sensitivity testing for depreciation, petrol and Grab spend",
-];
+interface PaidProductCTAProps {
+  productKey: string;
+}
 
-export default function PaidProductCTA() {
-  const product = TRANSPORT_CALCULATOR_PRODUCT;
+const VALUE_BULLETS: Record<string, string[]> = {
+  "transport-calculator": [
+    "Personalised cost comparison — your numbers, not national averages",
+    "1-year and 10-year total cost view",
+    "Break-even analysis: when a car beats MRT + Grab for you",
+    "Sensitivity testing for depreciation, petrol and Grab spend",
+  ],
+  "hdb-tenant-pack": [
+    "True monthly cost for up to 3 rental options — rent, utilities, Wi-Fi, transport, stamp duty",
+    "Total lease cost + average monthly cost (one-off costs amortised)",
+    "Side-by-side comparison — spot the cheapest real option",
+    "Viewing checklist, pre-signing verification, and message templates included",
+  ],
+  "home-bakery-calculator": [
+    "Ingredient database with automatic cost-per-gram/ml/unit conversion",
+    "Recipe costing with packaging, labour and overhead allocation",
+    "Suggested pricing at your target margin, with profit per item and batch",
+    "Monthly profit projection plus a home vs shared-kitchen upgrade scenario",
+  ],
+};
+
+const CTA_COPY: Record<string, { heading: string; blurb: string; noun: string; footer: string }> = {
+  "transport-calculator": {
+    heading: "Before you commit to a car, run the numbers.",
+    blurb: "Enter your own transport habits, car costs and assumptions. Compare your estimated 1-year and 10-year costs, find your break-even point, and test how the decision changes under different assumptions.",
+    noun: "Calculator",
+    footer: "The article shows typical costs · The calculator applies them to your household",
+  },
+  "hdb-tenant-pack": {
+    heading: "Before you sign a lease, know the true cost.",
+    blurb: "Compare the true monthly and total lease cost of up to 3 rental options. Inspect units with a detailed viewing checklist. Verify eligibility and documentation before signing. Use ready-to-copy message templates for clear communication.",
+    noun: "Pack",
+    footer: "The article outlines your options · The pack helps you verify and protect them",
+  },
+  "home-bakery-calculator": {
+    heading: "Price your bakes for profit, not for guesses.",
+    blurb: "Cost every ingredient, recipe and batch precisely — including packaging, your time and overheads. Set prices at your target margin, project monthly profit, and stress-test a shared-kitchen upgrade before committing.",
+    noun: "Calculator",
+    footer: "The article covers the rules · The calculator makes the business add up",
+  },
+};
+
+export default function PaidProductCTA({ productKey }: PaidProductCTAProps) {
+  const product = ALL_PRODUCTS.find(p => p.key === productKey) ?? ALL_PRODUCTS[0];
   const checkoutUrl = getPayPalCheckoutUrl();
   const configured = checkoutUrl.length > 0;
+  const bullets = VALUE_BULLETS[productKey] ?? VALUE_BULLETS["transport-calculator"];
+  const copy = CTA_COPY[productKey] ?? CTA_COPY["transport-calculator"];
 
   return (
     <div className="relative group my-24" data-animate>
@@ -42,16 +83,15 @@ export default function PaidProductCTA() {
             </div>
 
             <h3 className={`${playfair.className} text-4xl md:text-6xl font-black text-[var(--color-text-primary)] mb-6 tracking-tight leading-tight italic text-balance text-center`}>
-              Before you commit to a car, run the numbers.
+              {copy.heading}
             </h3>
 
             <p className="text-[var(--color-text-secondary)] text-lg md:text-xl mb-10 max-w-3xl mx-auto leading-relaxed text-center">
-              Enter your own transport habits, car costs and assumptions. Compare your estimated 1-year and 10-year costs,
-              find your break-even point, and test how the decision changes under different assumptions.
+              {copy.blurb}
             </p>
 
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-4 max-w-3xl mx-auto mb-12">
-              {VALUE_BULLETS.map((b) => (
+              {bullets.map((b) => (
                 <li key={b} className="flex items-start gap-3">
                   <svg className="w-5 h-5 mt-0.5 shrink-0" style={{ color: 'var(--color-green-light)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
@@ -69,7 +109,7 @@ export default function PaidProductCTA() {
                   rel="nofollow noopener noreferrer"
                   className="btn btn-primary btn-lg w-full sm:w-auto"
                 >
-                  Get the Calculator — {product.priceLabel}
+                  Get the {copy.noun} — {product.priceLabel}
                 </a>
               ) : (
                 <span
@@ -77,7 +117,7 @@ export default function PaidProductCTA() {
                   title="Payment link configuration pending"
                   className="btn btn-primary btn-lg w-full sm:w-auto opacity-60 cursor-not-allowed select-none"
                 >
-                  Get the Calculator — {product.priceLabel}
+                  Get the {copy.noun} — {product.priceLabel}
                 </span>
               )}
 
@@ -94,7 +134,7 @@ export default function PaidProductCTA() {
 
             <div className="mt-12 pt-8 border-t border-[var(--color-border)] text-center">
               <p className={`${mono.className} text-[9px] text-[var(--color-text-tertiary)] uppercase tracking-[0.35em]`}>
-                The article shows typical costs · The calculator applies them to your household
+                {copy.footer}
               </p>
             </div>
           </div>

@@ -24,7 +24,43 @@ export const TRANSPORT_CALCULATOR_PRODUCT = {
   thanksPath: "/thanks/transport-calculator",
 } as const;
 
-export type ProductConfig = typeof TRANSPORT_CALCULATOR_PRODUCT;
+export const HDB_TENANT_PRODUCT = {
+  key: "hdb-tenant-pack",
+  name: "Singapore HDB Tenant Protection & Cost Pack (2026)",
+  shortName: "HDB Tenant Protection & Cost Pack",
+  priceLabel: "S$17",
+  priceAmount: 17,
+  currency: "SGD",
+  articleSlug: "hdb-rental-guide-rental-flat-room-rental-eligibility",
+  masterAssetFile: "singapore-hdb-tenant-protection-cost-pack-2026.xlsx",
+  downloadFileName: "SGEventsHub-HDB-Tenant-Protection-Cost-Pack-2026.xlsx",
+  thanksPath: "/thanks/hdb-tenant-pack",
+} as const;
+
+export const HOME_BAKERY_PRODUCT = {
+  key: "home-bakery-calculator",
+  name: "Singapore Home Bakery Pricing & Profit Calculator (2026)",
+  shortName: "Home Bakery Pricing & Profit Calculator",
+  priceLabel: "S$22",
+  priceAmount: 22,
+  currency: "SGD",
+  articleSlug: "home-based-food-business-singapore",
+  masterAssetFile: "singapore-home-bakery-pricing-profit-calculator-2026.xlsx",
+  downloadFileName: "SGEventsHub-Home-Bakery-Pricing-Profit-Calculator-2026.xlsx",
+  thanksPath: "/thanks/home-bakery-calculator",
+} as const;
+
+export type ProductConfig = typeof TRANSPORT_CALCULATOR_PRODUCT | typeof HDB_TENANT_PRODUCT | typeof HOME_BAKERY_PRODUCT;
+
+export const ALL_PRODUCTS = [TRANSPORT_CALCULATOR_PRODUCT, HDB_TENANT_PRODUCT, HOME_BAKERY_PRODUCT] as const;
+
+export function getProductByKey(key: string): ProductConfig | undefined {
+  return ALL_PRODUCTS.find(p => p.key === key);
+}
+
+export function getProductByArticleSlug(slug: string): ProductConfig | undefined {
+  return ALL_PRODUCTS.find(p => p.articleSlug === slug);
+}
 
 const OWNER_PAYPAL_CHECKOUT_URL = "https://www.paypal.com/ncp/payment/6JYXQ5WASJBQ6";
 
