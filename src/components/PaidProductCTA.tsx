@@ -55,11 +55,17 @@ const CTA_COPY: Record<string, { heading: string; blurb: string; noun: string; f
 };
 
 export default function PaidProductCTA({ productKey }: PaidProductCTAProps) {
-  const product = ALL_PRODUCTS.find(p => p.key === productKey) ?? ALL_PRODUCTS[0];
+  // STRICT product resolution: render nothing unless the key maps to a
+  // configured product. Never fall back to another product's price/copy.
+  const product = ALL_PRODUCTS.find(p => p.key === productKey);
+  if (!product) return null;
+
   const checkoutUrl = getPayPalCheckoutUrl();
   const configured = checkoutUrl.length > 0;
-  const bullets = VALUE_BULLETS[productKey] ?? VALUE_BULLETS["transport-calculator"];
-  const copy = CTA_COPY[productKey] ?? CTA_COPY["transport-calculator"];
+  const bullets = VALUE_BULLETS[product.key];
+  if (!bullets) return null;
+  const copy = CTA_COPY[product.key];
+  if (!copy) return null;
 
   return (
     <div className="relative group my-24" data-animate>
