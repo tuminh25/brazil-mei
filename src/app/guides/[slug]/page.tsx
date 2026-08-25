@@ -7,6 +7,8 @@ import AffiliateCTA from "@/components/AffiliateCTA";
 import { TableOfContents } from "@/components/TableOfContents";
 import { addHeadingIds, findDecisionPointHeading, splitContentAtHeading } from "@/lib/content-utils";
 import { ResidentTools } from "@/components/ResidentTools";
+import PaidProductCTA from "@/components/PaidProductCTA";
+import { TRANSPORT_CALCULATOR_PRODUCT } from "@/config/products";
 import type { Metadata } from "next";
 import { getVersionedImageUrl, getVersionedOgImages, getPostImageUrl } from "@/lib/image-utils";
 
@@ -619,6 +621,41 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
 
           {/* MAIN ARTICLE CONTENT - with contextual tool injection */}
           {(() => {
+            // Paid product sales block — ONLY for the transport calculator article:
+            // injected right before the "Common Mistakes" H2 (after Side-by-Side).
+            if (post.slug === TRANSPORT_CALCULATOR_PRODUCT.articleSlug) {
+              const decisionPointIndex = findDecisionPointHeading(post.content, post.category);
+              const { beforeHtml, afterHtml } = decisionPointIndex >= 0
+                ? splitContentAtHeading(post.content, decisionPointIndex)
+                : { beforeHtml: "", afterHtml: post.content };
+              const salesBlockMatch = afterHtml.search(/<h2[^>]*>[^<]*Common Mistakes/i);
+              const midHtml = salesBlockMatch >= 0 ? afterHtml.slice(0, salesBlockMatch) : afterHtml;
+              const tailHtml = salesBlockMatch >= 0 ? afterHtml.slice(salesBlockMatch) : "";
+              return (
+                <>
+                  {beforeHtml && (
+                    <article className="editorial-article max-w-none mb-12" data-animate>
+                      <div dangerouslySetInnerHTML={{ __html: addHeadingIds(beforeHtml) }} />
+                    </article>
+                  )}
+
+                  {decisionPointIndex >= 0 && <ResidentTools category={post.category} />}
+
+                  <article className="editorial-article max-w-none mb-12" data-animate>
+                    <div dangerouslySetInnerHTML={{ __html: addHeadingIds(midHtml) }} />
+                  </article>
+
+                  <PaidProductCTA />
+
+                  {tailHtml && (
+                    <article className="editorial-article max-w-none mb-12" data-animate>
+                      <div dangerouslySetInnerHTML={{ __html: addHeadingIds(tailHtml) }} />
+                    </article>
+                  )}
+                </>
+              );
+            }
+
             const decisionPointIndex = findDecisionPointHeading(post.content, post.category);
             if (decisionPointIndex >= 0) {
               const { beforeHtml, afterHtml } = splitContentAtHeading(post.content, decisionPointIndex);
