@@ -10,7 +10,7 @@
  *
  * Design rules:
  *  - All calculations happen INSIDE the spreadsheet via live formulas.
- *  - Only yellow input cells are editable (sheets are protected, no password).
+ *  - No worksheet protection anywhere: customers are never prompted for a password.
  *  - Pre-filled numbers are clearly-labelled 2026 EXAMPLES, editable by design.
  *  - No external APIs, no live data fetches.
  */
@@ -858,51 +858,14 @@ async function main() {
   });
 
   // ------------------------------------------------------------------------
-  // Protect sheets: leave only yellow INPUT cells editable.
+  // Sheet protection deliberately REMOVED.
+  // Worksheet protection (even without a password) makes Excel show its
+  // protected-cell / "Unprotect Sheet" password dialog when customers
+  // interact with non-input cells (e.g. the merged verdict banner on
+  // UPGRADE SCENARIO). Customers must never be prompted for a password,
+  // so all cells stay editable at the file level. Formula integrity is
+  // preserved; do not reintroduce ws.protect() here.
   // ------------------------------------------------------------------------
-  const protectOpts = {
-    selectLockedCells: true,
-    selectUnlockedCells: true,
-    formatCells: false,
-    formatColumns: false,
-    formatRows: false,
-    insertRows: false,
-    insertColumns: false,
-    deleteRows: false,
-    deleteColumns: false,
-    sort: false,
-    autoFilter: false,
-  };
-
-  // Unlock all yellow input cells
-  function unlock(ws, addresses) {
-    addresses.forEach((a) => ws.getCell(a).protection = { locked: false });
-  }
-
-  unlock(ing, []);
-  for (let i = 0; i < exampleIngredients.length; i++) {
-    const rowIdx = ingFirstDataRow + i;
-    ['B','C','D','E','G'].forEach(col => unlock(ing, [`${col}${rowIdx}`]));
-  }
-  for (let i = 0; i < extraRows; i++) {
-    const rowIdx = ingFirstDataRow + exampleIngredients.length + i;
-    ['B','C','D','E','G'].forEach(col => unlock(ing, [`${col}${rowIdx}`]));
-  }
-
-  for (let i = 0; i < recipeLines.length; i++) {
-    unlock(rec, [`C${recipeFirstRow + i}`]);
-  }
-  unlock(rec, [`C${yieldRow}`, `C${pkgPerItemRow}`]);
-
-  unlock(lab, [hourlyRateRef, batchHoursRef, elecPerBatchRef, equipMonthlyRef, otherMonthlyRef, batchesMonthRef]);
-
-  unlock(price, [marginInputRef, actualPriceInputRef, volInputRef]);
-
-  unlock(upg, [sharedHourlyRef, sharedHoursRef, sharedFixedRef, batchesUpgRef]);
-
-  for (const ws of [start, ing, rec, lab, price, upg, src]) {
-    await ws.protect('', protectOpts);
-  }
 
   // ------------------------------------------------------------------------
   // Write file
