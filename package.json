@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "seed": "tsx prisma/seed.ts",
+    "test:conn": "tsx tests/connection-lifecycle.test.ts",
     "postinstall": "prisma generate",
     "enrich-events": "node scripts/enrichEvents.js",
     "enrich-events:retry": "node scripts/enrichEvents.js --retry",
