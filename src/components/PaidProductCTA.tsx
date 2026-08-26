@@ -3,7 +3,7 @@
 // Visually consistent with AffiliateCTA (gradient border card, mono badges,
 // Playfair editorial heading). Server component — no client JS.
 import { Playfair_Display, IBM_Plex_Mono } from 'next/font/google';
-import { ALL_PRODUCTS, getPayPalCheckoutUrl, type ProductConfig } from "@/config/products";
+import { ALL_PRODUCTS, type ProductConfig } from "@/config/products";
 
 const playfair = Playfair_Display({ subsets: ['latin'], weight: ['700', '900'], style: ['italic', 'normal'] });
 const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '600'] });
@@ -60,8 +60,10 @@ export default function PaidProductCTA({ productKey }: PaidProductCTAProps) {
   const product = ALL_PRODUCTS.find(p => p.key === productKey);
   if (!product) return null;
 
-  const checkoutUrl = getPayPalCheckoutUrl();
-  const configured = checkoutUrl.length > 0;
+  // Per-product PayPal URL — no shared/global fallback. Each product can
+  // only ever link to its own dedicated PayPal payment page.
+  const checkoutUrl = product.paypalUrl;
+  const configured = typeof checkoutUrl === "string" && /^https:\/\/(www\.)?paypal\.com\//.test(checkoutUrl);
   const bullets = VALUE_BULLETS[product.key];
   if (!bullets) return null;
   const copy = CTA_COPY[product.key];
