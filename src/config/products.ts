@@ -51,9 +51,79 @@ export const HOME_BAKERY_PRODUCT = {
   paypalUrl: "https://www.paypal.com/ncp/payment/9N8RHTMEPZSEY",
 } as const;
 
-export type ProductConfig = typeof TRANSPORT_CALCULATOR_PRODUCT | typeof HDB_TENANT_PRODUCT | typeof HOME_BAKERY_PRODUCT;
+export const HDB_RENOSMART_PRODUCT = {
+  key: "hdb-renosmart-planner",
+  name: "HDB RenoSmart Budget & Compliance Planner (2026)",
+  shortName: "HDB RenoSmart Planner",
+  priceLabel: "S$19",
+  priceAmount: 19,
+  currency: "SGD",
+  articleSlug: "hdb-renovation-cost-guide-singapore",
+  masterAssetFile: "HDB-RenoSmart-Budget-Compliance-Planner-2026.xlsx",
+  downloadFileName: "SGEventsHub-HDB-RenoSmart-Planner-2026.xlsx",
+  thanksPath: "/thanks/hdb-renosmart-planner",
+  paypalUrl: "https://www.paypal.com/ncp/payment/PLACEHOLDER_HDB_RENOSMART",
+} as const;
 
-export const ALL_PRODUCTS = [TRANSPORT_CALCULATOR_PRODUCT, HDB_TENANT_PRODUCT, HOME_BAKERY_PRODUCT] as const;
+export const WEDDING_ANGBAO_PRODUCT = {
+  key: "wedding-angbao-planner",
+  name: "Singapore Wedding Cashflow & Ang Bao Planner (2026)",
+  shortName: "Wedding Cashflow & Ang Bao Planner",
+  priceLabel: "S$19",
+  priceAmount: 19,
+  currency: "SGD",
+  articleSlug: "singapore-wedding-cost-ang-bao-guide",
+  masterAssetFile: "singapore-wedding-cashflow-angbao-planner-2026.xlsx",
+  downloadFileName: "SGEventsHub-Wedding-AngBao-Planner-2026.xlsx",
+  thanksPath: "/thanks/wedding-angbao-planner",
+  paypalUrl: "https://www.paypal.com/ncp/payment/PLACEHOLDER_WEDDING_ANGBAO",
+} as const;
+
+export const PR_READINESS_PRODUCT = {
+  key: "pr-readiness-audit",
+  name: "Singapore PR Readiness & Document Audit (2026)",
+  shortName: "PR Readiness & Document Audit",
+  priceLabel: "S$19",
+  priceAmount: 19,
+  currency: "SGD",
+  articleSlug: "singapore-pr-self-submission-guide",
+  masterAssetFile: "singapore-pr-readiness-document-audit-2026.xlsx",
+  downloadFileName: "SGEventsHub-PR-Readiness-Audit-2026.xlsx",
+  thanksPath: "/thanks/pr-readiness-audit",
+  paypalUrl: "https://www.paypal.com/ncp/payment/PLACEHOLDER_PR_READINESS",
+} as const;
+
+export const P1_PHASE_MAPPER_PRODUCT = {
+  key: "p1-phase-mapper",
+  name: "Singapore P1 Phase & Priority Strategy Mapper (2026)",
+  shortName: "P1 Phase & Priority Strategy Mapper",
+  priceLabel: "S$17",
+  priceAmount: 17,
+  currency: "SGD",
+  articleSlug: "p1-registration-phases-distance-guide",
+  masterAssetFile: "singapore-p1-phase-priority-strategy-mapper-2026.xlsx",
+  downloadFileName: "SGEventsHub-P1-Phase-Mapper-2026.xlsx",
+  thanksPath: "/thanks/p1-phase-mapper",
+  paypalUrl: "https://www.paypal.com/ncp/payment/PLACEHOLDER_P1_PHASE_MAPPER",
+} as const;
+
+export const MDW_TCO_PRODUCT = {
+  key: "mdw-tco-planner",
+  name: "Singapore MDW Total Cost of Ownership (TCO) Planner (2026)",
+  shortName: "MDW TCO Planner",
+  priceLabel: "S$19",
+  priceAmount: 19,
+  currency: "SGD",
+  articleSlug: "foreign-domestic-worker-hiring-cost-guide",
+  masterAssetFile: "singapore-mdw-tco-planner-2026.xlsx",
+  downloadFileName: "SGEventsHub-MDW-TCO-Planner-2026.xlsx",
+  thanksPath: "/thanks/mdw-tco-planner",
+  paypalUrl: "https://www.paypal.com/ncp/payment/PLACEHOLDER_MDW_TCO",
+} as const;
+
+export type ProductConfig = typeof TRANSPORT_CALCULATOR_PRODUCT | typeof HDB_TENANT_PRODUCT | typeof HOME_BAKERY_PRODUCT | typeof HDB_RENOSMART_PRODUCT | typeof WEDDING_ANGBAO_PRODUCT | typeof PR_READINESS_PRODUCT | typeof P1_PHASE_MAPPER_PRODUCT | typeof MDW_TCO_PRODUCT;
+
+export const ALL_PRODUCTS = [TRANSPORT_CALCULATOR_PRODUCT, HDB_TENANT_PRODUCT, HOME_BAKERY_PRODUCT, HDB_RENOSMART_PRODUCT, WEDDING_ANGBAO_PRODUCT, PR_READINESS_PRODUCT, P1_PHASE_MAPPER_PRODUCT, MDW_TCO_PRODUCT] as const;
 
 export function getProductByKey(key: string): ProductConfig | undefined {
   return ALL_PRODUCTS.find(p => p.key === key);
