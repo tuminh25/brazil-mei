@@ -5,7 +5,7 @@
   "framework": "nextjs",
   "functions": {
     "src/app/api/download/**/*.ts": {
-      "includedFiles": "digital-products/**/*"
+      "includeFiles": "digital-products/**/*"
     }
   }
 }
