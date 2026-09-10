@@ -502,6 +502,9 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
 
   const displayImage = post.imageUrl || "https://images.unsplash.com/photo-1525625239513-39bc131f9979?w=1600&q=80";
 
+  // Determine if this article has a matching paid product (for CTA injection)
+  const matchedProduct = getProductByArticleSlug(post.slug);
+
   return (
     <main className={`${inter.className} min-h-screen bg-[var(--color-black)] text-[var(--color-text-primary)] pb-32 selection:bg-[var(--color-blue)]/30 font-sans relative overflow-hidden`}>
 
@@ -623,7 +626,7 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
           {(() => {
             // Paid product sales block — injected for articles that have a matching product.
             // Injected right before the "Common Mistakes" H2 (after Side-by-Side for transport, or equivalent for others).
-            const product = getProductByArticleSlug(post.slug);
+            const product = matchedProduct;
             if (product) {
               const decisionPointIndex = findDecisionPointHeading(post.content, post.category);
               const { beforeHtml, afterHtml } = decisionPointIndex >= 0
@@ -682,6 +685,13 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
               );
             }
           })()}
+
+          {/* GUARANTEED FALLBACK: If article has a matching paid product but CTA wasn't injected
+              (e.g., no decision point found and no "Common Mistakes" heading), render it here
+              at the end of article content, before the generic ResidentTools/AffiliateCTA. */}
+          {matchedProduct && (
+            <PaidProductCTA productKey={matchedProduct.key} />
+          )}
 
           {/* USEFUL RESIDENT TOOLS - Auto-mapped by category (end of article) */}
           <ResidentTools category={post.category} />

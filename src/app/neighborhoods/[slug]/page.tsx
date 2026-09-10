@@ -10,6 +10,7 @@ const inter = Inter({ subsets: ['latin'], weight: ['400', '700', '900'] });
 const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '600'] });
 
 export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
 
 const neighborhoodData: Record<string, { name: string; description: string; imageUrl: string; tags: string[]; mrtLines: string[]; highlights: string[] }> = {
   woodlands: {

@@ -121,9 +121,23 @@ export const MDW_TCO_PRODUCT = {
   paypalUrl: "https://www.paypal.com/ncp/payment/PLACEHOLDER_MDW_TCO",
 } as const;
 
-export type ProductConfig = typeof TRANSPORT_CALCULATOR_PRODUCT | typeof HDB_TENANT_PRODUCT | typeof HOME_BAKERY_PRODUCT | typeof HDB_RENOSMART_PRODUCT | typeof WEDDING_ANGBAO_PRODUCT | typeof PR_READINESS_PRODUCT | typeof P1_PHASE_MAPPER_PRODUCT | typeof MDW_TCO_PRODUCT;
+export const WOODLANDS_EXAM_BACKUP_PRODUCT = {
+  key: "woodlands-exam-week-backup-plan",
+  name: "Woodlands Exam Week Backup Plan 2026",
+  shortName: "Woodlands Exam Week Backup Plan",
+  priceLabel: "S$6.90",
+  priceAmount: 6.9,
+  currency: "SGD",
+  articleSlug: "quiet-study-spots-woodlands-singapore-2026",
+  masterAssetFile: "Woodlands-Exam-Week-Backup-Plan-2026.pdf",
+  downloadFileName: "Woodlands-Exam-Week-Backup-Plan-2026.pdf",
+  thanksPath: "/thanks/woodlands-exam-week-backup-plan",
+  paypalUrl: "https://www.paypal.com/ncp/payment/PLACEHOLDER_WOODLANDS_EXAM_BACKUP",
+} as const;
 
-export const ALL_PRODUCTS = [TRANSPORT_CALCULATOR_PRODUCT, HDB_TENANT_PRODUCT, HOME_BAKERY_PRODUCT, HDB_RENOSMART_PRODUCT, WEDDING_ANGBAO_PRODUCT, PR_READINESS_PRODUCT, P1_PHASE_MAPPER_PRODUCT, MDW_TCO_PRODUCT] as const;
+export type ProductConfig = typeof TRANSPORT_CALCULATOR_PRODUCT | typeof HDB_TENANT_PRODUCT | typeof HOME_BAKERY_PRODUCT | typeof HDB_RENOSMART_PRODUCT | typeof WEDDING_ANGBAO_PRODUCT | typeof PR_READINESS_PRODUCT | typeof P1_PHASE_MAPPER_PRODUCT | typeof MDW_TCO_PRODUCT | typeof WOODLANDS_EXAM_BACKUP_PRODUCT;
+
+export const ALL_PRODUCTS = [TRANSPORT_CALCULATOR_PRODUCT, HDB_TENANT_PRODUCT, HOME_BAKERY_PRODUCT, HDB_RENOSMART_PRODUCT, WEDDING_ANGBAO_PRODUCT, PR_READINESS_PRODUCT, P1_PHASE_MAPPER_PRODUCT, MDW_TCO_PRODUCT, WOODLANDS_EXAM_BACKUP_PRODUCT] as const;
 
 export function getProductByKey(key: string): ProductConfig | undefined {
   return ALL_PRODUCTS.find(p => p.key === key);

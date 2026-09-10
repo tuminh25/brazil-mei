@@ -9,6 +9,7 @@ const inter = Inter({ subsets: ['latin'], weight: ['400', '600', '800'] });
 const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '600'] });
 
 export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "Latest Singapore Resident Guides | SG Events Hub",

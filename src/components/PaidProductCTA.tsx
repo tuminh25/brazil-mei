@@ -31,6 +31,56 @@ const VALUE_BULLETS: Record<string, string[]> = {
     "Suggested pricing at your target margin, with profit per item and batch",
     "Monthly profit projection plus a home vs shared-kitchen upgrade scenario",
   ],
+  "hdb-renosmart-planner": [
+    "Personalised renovation budget — your flat, your scope, your floor area",
+    "Planning range with contingency and GST — no hidden surprises",
+    "Cash requirement & payment milestones tied to your total",
+    "Compliance checker: BTO toilet hacking, permits, structural rules",
+  ],
+  "wedding-angbao-planner": [
+    "Total wedding budget with banquet, bridal, photography, décor, rings, and customs",
+    "Three ang bao scenarios (conservative / expected / optimistic) with surplus/shortfall",
+    "Break-even ang bao per guest and guest count needed to cover costs",
+    "Upfront cash requirement and payment milestone timeline",
+  ],
+  "pr-readiness-audit": [
+    "Complete ICA document checklist across 7 categories with required/optional flags",
+    "Auto-calculated readiness score by category and overall",
+    "Prioritised action plan for missing documents with recommended steps",
+    "Profile section for personal, employment, education, and family details",
+  ],
+  "p1-phase-mapper": [
+    "All P1 registration phases (1 to 3) with eligibility, dates, and documents",
+    "School shortlist with distance categories and priority planning",
+    "Personalised action plan with deadlines and status tracking",
+    "Child profile with citizenship, sibling, alumni, and volunteer details",
+  ],
+  "mdw-tco-planner": [
+    "Full first-year and ongoing annual cost breakdown (salary, levy, insurance, living expenses)",
+    "Placement loan breakdown: agency fee, employer cash outlay, salary recovery, net cost",
+    "Medical and personal accident insurance minimums per MOM (S$60k each)",
+    "Affordability check against household income with monthly/annual views",
+  ],
+  "woodlands-exam-week-backup-plan": [
+    "Woodlands/North study-space decision matrix with 6 verified venues",
+    "Plan A → B → C → D backup hierarchy for exam-week conditions",
+    "Opening-hour and booking checks for every listed venue",
+    "Quietness / power / Wi-Fi / AC considerations per venue",
+    "Late-hour fallback logic with verified 24-hour options",
+    "Exam-week checklist and emergency decision rules",
+  ],
+};
+
+const DOWNLOAD_DESCRIPTIONS: Record<string, string> = {
+  "transport-calculator": "Instant digital download · Works with Excel and Google Sheets",
+  "hdb-tenant-pack": "Instant digital download · Works with Excel and Google Sheets",
+  "home-bakery-calculator": "Instant digital download · Works with Excel and Google Sheets",
+  "hdb-renosmart-planner": "Instant digital download · Works with Excel and Google Sheets",
+  "wedding-angbao-planner": "Instant digital download · Works with Excel and Google Sheets",
+  "pr-readiness-audit": "Instant digital download · Works with Excel and Google Sheets",
+  "p1-phase-mapper": "Instant digital download · Works with Excel and Google Sheets",
+  "mdw-tco-planner": "Instant digital download · Works with Excel and Google Sheets",
+  "woodlands-exam-week-backup-plan": "Instant digital download · PDF — works on any device",
 };
 
 const CTA_COPY: Record<string, { heading: string; blurb: string; noun: string; footer: string }> = {
@@ -52,6 +102,42 @@ const CTA_COPY: Record<string, { heading: string; blurb: string; noun: string; f
     noun: "Calculator",
     footer: "The article covers the rules · The calculator makes the business add up",
   },
+  "hdb-renosmart-planner": {
+    heading: "Before you renovate, know the true cost.",
+    blurb: "Enter your flat type, floor area, and renovation scope. Get a personalised budget with GST and contingency, see your cash requirement and payment milestones, and check HDB compliance warnings — all in one workbook.",
+    noun: "Planner",
+    footer: "The article explains renovation costs · The planner applies them to your flat",
+  },
+  "wedding-angbao-planner": {
+    heading: "Before you book the banquet, know the true cash flow.",
+    blurb: "Enter your guest count, venue tier, and vendor quotes. See three ang bao scenarios, break-even points, and the upfront cash you must cover before the wedding day — so guest contributions never become your budget's safety net.",
+    noun: "Planner",
+    footer: "The article outlines costs and norms · The planner applies them to your wedding",
+  },
+  "pr-readiness-audit": {
+    heading: "Before you submit to ICA, know your document gaps.",
+    blurb: "Build your profile, check off every required and supporting document across 7 categories, and get an auto-prioritised action plan for anything missing. No guessing — just a clear readiness score and next steps.",
+    noun: "Audit",
+    footer: "The article lists ICA requirements · The audit tracks your compliance",
+  },
+  "p1-phase-mapper": {
+    heading: "Before you register for P1, map your real options.",
+    blurb: "Enter your child's profile and address. See which phase applies, shortlist schools by actual road-distance tiers, and build a timeline with deadlines. Never register in Phase 2C when an earlier phase actually applies.",
+    noun: "Mapper",
+    footer: "The article explains phases and distance rules · The mapper applies them to your child",
+  },
+  "mdw-tco-planner": {
+    heading: "Before you hire a helper, know the full cost.",
+    blurb: "Enter your helper type, salary, and levy tier. See the complete first-year and ongoing annual cost — including placement loan recovery, insurance minimums, and living expenses — so the monthly salary isn't the only number you plan for.",
+    noun: "Planner",
+    footer: "The article breaks down MDW costs · The planner applies them to your household",
+  },
+  "woodlands-exam-week-backup-plan": {
+    heading: "Know where to go next before your usual study spot fills up.",
+    blurb: "You already know the obvious study spots. The problem starts when you arrive and your first choice is full, too noisy, closed, or simply doesn't fit what you need. The Woodlands Exam Week Backup Plan gives you a practical Plan A → B → C → D system so you can switch quickly instead of starting the search again.",
+    noun: "Backup Plan",
+    footer: "The article lists study spots · The backup plan tells you what to do when they're full",
+  },
 };
 
 export default function PaidProductCTA({ productKey }: PaidProductCTAProps) {
@@ -68,6 +154,7 @@ export default function PaidProductCTA({ productKey }: PaidProductCTAProps) {
   if (!bullets) return null;
   const copy = CTA_COPY[product.key];
   if (!copy) return null;
+  const downloadDesc = DOWNLOAD_DESCRIPTIONS[product.key] || "Instant digital download";
 
   return (
     <div className="relative group my-24" data-animate>
@@ -135,7 +222,7 @@ export default function PaidProductCTA({ productKey }: PaidProductCTAProps) {
                     PayPal checkout is being connected — check back shortly.
                   </p>
                 )}
-                <p>Instant digital download · Works with Excel and Google Sheets</p>
+                <p>{downloadDesc}</p>
                 <p>Estimates only — not financial advice.</p>
               </div>
             </div>

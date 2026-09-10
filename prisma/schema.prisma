@@ -1,97 +1,68 @@
-// prisma/schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
-// --- ENUMS ---
-enum EventStatus {
-  DRAFT
-  ENRICHING
-  PUBLISHED
-  ARCHIVED
-}
-
-// --- AUTHOR MODEL (Hệ thống chuyên gia EEAT) ---
 model Author {
   id          String   @id @default(cuid())
   name        String
-  email       String?
   role        String
-  bio         String?  @db.Text  
+  bio         String?
   avatarUrl   String?
-  socialLinks Json?    // { twitter: "...", instagram: "..." }
-  
-  // Quan hệ ngược
-  posts       Post[]
-  events      Event[]
-  
+  socialLinks Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  email       String?
+  events      Event[]
+  posts       Post[]
 
   @@index([name])
 }
 
-// --- EVENT MODEL ---
 model Event {
-  id               Int          @id @default(autoincrement())
-  slug             String       @unique
-  name             String
-  description      String?      @db.Text
-  imageUrl         String?
-  startDate        DateTime?
-  endDate          DateTime?
-  status           EventStatus  @default(DRAFT)
-  enrichedContent  Json?
-
-  // Quan hệ với Author
-  authorId         String?
-  author           Author?      @relation(fields: [authorId], references: [id])
-
-  // Địa điểm
-  venue            String?
-  venueAddress     String?
-  postalCode       String?
-  latitude         Float?
-  longitude        Float?
-
-  // Giá & Phân loại
-  price            String?
-  currency         String?      @default("SGD")
-  isFree           Boolean?     @default(false)
-  category         String?
-  tags             String[]     @default([])
-  
-  // SEO Meta
-  metaTitle        String?
-  metaDescription  String?
-
-  // Nguồn & Affiliate
+  id                      Int         @id @default(autoincrement())
+  slug                    String      @unique
+  name                    String
+  description             String?
+  imageUrl                String?
+  startDate               DateTime?
+  endDate                 DateTime?
+  status                  EventStatus @default(DRAFT)
+  venue                   String?
+  venueAddress            String?
+  postalCode              String?
+  latitude                Float?
+  longitude               Float?
+  price                   String?
+  currency                String?     @default("SGD")
+  isFree                  Boolean?    @default(false)
+  category                String?
+  tags                    String[]    @default([])
+  metaTitle               String?
+  metaDescription         String?
   sourceUrl               String?
   sourceProvider          String?
-  affiliateSearchKeywords Json?   
-  marketingPitch          String? @db.Text
-  nearbyAttractions       Json?   
-
-  // AI Enrichment
-  aiSummary        String?      @db.Text
-  aiSmartTips      Json?
-  aiFullExperience Json?
-  aiFaq            Json?
-  aiBestFor        String?
-  aiVibe           String?
-  aiDurationHint   String?
-  hotnessScore     Int?         @default(0)
-
-  // TIMESTAMPS (Chỉ khai báo 1 lần ở đây)
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  aiSummary               String?
+  aiSmartTips             Json?
+  aiFullExperience        Json?
+  aiFaq                   Json?
+  aiBestFor               String?
+  aiVibe                  String?
+  aiDurationHint          String?
+  hotnessScore            Int?        @default(0)
+  affiliateSearchKeywords Json?
+  marketingPitch          String?
+  nearbyAttractions       Json?
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt
+  enrichedContent         Json?
+  authorId                String?
+  author                  Author?     @relation(fields: [authorId], references: [id])
 
   @@index([slug])
   @@index([startDate])
@@ -101,7 +72,54 @@ model Event {
   @@index([authorId])
 }
 
-// --- ENUMS ---
+model Post {
+  id              Int          @id @default(autoincrement())
+  slug            String       @unique
+  title           String
+  excerpt         String?
+  content         String
+  imageUrl        String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  authorId        String?
+  bestTime        String?
+  insiderPrice    String?
+  isNewsjack      Boolean?     @default(false)
+  secretTip       String?
+  klookUrl        String?
+  tripUrl         String?
+  metaDescription String?
+  metaTitle       String?
+  neighborhood    String?
+  tags            String[]     @default([])
+  category        PostCategory @default(TRAVEL_GUIDE)
+  status          PostStatus   @default(PUBLISHED)
+  author          Author?      @relation(fields: [authorId], references: [id])
+
+  @@index([slug])
+  @@index([authorId])
+  @@index([category])
+  @@index([neighborhood])
+  @@index([isNewsjack])
+  @@index([status])
+}
+
+model MrtStation {
+  id        Int     @id @default(autoincrement())
+  name      String  @unique
+  slug      String  @unique
+  latitude  Float
+  longitude Float
+  line      String?
+}
+
+enum EventStatus {
+  DRAFT
+  ENRICHING
+  PUBLISHED
+  ARCHIVED
+}
+
 enum PostCategory {
   HOUSING
   TRANSPORT
@@ -120,63 +138,4 @@ enum PostStatus {
   PUBLISHED
   DRAFT
   ARCHIVED
-}
-
-// --- POST MODEL (RESIDENT GUIDES) ---
-model Post {
-  id          Int         @id @default(autoincrement())
-  slug        String      @unique
-  title       String
-  excerpt     String?     @db.Text
-  content     String      @db.Text
-  imageUrl    String?
-  category    PostCategory
-  status      PostStatus  @default(PUBLISHED)
-  
-  // Neighborhood support (Phase 3)
-  neighborhood String?
-  
-  // Tags for future use
-  tags        String[]    @default([])
-  
-  // Quan hệ với Author
-  authorId    String?
-  author      Author?     @relation(fields: [authorId], references: [id])
-  
-  // Newsjacking support
-  isNewsjack  Boolean?    @default(false)
-
-  // Insider Intelligence fields
-  insiderPrice  String?   @db.Text
-  bestTime      String?   @db.Text
-  secretTip     String?   @db.Text
-  
-  // Affiliate Deep Links
-  tripUrl       String?   @db.Text
-  klookUrl      String?   @db.Text
-  
-  // SEO
-  metaTitle       String?
-  metaDescription String?
-  
-  // TIMESTAMPS
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([slug])
-  @@index([authorId])
-  @@index([category])
-  @@index([neighborhood])
-  @@index([isNewsjack])
-  @@index([status])
-}
-
-// --- MRT MODEL ---
-model MrtStation {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  slug      String   @unique
-  latitude  Float
-  longitude Float
-  line      String?
 }

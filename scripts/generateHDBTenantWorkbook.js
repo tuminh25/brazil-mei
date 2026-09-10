@@ -242,7 +242,7 @@ async function main() {
     'Yellow cells are yours to edit. Blue/green cells calculate automatically — do not type into them.',
     'Every pre-filled figure is a clearly-labelled 2026 EXAMPLE assumption, not a quote or forecast. Replace with your own numbers.',
     'The calculator works entirely offline inside this file. It never fetches live rental or utility data.',
-    'Stamp duty calculations follow IRAS guidelines for lease agreements. Verify current rates on IRAS website before relying on them.',
+    'Stamp duty calculations follow IRAS guidelines for lease agreements. For a tenancy agreement, the tenant/lessee is generally liable for lease duty unless the agreement states otherwise. Verify current rates on IRAS website before relying on them.',
     'This pack is a practical planning tool. It is NOT legal advice. For legal questions, consult a qualified professional.',
   ]);
 
@@ -356,7 +356,7 @@ async function main() {
   // One-off / upfront costs
   r = addCalcInputSection(r, 'ONE-OFF / UPFRONT COSTS', [
     { key: 'deposit', label: 'Security deposit (months of rent)', example: 2, note: 'Typically 1–2 months. Enter number of months; formula converts to S$.', numFmt: '0.0' },
-    { key: 'stampDuty', label: 'Stamp duty (tenant\'s share)', example: 150, note: 'Lease duty per IRAS. For leases ≤3 years: 0.4% of total rent. Verify on IRAS website.' },
+    { key: 'stampDuty', label: 'Stamp duty (tenant\'s share per agreement)', example: 150, note: 'Lease duty per IRAS. For leases ≤3 years: 0.4% of total rent. For a tenancy agreement, the tenant/lessee is generally liable for lease duty unless the agreement states otherwise. Verify on IRAS website.' },
     { key: 'agentFee', label: 'Agent commission (if any)', example: 0, note: 'Typically 1 month rent if tenant\'s agent. Enter 0 if direct.' },
     { key: 'movingCost', label: 'Moving / setup costs', example: 300, note: 'Mover, boxes, initial groceries, minor repairs.' },
     { key: 'otherOneoff', label: 'Other one-off costs', example: 0, note: 'Any other upfront payment.' },
@@ -596,7 +596,7 @@ async function main() {
     'No "booking fee" or "goodwill deposit" before signing TA',
     'Rent due date, mode (bank transfer preferred), late fee terms',
     'Utility bills: whose name? How reimbursed?',
-    'Stamp duty: who pays? Tenant\'s share per IRAS?',
+    'Stamp duty: who pays per agreement? Tenant/lessee generally liable unless TA states otherwise',
   ], ORANGE);
 
   r = addChecklistSection(r, 'DOCUMENTATION & EVIDENCE', [
@@ -716,13 +716,13 @@ async function main() {
     { critical: true, text: 'Deposit held per agreement: stakeholder / joint account / lawyer / landlord' },
     { critical: false, text: 'First month\'s rent receipt obtained' },
     { critical: false, text: 'Agent commission receipt (if paid)' },
-    { critical: false, text: 'Stamp duty: tenant\'s share calculated, payment plan agreed' },
+    { critical: false, text: 'Stamp duty: liability per agreement (tenant/lessee generally liable unless TA states otherwise), payment plan agreed' },
     { critical: false, text: 'Post-dated cheques / GIRO / standing instruction details confirmed' },
   ], ORANGE);
 
   r = addPreSection(r, 'STAMP DUTY & IRAS COMPLIANCE', [
     { critical: false, text: 'Lease duty calculated per IRAS: 0.4% of total rent for lease ≤3 years (tenant\'s share)' },
-    { critical: false, text: 'Stamp duty paid within 14 days of signing (penalty if late)' },
+    { critical: false, text: 'Stamp duty paid within 14 days of signing (penalty if late) — liability per agreement' },
     { critical: false, text: 'e-Stamping via IRAS portal (www.iras.gov.sg) — keep certificate' },
     { critical: false, text: 'If agent says "landlord pays stamp duty" — confirm in writing in TA' },
     { critical: false, text: 'Reference: IRAS "Stamp Duty for Lease/Tenancy Agreements" guide' },
@@ -791,7 +791,7 @@ Specifically:
 
 Also, please confirm:
 • Security deposit: [X] months = S$[amount]
-• Stamp duty: tenant's share per IRAS guidelines — who will handle e-stamping?
+• Stamp duty: liability per agreement (tenant/lessee generally liable per IRAS unless TA states otherwise) — who will handle e-stamping?
 • Agent commission (if any): amount and payer
 
 Thank you,
@@ -852,7 +852,7 @@ Confirming our agreement for [address/unit number] before I make the deposit pay
   - To be held by: [stakeholder / joint account / lawyer / landlord]
   - Receipt to be issued upon receipt
 • First month rent: S$[amount] due on move-in [date]
-• Stamp duty (tenant's share per IRAS): S$[amount] — to be e-stamped by [landlord/agent/me] within 14 days
+• Stamp duty (tenant/lessee generally liable per IRAS unless TA states otherwise): S$[amount] — to be e-stamped by [landlord/agent/me] within 14 days
 • Agent commission (if any): S$[amount] payable by [tenant/landlord]
 • Lease term: [X] months, from [start date] to [end date]
 • Notice period: [X] months
@@ -919,7 +919,7 @@ Thank you,
       'HDB Branch mediation for landlord-tenant disputes',
     ]},
     { category: 'Key Assumptions in This Pack', items: [
-      'Stamp duty calculated at 0.4% of total rent (lease ≤ 3 years). Verify current rate on IRAS website.',
+      'Stamp duty calculated at 0.4% of total rent (lease ≤ 3 years). For a tenancy agreement, the tenant/lessee is generally liable for lease duty unless the agreement states otherwise. Verify current rate on IRAS website.',
       'Security deposit: 1–2 months rent is market practice; HDB does not mandate a specific amount.',
       'Agent commission: typically 1 month rent if tenant engages agent; negotiable.',
       'Air-con servicing: quarterly (~S$160/quarter) is market practice; clause should specify.',

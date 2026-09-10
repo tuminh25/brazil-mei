@@ -1,28 +1,31 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-async function check() {
-  const posts = await prisma.post.findMany({
-    where: { slug: { in: [
-      'hdb-resale-grants-2026-complete-guide',
-      'cpf-changes-2026-singapore-residents-guide',
-      'chas-medisave-medishield-life-singapore-healthcare-financing-guide',
-      'singapore-transport-costs-2026-mrt-bus-grab-car-comparison',
-      'skillsfuture-level-up-programme-explained-2026',
-      'cdc-vouchers-2026-grocery-hawker-budgeting-families'
-    ]}},
-    select: { title: true, content: true, excerpt: true, imageUrl: true, category: true, authorId: true }
-  });
+async function checkPosts() {
+  const slugs = [
+    'hdb-renovation-cost-guide-singapore',
+    'singapore-wedding-cost-ang-bao-guide',
+    'singapore-pr-self-submission-guide',
+    'p1-registration-phases-distance-guide',
+    'foreign-domestic-worker-hiring-cost-guide'
+  ];
   
-  for (const post of posts) {
-    console.log('===', post.title, '===');
-    console.log('Category:', post.category);
-    console.log('Author:', post.authorId);
-    console.log('Image:', post.imageUrl);
-    console.log('Excerpt starts with:', post.excerpt?.substring(0, 100));
-    console.log('Content starts with:', post.content?.substring(0, 200));
-    console.log('');
+  for (const slug of slugs) {
+    const post = await prisma.post.findUnique({ where: { slug } });
+    if (post) {
+      console.log('FOUND:', slug);
+      console.log('Title:', post.title);
+      console.log('Category:', post.category);
+      console.log('Content length:', post.content?.length);
+      console.log('---First 500 chars of content---');
+      console.log(post.content?.substring(0, 500));
+      console.log('========================');
+    } else {
+      console.log('NOT FOUND:', slug);
+      console.log('========================');
+    }
   }
   await prisma.$disconnect();
 }
-check();
+
+checkPosts().catch(console.error);
