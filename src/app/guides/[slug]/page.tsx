@@ -686,13 +686,6 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
             }
           })()}
 
-          {/* GUARANTEED FALLBACK: If article has a matching paid product but CTA wasn't injected
-              (e.g., no decision point found and no "Common Mistakes" heading), render it here
-              at the end of article content, before the generic ResidentTools/AffiliateCTA. */}
-          {matchedProduct && (
-            <PaidProductCTA productKey={matchedProduct.key} />
-          )}
-
           {/* USEFUL RESIDENT TOOLS - Auto-mapped by category (end of article) */}
           <ResidentTools category={post.category} />
 
