@@ -78,6 +78,12 @@ const nextConfig = {
         destination: '/guides/:slug*',
         permanent: true,
       },
+      // Handle trailing slash for PayPal auto-return URL
+      {
+        source: '/thanks/woodlands-exam-week-backup-plan/',
+        destination: '/thanks/woodlands-exam-week-backup-plan',
+        permanent: true,
+      },
     ];
   },
 };
