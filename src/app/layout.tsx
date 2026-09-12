@@ -4,21 +4,16 @@ import "./globals.css";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { Analytics } from "@vercel/analytics/react";
-import { GoogleAnalytics } from "@next/third-parties/google";
-
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.sgeventshub.com'),
+  metadataBase: new URL('https://www.brazilmei.com'),
   title: {
-    default: "SG Events Hub | Singapore Resident Intelligence",
-    template: "%s | SG Events Hub",
+    default: "Brazil MEI | Microempreendedor Individual Intelligence",
+    template: "%s | Brazil MEI",
   },
-  description: "Practical guides for living in Singapore — housing, transport, money, healthcare, food, and neighborhood intelligence.",
+  description: "Practical guides for MEIs in Brazil — registration, taxes, invoicing, benefits, and compliance.",
   alternates: {
     canonical: '/',
-    types: {
-      'application/rss+xml': '/rss.xml',
-    },
   },
   icons: {
     icon: [
@@ -30,26 +25,26 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    locale: 'en_SG',
-    url: 'https://www.sgeventshub.com/',
-    siteName: 'SG Events Hub',
-    title: 'SG Events Hub | Singapore Resident Intelligence',
-    description: 'Practical guides for living in Singapore — housing, transport, money, healthcare, food, and neighborhood intelligence.',
+    locale: 'pt_BR',
+    url: 'https://www.brazilmei.com/',
+    siteName: 'Brazil MEI',
+    title: 'Brazil MEI | Microempreendedor Individual Intelligence',
+    description: 'Practical guides for MEIs in Brazil — registration, taxes, invoicing, benefits, and compliance.',
     images: [
       {
         url: '/icon.png?v=2',
         width: 512,
         height: 512,
-        alt: 'SG Events Hub - Singapore Resident Intelligence',
+        alt: 'Brazil MEI - Microempreendedor Individual Intelligence',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    site: '@sgeventshub',
-    creator: '@sgeventshub',
-    title: 'SG Events Hub | Singapore Resident Intelligence',
-    description: 'Practical guides for living in Singapore — housing, transport, money, healthcare, food, and neighborhood intelligence.',
+    site: '@brazilmei',
+    creator: '@brazilmei',
+    title: 'Brazil MEI | Microempreendedor Individual Intelligence',
+    description: 'Practical guides for MEIs in Brazil — registration, taxes, invoicing, benefits, and compliance.',
     images: ['/icon.png?v=2'],
   },
   robots: {
@@ -79,33 +74,33 @@ function StructuredData() {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "SG Events Hub",
-    "url": "https://www.sgeventshub.com",
-    "logo": "https://www.sgeventshub.com/icon.png",
+    "name": "Brazil MEI",
+    "url": "https://www.brazilmei.com",
+    "logo": "https://www.brazilmei.com/icon.png",
     "sameAs": [
-      "https://twitter.com/sgeventshub",
-      "https://www.facebook.com/sgeventshub",
-      "https://www.instagram.com/sgeventshub"
+      "https://twitter.com/brazilmei",
+      "https://www.facebook.com/brazilmei",
+      "https://www.instagram.com/brazilmei"
     ],
-    "description": "Singapore Resident Intelligence — practical guides for housing, transport, money, healthcare, food, study, work, and neighborhood life.",
+    "description": "Brazil MEI Intelligence — practical guides for registration, taxes, invoicing, benefits, and compliance.",
   };
 
   const webSiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "SG Events Hub",
-    "url": "https://www.sgeventshub.com",
-    "description": "Practical guides for living in Singapore — housing, transport, money, healthcare, food, and neighborhood intelligence.",
+    "name": "Brazil MEI",
+    "url": "https://www.brazilmei.com",
+    "description": "Practical guides for MEIs in Brazil — registration, taxes, invoicing, benefits, and compliance.",
     "publisher": {
       "@type": "Organization",
-      "name": "SG Events Hub",
-      "url": "https://www.sgeventshub.com"
+      "name": "Brazil MEI",
+      "url": "https://www.brazilmei.com"
     },
     "potentialAction": {
       "@type": "SearchAction",
       "target": {
         "@type": "EntryPoint",
-        "urlTemplate": "https://www.sgeventshub.com/guides?search={search_term_string}"
+        "urlTemplate": "https://www.brazilmei.com/guides?search={search_term_string}"
       },
       "query-input": "required name=search_term_string"
     }
@@ -129,18 +124,11 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="dark scroll-smooth">
+    <html lang="pt-BR" className="dark scroll-smooth">
       <head>
         <StructuredData />
       </head>
       <body className="min-h-screen bg-black text-white antialiased">
-        {/* Google AdSense Script - Chạy trực tiếp trong head (beforeInteractive) */}
-        <script 
-          async 
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5206605273738031"
-          crossOrigin="anonymous"
-        ></script>
-        
         <div className="relative flex min-h-screen flex-col">
           <SiteHeader />
           <main className="flex-1">{children}</main>
@@ -148,9 +136,6 @@ export default function RootLayout({
         </div>
         
         <Analytics />
-        <GoogleAnalytics gaId="G-9FFS6DQMM0" />
-
-
       </body>
     </html>
   );

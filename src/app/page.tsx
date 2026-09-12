@@ -13,36 +13,24 @@ const inter = Inter({ subsets: ['latin'], weight: ['400', '700', '900'] });
 export const dynamic = 'force-static';
 export const revalidate = 3600;
 
-const IMAGE_FALLBACK = "https://images.unsplash.com/photo-1525625239513-39bc131f9979?q=80&w=1600&auto=format&fit=crop";
+const IMAGE_FALLBACK = "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1600&auto=format&fit=crop";
 
 const topicCategories = [
-  { value: 'HOUSING', label: 'Housing', icon: 'housing', href: '/guides?category=HOUSING' },
-  { value: 'TRANSPORT', label: 'Transport', icon: 'transport', href: '/guides?category=TRANSPORT' },
-  { value: 'MONEY', label: 'Money', icon: 'money', href: '/guides?category=MONEY' },
-  { value: 'FOOD', label: 'Food', icon: 'food', href: '/guides?category=FOOD' },
-  { value: 'HEALTHCARE', label: 'Healthcare', icon: 'healthcare', href: '/guides?category=HEALTHCARE' },
-  { value: 'STUDY', label: 'Study', icon: 'study', href: '/guides?category=STUDY' },
-  { value: 'LIFESTYLE', label: 'Lifestyle', icon: 'lifestyle', href: '/guides?category=LIFESTYLE' },
-  { value: 'WORK', label: 'Work', icon: 'work', href: '/guides?category=WORK' },
-];
-
-const neighborhoodData = [
-  { slug: 'woodlands', name: 'Woodlands', tag: 'North', color: 'blue' },
-  { slug: 'tengah', name: 'Tengah', tag: 'West', color: 'green' },
-  { slug: 'jurong', name: 'Jurong', tag: 'West', color: 'orange' },
-  { slug: 'punggol', name: 'Punggol', tag: 'North-East', color: 'cyan' },
-  { slug: 'tampines', name: 'Tampines', tag: 'East', color: 'purple' },
+  { value: 'MEI_DAS', label: 'DAS MEI', icon: 'calculator', href: '/mei-das' },
+  { value: 'MEI_FATURAMENTO', label: 'Faturamento', icon: 'chart', href: '/mei-faturamento' },
+  { value: 'DASN_SIMEI', label: 'DASN-SIMEI', icon: 'file', href: '/dasn-simei' },
+  { value: 'NOTA_FISCAL', label: 'Nota Fiscal', icon: 'receipt', href: '/nota-fiscal-mei' },
+  { value: 'MEI_OBRIGACOES', label: 'Obrigações', icon: 'checklist', href: '/mei-obrigacoes' },
+  { value: 'MEI_CADASTRO', label: 'Cadastro MEI', icon: 'user', href: '/mei-cadastro' },
+  { value: 'FERRAMENTAS', label: 'Ferramentas', icon: 'tools', href: '/ferramentas' },
+  { value: 'GUIA_COMPLETO', label: 'Guia Completo', icon: 'book', href: '/guias' },
 ];
 
 const tools = [
-  { name: 'HDB Affordability Calculator', category: 'Housing', icon: 'calculator', status: 'Coming Soon' },
-  { name: 'CPF Retirement Planner', category: 'Money', icon: 'planner', status: 'Coming Soon' },
-  { name: 'Transport Cost Calculator', category: 'Transport', icon: 'transportCost', status: 'Coming Soon' },
-  { name: 'School Distance Checker', category: 'Study', icon: 'school', status: 'Coming Soon' },
-  { name: 'Hawker Price Tracker', category: 'Food', icon: 'hawker', status: 'Coming Soon' },
-  { name: 'Clinic & Hospital Finder', category: 'Healthcare', icon: 'clinic', status: 'Coming Soon' },
-  { name: 'Salary Benchmark Tool', category: 'Work', icon: 'salary', status: 'Coming Soon' },
-  { name: 'Neighborhood Comparison', category: 'Neighborhood', icon: 'map', status: 'Coming Soon' },
+  { name: 'Calculadora DAS MEI', category: 'Tributos', icon: 'calculator', status: 'Disponível', href: '/ferramentas/calculadora-das' },
+  { name: 'Verificador de Faturamento', category: 'Controle', icon: 'chart', status: 'Em breve', href: '/ferramentas/verificador-faturamento' },
+  { name: 'Checklist Obrigações Mensais', category: 'Compliance', icon: 'checklist', status: 'Em breve', href: '/ferramentas/checklist-obrigacoes' },
+  { name: 'Simulador de Contratação', category: 'RH', icon: 'user', status: 'Em breve', href: '/ferramentas/simulador-contratacao' },
 ];
 
 function HeroSection({ playfairClass, monoClass, interClass }: { playfairClass: string; monoClass: string; interClass: string }) {
@@ -50,8 +38,8 @@ function HeroSection({ playfairClass, monoClass, interClass }: { playfairClass: 
     <section className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden border-b border-[var(--color-border)]">
       <div className="absolute inset-0 -z-20">
         <img
-          src="https://images.unsplash.com/photo-1525625293386-3f8f99389edd?q=80&w=2400"
-          alt="Singapore Marina Bay Skyline at Dusk"
+          src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=2400"
+          alt="Empreendedor brasileiro trabalhando"
           className="hero-image object-cover opacity-20 scale-100 w-full h-full"
         />
       </div>
@@ -67,61 +55,60 @@ function HeroSection({ playfairClass, monoClass, interClass }: { playfairClass: 
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass mb-8">
           <span className="w-1.5 h-1.5 bg-[var(--color-green)] rounded-full animate-pulse" />
           <span className={`${monoClass} text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-text-tertiary)]`}>
-            Live Intelligence Platform
+            Plataforma de Inteligência MEI
           </span>
         </div>
 
         <p className={`${monoClass} text-[var(--color-blue-light)] text-[10px] uppercase tracking-[0.5em] mb-6 font-black`}>
-          Singapore Resident Intelligence
+          Brasil • Microempreendedor Individual
         </p>
 
         <h1 className={`${playfairClass} hero-headline text-6xl md:text-[9.5rem] lg:text-[11rem] font-black leading-[0.82] tracking-tighter uppercase text-[var(--color-text-primary)] drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)] mb-8 text-balance`}>
-          Singapore{' '}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-cyan)] via-[var(--color-blue)] to-[var(--color-purple)]">
-            Unlocked
+          MEI <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-green)] via-[var(--color-blue)] to-[var(--color-purple)]">
+            Descomplicado
           </span>
         </h1>
 
         <p className="text-[var(--color-text-secondary)] text-lg md:text-xl max-w-3xl mx-auto mb-12 leading-relaxed font-light">
-          Practical guides for living in Singapore — housing, transport, money, food, healthcare, and neighborhood intelligence.
+          Guias práticos para MEIs no Brasil — DAS, faturamento, DASN-SIMEI, nota fiscal, obrigações mensais, contratação e ferramentas de cálculo.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Link
-            href="/guides"
+            href="/guias"
             className="text-[var(--color-text-tertiary)] text-xs font-bold uppercase tracking-widest hover:text-[var(--color-blue-light)] transition-colors border-b border-[var(--color-gray-800)] pb-1 inline-flex items-center gap-2"
           >
-            Browse All Guides
+            Ver Todos os Guias
             <ArrowRightIcon className="w-3 h-3" />
           </Link>
           <Link
-            href="/neighborhoods"
+            href="/ferramentas"
             className="text-[var(--color-text-tertiary)] text-xs font-bold uppercase tracking-widest hover:text-[var(--color-blue-light)] transition-colors border-b border-[var(--color-gray-800)] pb-1 inline-flex items-center gap-2"
           >
-            Explore Neighborhoods
+            Acessar Ferramentas
             <ArrowRightIcon className="w-3 h-3" />
           </Link>
         </div>
 
         <div className="mt-16 flex flex-wrap justify-center gap-8 md:gap-12 items-center text-[var(--color-text-tertiary)]">
           <div className="flex items-center gap-2">
-            <span className={`${monoClass} text-[9px] font-black uppercase tracking-[0.1em] text-[var(--color-text-primary)]`}>120+</span>
-            <span className="text-sm">Guides Published</span>
+            <span className={`${monoClass} text-[9px] font-black uppercase tracking-[0.1em] text-[var(--color-text-primary)]`}>8+</span>
+            <span className="text-sm">Temas Principais</span>
           </div>
           <div className="w-px h-6 bg-[var(--color-border)]" />
           <div className="flex items-center gap-2">
-            <span className={`${monoClass} text-[9px] font-black uppercase tracking-[0.1em] text-[var(--color-text-primary)]`}>8</span>
-            <span className="text-sm">Categories</span>
+            <span className={`${monoClass} text-[9px] font-black uppercase tracking-[0.1em] text-[var(--color-text-primary)]`}>2026</span>
+            <span className="text-sm">Atualizado</span>
           </div>
           <div className="w-px h-6 bg-[var(--color-border)]" />
           <div className="flex items-center gap-2">
-            <span className={`${monoClass} text-[9px] font-black uppercase tracking-[0.1em] text-[var(--color-text-primary)]`}>28</span>
-            <span className="text-sm">Neighborhoods</span>
+            <span className={`${monoClass} text-[9px] font-black uppercase tracking-[0.1em] text-[var(--color-text-primary)]`}>Oficial</span>
+            <span className="text-sm">Fontes Gov.br</span>
           </div>
           <div className="w-px h-6 bg-[var(--color-border)]" />
           <div className="flex items-center gap-2">
-            <span className={`${monoClass} text-[9px] font-black uppercase tracking-[0.1em] text-[var(--color-text-primary)]`}>Weekly</span>
-            <span className="text-sm">Updates</span>
+            <span className={`${monoClass} text-[9px] font-black uppercase tracking-[0.1em] text-[var(--color-text-primary)]`}>Gratuito</span>
+            <span className="text-sm">Acesso Livre</span>
           </div>
         </div>
       </div>
@@ -129,21 +116,21 @@ function HeroSection({ playfairClass, monoClass, interClass }: { playfairClass: 
   );
 }
 
-function TodaysSingaporeSection({ todaysSingapore, monoClass, playfairClass, interClass, IMAGE_FALLBACK }: { todaysSingapore: any[]; monoClass: string; playfairClass: string; interClass: string; IMAGE_FALLBACK: string }) {
-  if (todaysSingapore.length === 0) {
+function LatestGuidesSection({ latestGuides, monoClass, playfairClass, interClass, IMAGE_FALLBACK }: { latestGuides: any[]; monoClass: string; playfairClass: string; interClass: string; IMAGE_FALLBACK: string }) {
+  if (latestGuides.length === 0) {
     return (
       <section className="section" data-section>
         <div className="container">
           <div className="section-header-left">
-            <p className="section-eyebrow">Updated Today</p>
+            <p className="section-eyebrow">Publicados Recentemente</p>
             <h2 className="section-title section-title-lg">
-              Today's<br />Singapore
+              Últimos<br />Guias
             </h2>
             <div className="section-divider" />
           </div>
           <div className="text-center py-20 border border-dashed border-[var(--color-border)] rounded-[var(--radius-3xl)]">
-            <p className="text-[var(--color-text-tertiary)] font-bold uppercase tracking-widest text-xl mb-4">No resident guides yet</p>
-            <p className="text-[var(--color-text-muted)] max-w-md mx-auto">Publish your first guide to see it here.</p>
+            <p className="text-[var(--color-text-tertiary)] font-bold uppercase tracking-widest text-xl mb-4">Nenhum guia publicado ainda</p>
+            <p className="text-[var(--color-text-muted)] max-w-md mx-auto">Execute o seed para popular o banco com guias iniciais.</p>
           </div>
         </div>
       </section>
@@ -154,22 +141,22 @@ function TodaysSingaporeSection({ todaysSingapore, monoClass, playfairClass, int
     <section className="section" data-section>
       <div className="container">
         <div className="section-header-left">
-          <p className="section-eyebrow">Updated Today</p>
+          <p className="section-eyebrow">Publicados Recentemente</p>
           <h2 className="section-title section-title-lg">
-            Today's<br />Singapore
+            Últimos<br />Guias
           </h2>
           <div className="section-divider" />
         </div>
 
         <div className="grid-magazine">
           <Link
-            href={`/guides/${todaysSingapore[0].slug}`}
+            href={`/guias/${latestGuides[0].slug}`}
             className="magazine-feature card-elevated group relative overflow-hidden"
           >
             <div className="card-media h-[400px] md:h-[500px] relative">
               <img
-                src={getVersionedImageUrl(todaysSingapore[0].imageUrl, todaysSingapore[0].updatedAt) || IMAGE_FALLBACK}
-                alt={todaysSingapore[0].title}
+                src={getVersionedImageUrl(latestGuides[0].imageUrl, latestGuides[0].updatedAt) || IMAGE_FALLBACK}
+                alt={latestGuides[0].title}
                 className="absolute inset-0 object-cover"
                 sizes="(max-width: 1280px) 100vw, 66vw"
                 loading="eager"
@@ -178,50 +165,44 @@ function TodaysSingaporeSection({ todaysSingapore, monoClass, playfairClass, int
               <div className="absolute top-4 left-4 right-4 flex flex-wrap gap-2">
                 <span className="badge badge-blue">
                   <span className="badge-dot" />
-                  {todaysSingapore[0].category}
+                  {latestGuides[0].category}
                 </span>
-                {todaysSingapore[0].neighborhood && (
-                  <span className="badge badge-green">
-                    <span className="badge-dot" />
-                    {todaysSingapore[0].neighborhood}
-                  </span>
-                )}
               </div>
               <div className="absolute bottom-4 left-4 right-4">
                 <span className="badge badge-cyan">
                   <span className="badge-dot animate-pulse" />
-                  Latest
+                  Novo
                 </span>
               </div>
             </div>
             <div className="card-editorial">
               <h3 className="card-title text-2xl md:text-3xl">
-                {todaysSingapore[0].title}
+                {latestGuides[0].title}
               </h3>
-              {todaysSingapore[0].excerpt && todaysSingapore[0].excerpt.trim() !== "" && (
+              {latestGuides[0].excerpt && latestGuides[0].excerpt.trim() !== "" && (
                 <p className="card-excerpt text-base md:text-lg line-clamp-3">
-                  {todaysSingapore[0].excerpt}
+                  {latestGuides[0].excerpt}
                 </p>
               )}
               <div className="card-footer">
                 <div className="card-author">
-                  {todaysSingapore[0].author?.avatarUrl && (
-                    <img src={todaysSingapore[0].author.avatarUrl} className="card-author-avatar" alt={todaysSingapore[0].author.name} />
+                  {latestGuides[0].author?.avatarUrl && (
+                    <img src={latestGuides[0].author.avatarUrl} className="card-author-avatar" alt={latestGuides[0].author.name} />
                   )}
                   <span className="card-author-name">
-                    {todaysSingapore[0].author?.name || 'Editorial Team'}
+                    {latestGuides[0].author?.name || 'Equipe Editorial'}
                   </span>
                 </div>
-                <span className="card-action">Read →</span>
+                <span className="card-action">Ler →</span>
               </div>
             </div>
           </Link>
 
           <div className="magazine-sidebar grid grid-cols-1 gap-4">
-            {todaysSingapore.slice(1, 4).map((post, i) => (
+            {latestGuides.slice(1, 4).map((post, i) => (
               <Link
                 key={post.id}
-                href={`/guides/${post.slug}`}
+                href={`/guias/${post.slug}`}
                 className="card group overflow-hidden"
               >
                 <div className="card-media h-48 md:h-56 relative">
@@ -238,12 +219,6 @@ function TodaysSingaporeSection({ todaysSingapore, monoClass, playfairClass, int
                       <span className="badge-dot" />
                       {post.category}
                     </span>
-                    {post.neighborhood && (
-                      <span className="badge badge-green">
-                        <span className="badge-dot" />
-                        {post.neighborhood}
-                      </span>
-                    )}
                   </div>
                 </div>
                 <div className="card-editorial p-5">
@@ -252,21 +227,21 @@ function TodaysSingaporeSection({ todaysSingapore, monoClass, playfairClass, int
                   </h3>
                   <div className="card-footer">
                     <span className="card-author-name">
-                      {post.author?.name || 'Editorial Team'}
+                      {post.author?.name || 'Equipe Editorial'}
                     </span>
-                    <span className="card-action">Read →</span>
+                    <span className="card-action">Ler →</span>
                   </div>
                 </div>
               </Link>
             ))}
           </div>
 
-          {todaysSingapore.length > 4 && (
+          {latestGuides.length > 4 && (
             <div className="magazine-half grid grid-cols-1 md:grid-cols-2 gap-4" style={{ gridColumn: 'span 6 / span 6' }}>
-              {todaysSingapore.slice(4, 8).map((post) => (
+              {latestGuides.slice(4, 8).map((post) => (
                 <Link
                   key={post.id}
-                  href={`/guides/${post.slug}`}
+                  href={`/guias/${post.slug}`}
                   className="card group overflow-hidden"
                 >
                   <div className="card-media h-48 relative">
@@ -283,12 +258,6 @@ function TodaysSingaporeSection({ todaysSingapore, monoClass, playfairClass, int
                         <span className="badge-dot" />
                         {post.category}
                       </span>
-                      {post.neighborhood && (
-                        <span className="badge badge-green">
-                          <span className="badge-dot" />
-                          {post.neighborhood}
-                        </span>
-                      )}
                     </div>
                   </div>
                   <div className="card-editorial p-5">
@@ -297,9 +266,9 @@ function TodaysSingaporeSection({ todaysSingapore, monoClass, playfairClass, int
                     </h3>
                     <div className="card-footer">
                       <span className="card-author-name">
-                        {post.author?.name || 'Editorial Team'}
+                        {post.author?.name || 'Equipe Editorial'}
                       </span>
-                      <span className="card-action">Read →</span>
+                      <span className="card-action">Ler →</span>
                     </div>
                   </div>
                 </Link>
@@ -310,71 +279,11 @@ function TodaysSingaporeSection({ todaysSingapore, monoClass, playfairClass, int
 
         <div className="mt-12 text-center">
           <Link
-            href="/latest"
+            href="/guias"
             className="text-[var(--color-text-tertiary)] text-xs font-bold uppercase tracking-widest hover:text-[var(--color-blue-light)] transition-colors border-b border-[var(--color-gray-800)] pb-1 inline-flex items-center gap-2"
           >
-            View All Latest
+            Ver Todos os Guias
             <ArrowRightIcon className="w-3 h-3" />
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function NeighborhoodsSection({ neighborhoodsWithCounts, monoClass, playfairClass, interClass }: { neighborhoodsWithCounts: any[]; monoClass: string; playfairClass: string; interClass: string }) {
-  return (
-    <section className="section bg-[var(--color-black-soft)] border-t border-[var(--color-border)]" data-section>
-      <div className="container">
-        <div className="section-header-left">
-          <p className="section-eyebrow" style={{ color: 'var(--color-blue-light)' }}>Where You Live</p>
-          <h2 className="section-title section-title-lg">Neighborhoods</h2>
-          <div className="section-divider" />
-          <p className="section-description text-base max-w-none">
-            Every neighborhood has its rhythm. Discover transport links, housing trends, food scenes, and local secrets for where you live — or where you're moving next.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {neighborhoodsWithCounts.map((hood) => (
-            <Link
-              key={hood.slug}
-              href={`/neighborhoods/${hood.slug}`}
-              className="card-elevated group p-6"
-            >
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-[var(--color-black)] flex items-center justify-center flex-shrink-0 group-hover:bg-[var(--color-blue)]/10 transition-colors border border-[var(--color-border)]">
-                  <span className="w-3 h-3 rounded-full" style={{ backgroundColor: `var(--color-${hood.color}-500)` }} />
-                </div>
-                <div className="flex-1 min-w-0 text-left">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className={`${monoClass} font-black uppercase tracking-widest`} style={{ color: `var(--color-${hood.color}-400)`, fontSize: 'var(--text-micro)' }}>
-                      {hood.tag}
-                    </span>
-                  </div>
-                  <h3 className="text-lg font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-blue-light)] transition-colors mb-1 leading-tight">
-                    {hood.name}
-                  </h3>
-                  <p className={`${monoClass} font-black uppercase tracking-[0.2em] mb-2`} style={{ color: `var(--color-${hood.color}-400)`, fontSize: 'var(--text-micro)' }}>
-                    {hood.articleCount} Guides
-                  </p>
-                  <span className={`${monoClass} text-[var(--color-text-tertiary)] uppercase tracking-widest inline-flex items-center gap-1`} style={{ fontSize: 'var(--text-micro)' }}>
-                    Explore
-                    <ArrowRightIcon className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        <div className="mt-12 text-center">
-          <Link
-            href="/neighborhoods"
-            className="btn btn-secondary btn-md"
-          >
-            All Neighborhoods
-            <ArrowRightIcon className="w-4 h-4" />
           </Link>
         </div>
       </div>
@@ -387,11 +296,11 @@ function TopicsSection({ topicsWithCounts, monoClass, playfairClass, interClass 
     <section className="section" data-section>
       <div className="container">
         <div className="section-header">
-          <p className="section-eyebrow">What You Need</p>
-          <h2 className="section-title">Browse by Topic</h2>
+          <p className="section-eyebrow">O Que Você Precisa</p>
+          <h2 className="section-title">Navegar por Tema</h2>
           <div className="section-divider" />
           <p className="section-description">
-            Every guide is categorized so you can find exactly what matters to your daily life.
+            Cada guia é categorizado para você encontrar exatamente o que importa para sua rotina como MEI.
           </p>
         </div>
 
@@ -409,7 +318,7 @@ function TopicsSection({ topicsWithCounts, monoClass, playfairClass, interClass 
                 {topic.label}
               </h3>
               <p className={`${monoClass} font-black uppercase tracking-[0.2em]`} style={{ color: 'var(--color-blue-light)', fontSize: 'var(--text-micro)' }}>
-                {topic.count} Guides
+                {topic.count} Guias
               </p>
             </Link>
           ))}
@@ -426,11 +335,11 @@ function FeaturedGuidesSection({ featuredGuides, monoClass, playfairClass, inter
     <section className="section bg-[var(--color-black-soft)] border-t border-[var(--color-border)]" data-section>
       <div className="container">
         <div className="section-header-left">
-          <p className="section-eyebrow" style={{ color: 'var(--color-cyan-light)' }}>Planning Intelligence</p>
-          <h2 className="section-title section-title-lg">Featured<br />Guides</h2>
+          <p className="section-eyebrow" style={{ color: 'var(--color-green-light)' }}>Guias Essenciais</p>
+          <h2 className="section-title section-title-lg">Guias<br />Em Destaque</h2>
           <div className="section-divider" />
           <p className="section-description text-base max-w-none">
-            High-impact guides with insider pricing, optimal timing, and local secrets. Built from extensive research and regular updates.
+            Guias de alto impacto com informações oficiais, prazos 2026 e checklists práticos. Baseados em pesquisa extensa e atualizações regulares.
           </p>
         </div>
 
@@ -438,7 +347,7 @@ function FeaturedGuidesSection({ featuredGuides, monoClass, playfairClass, inter
           {featuredGuides.map((post) => (
             <Link
               key={post.id}
-              href={`/guides/${post.slug}`}
+              href={`/guias/${post.slug}`}
               className="card-elevated group overflow-hidden"
             >
               <div className="card-media h-64 relative">
@@ -455,17 +364,11 @@ function FeaturedGuidesSection({ featuredGuides, monoClass, playfairClass, inter
                     <span className="badge-dot" />
                     {post.category}
                   </span>
-                  {post.neighborhood && (
-                    <span className="badge badge-green">
-                      <span className="badge-dot" />
-                      {post.neighborhood}
-                    </span>
-                  )}
                 </div>
                 <div className="absolute bottom-4 left-4 right-4">
-                  <span className="badge badge-cyan">
+                  <span className="badge badge-green">
                     <span className="badge-dot animate-pulse" />
-                    Planning Report
+                    Essencial
                   </span>
                 </div>
               </div>
@@ -478,9 +381,9 @@ function FeaturedGuidesSection({ featuredGuides, monoClass, playfairClass, inter
                 </p>
                 <div className="card-footer">
                   <span className="card-author-name">
-                    {post.author?.name || 'Editorial Team'}
+                    {post.author?.name || 'Equipe Editorial'}
                   </span>
-                  <span className="card-action" style={{ color: 'var(--color-cyan-light)' }}>Read Report →</span>
+                  <span className="card-action" style={{ color: 'var(--color-green-light)' }}>Ler Guia →</span>
                 </div>
               </div>
             </Link>
@@ -489,10 +392,10 @@ function FeaturedGuidesSection({ featuredGuides, monoClass, playfairClass, inter
 
         <div className="mt-12 text-center">
           <Link
-            href="/guides"
+            href="/guias"
             className="btn btn-secondary btn-md"
           >
-            All Guides
+            Todos os Guias
             <ArrowRightIcon className="w-4 h-4" />
           </Link>
         </div>
@@ -506,11 +409,11 @@ function ToolsSection({ tools, monoClass, playfairClass, interClass }: { tools: 
     <section className="section" data-section>
       <div className="container">
         <div className="section-header">
-          <p className="section-eyebrow">Resident Utilities</p>
-          <h2 className="section-title">Tools & Calculators</h2>
+          <p className="section-eyebrow">Utilitários MEI</p>
+          <h2 className="section-title">Ferramentas & Calculadoras</h2>
           <div className="section-divider" />
           <p className="section-description">
-            Practical calculators for the decisions that matter — housing affordability, CPF planning, transport costs, school choices.
+            Calculadoras práticas para as decisões que importam — DAS mensal, controle de faturamento, checklist de obrigações, simulação de contratação.
           </p>
         </div>
 
@@ -518,7 +421,7 @@ function ToolsSection({ tools, monoClass, playfairClass, interClass }: { tools: 
           {tools.map((tool) => (
             <Link
               key={tool.name}
-              href={`/tools/${tool.name.toLowerCase().replace(/\s+/g, '-')}`}
+              href={tool.href}
               className="card group p-6"
             >
               <div className="flex items-start gap-3 mb-4">
@@ -536,13 +439,13 @@ function ToolsSection({ tools, monoClass, playfairClass, interClass }: { tools: 
               </div>
               <div className="flex items-center justify-between pt-4 border-t border-[var(--color-border)]">
                 <span className={`${monoClass} font-black uppercase tracking-widest`} style={{ 
-                  color: 'var(--color-green-light)', 
+                  color: tool.status === 'Disponível' ? 'var(--color-green-light)' : 'var(--color-text-tertiary)', 
                   fontSize: 'var(--text-micro)' 
                 }}>
-                  Available
+                  {tool.status}
                 </span>
                 <span className={`${monoClass} font-black uppercase tracking-widest group-hover:translate-x-1 transition-transform`} style={{ color: 'var(--color-blue-light)', fontSize: 'var(--text-micro)' }}>
-                  Open Tool
+                  Abrir Ferramenta
                   <ArrowRightIcon className="w-3 h-3 ml-1" />
                 </span>
               </div>
@@ -552,10 +455,10 @@ function ToolsSection({ tools, monoClass, playfairClass, interClass }: { tools: 
 
         <div className="mt-12 text-center">
           <Link
-            href="/tools"
+            href="/ferramentas"
             className="btn btn-secondary btn-md"
           >
-            View All Tools
+            Ver Todas as Ferramentas
             <ArrowRightIcon className="w-4 h-4" />
           </Link>
         </div>
@@ -564,58 +467,47 @@ function ToolsSection({ tools, monoClass, playfairClass, interClass }: { tools: 
   );
 }
 
-function LatestUpdatesSection({ latestUpdates, monoClass, playfairClass, interClass, IMAGE_FALLBACK }: { latestUpdates: any[]; monoClass: string; playfairClass: string; interClass: string; IMAGE_FALLBACK: string }) {
-  if (latestUpdates.length === 0) return null;
+function KeyTopicsSection({ monoClass, playfairClass, interClass }: { monoClass: string; playfairClass: string; interClass: string }) {
+  const keyTopics = [
+    { title: 'DAS MEI 2026', description: 'Valor, vencimento, PIX, boleto, débito automático e multa por atraso', href: '/mei-das', icon: 'calculator' },
+    { title: 'Limite de Faturamento', description: 'Teto R$ 81.000/ano, controle mensal, desenquadramento e transição para ME', href: '/mei-faturamento', icon: 'chart' },
+    { title: 'DASN-SIMEI 2026', description: 'Declaração anual até 31/05, como preencher, retificação e multa', href: '/dasn-simei', icon: 'file' },
+    { title: 'Nota Fiscal MEI', description: 'Quando é obrigatória, NF-e vs NFS-e, emissão gratuita, erros comuns', href: '/nota-fiscal-mei', icon: 'receipt' },
+    { title: 'Obrigações Mensais', description: 'Checklist completo: DAS, notas, documentos, faturamento, declarações', href: '/mei-obrigacoes', icon: 'checklist' },
+    { title: 'Contratar Funcionário', description: 'Regras, custos (salário + encargos), eSocial, obrigações trabalhistas', href: '/mei-obrigacoes#contratacao', icon: 'user' },
+  ];
 
   return (
     <section className="section bg-[var(--color-black-soft)] border-t border-[var(--color-border)]" data-section>
       <div className="container">
         <div className="section-header-left">
-          <p className="section-eyebrow" style={{ color: 'var(--color-orange-light)' }}>Breaking & New</p>
-          <h2 className="section-title section-title-lg">Latest<br />Updates</h2>
+          <p className="section-eyebrow" style={{ color: 'var(--color-orange-light)' }}>Temas Mais Buscados</p>
+          <h2 className="section-title section-title-lg">Principais<br />Dúvidas MEI</h2>
           <div className="section-divider" />
         </div>
 
-        <div className="grid-editorial-3">
-          {latestUpdates.map((post) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {keyTopics.map((topic) => (
             <Link
-              key={post.id}
-              href={`/guides/${post.slug}`}
-              className="card group flex gap-5 p-5"
+              key={topic.title}
+              href={topic.href}
+              className="card-elevated group p-6"
             >
-              <div className="w-20 h-20 rounded-[var(--radius-xl)] overflow-hidden flex-shrink-0 bg-[var(--color-gray-800)] relative">
-                <img
-                  src={getVersionedImageUrl(post.imageUrl, post.updatedAt) || IMAGE_FALLBACK}
-                  alt=""
-                  className="absolute inset-0 object-cover"
-                  sizes="80px"
-                  loading="lazy"
-                />
+              <div className="w-12 h-12 rounded-xl bg-[var(--color-black)] flex items-center justify-center mb-4 group-hover:bg-[var(--color-blue)]/10 transition-colors border border-[var(--color-border)]">
+                <TopicIcon name={topic.icon} className="w-6 h-6" style={{ color: 'var(--color-blue-light)' }} />
               </div>
-              <div className="flex-1 min-w-0">
-                <div className={`${monoClass} flex items-center gap-2 mb-2`} style={{ fontSize: 'var(--text-micro)' }}>
-                  <span className="w-1.5 h-1.5 bg-[var(--color-orange)] rounded-full" />
-                  <span style={{ color: 'var(--color-orange-light)' }}>New</span>
-                </div>
-                <h3 className="text-white font-bold text-sm leading-tight line-clamp-2 group-hover:text-[var(--color-orange-light)] transition-colors">
-                  {post.title}
-                </h3>
-                <p className={`${monoClass} uppercase tracking-widest mt-2`} style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-micro)' }}>
-                  {new Date(post.createdAt).toLocaleDateString('en-SG', { day: '2-digit', month: 'short', year: 'numeric' })}
-                </p>
-              </div>
+              <h3 className="text-lg font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-blue-light)] transition-colors mb-2 leading-tight">
+                {topic.title}
+              </h3>
+              <p className="text-[var(--color-text-secondary)] text-sm leading-relaxed mb-4">
+                {topic.description}
+              </p>
+              <span className={`${monoClass} text-[var(--color-blue-light)] text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-2`}>
+                Ler Guia
+                <ArrowRightIcon className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+              </span>
             </Link>
           ))}
-        </div>
-
-        <div className="mt-12 text-center">
-          <Link
-            href="/latest"
-            className="btn btn-secondary btn-md"
-          >
-            All Updates
-            <ArrowRightIcon className="w-4 h-4" />
-          </Link>
         </div>
       </div>
     </section>
@@ -632,18 +524,18 @@ function NewsletterSection({ playfairClass, monoClass, interClass }: { playfairC
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-[var(--color-purple)]/10 rounded-full blur-[120px] translate-x-1/2 -translate-y-1/2" />
 
           <p className={`${monoClass} font-black uppercase tracking-[0.4em] mb-4 relative z-10`} style={{ color: 'var(--color-blue-light)', fontSize: 'var(--text-xs)' }}>
-            Stay Informed
+            Mantenha-se Informado
           </p>
           <h2 className={`${playfairClass} text-4xl md:text-6xl font-black mb-6 tracking-tighter italic relative z-10`}>
-            Get Singapore Intelligence in Your Inbox
+            Resumo Semanal MEI na Sua Caixa de Entrada
           </h2>
           <p className="text-[var(--color-text-secondary)] max-w-xl mx-auto mb-10 leading-relaxed relative z-10">
-            Weekly digest of new guides, policy changes, and neighborhood insights. No spam. Unsubscribe anytime.
+            Novos guias, mudanças na legislação, prazos de DASN e DAS, ferramentas atualizadas. Sem spam. Cancelamento a qualquer momento.
           </p>
           <form className="max-w-md mx-auto flex flex-col sm:flex-row gap-3 relative z-10">
             <input
               type="email"
-              placeholder="your@email.com"
+              placeholder="seu@email.com"
               className="input-premium flex-1"
               required
             />
@@ -651,12 +543,12 @@ function NewsletterSection({ playfairClass, monoClass, interClass }: { playfairC
               type="submit"
               className="btn btn-primary btn-md whitespace-nowrap"
             >
-              Subscribe
+              Inscrever-se
               <ArrowRightIcon className="w-4 h-4" />
             </button>
           </form>
           <p className={`${monoClass} uppercase tracking-[0.3em] relative z-10 mt-6`} style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-micro)' }}>
-            By subscribing you agree to our Privacy Policy.
+            Ao se inscrever você concorda com nossa Política de Privacidade.
           </p>
         </div>
       </div>
@@ -671,24 +563,24 @@ function TrustBannerSection({ playfairClass, monoClass, interClass }: { playfair
         <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[var(--color-border)] rounded-[var(--radius-3xl)] overflow-hidden">
           <div className="p-10 md:p-16 bg-[var(--color-black)] hover:bg-[var(--color-black-soft)] transition-all">
             <div className="w-14 h-14 rounded-xl bg-[var(--color-black-elevated)] flex items-center justify-center mb-6 border border-[var(--color-border)] group-hover:border-[var(--color-blue)]/30 transition-colors">
-              <svg className="w-8 h-8" style={{ color: 'var(--color-cyan-light)' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              <svg className="w-8 h-8" style={{ color: 'var(--color-green-light)' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </div>
-            <h3 className="text-[var(--color-text-primary)] font-black text-2xl mb-4 uppercase italic">Research-Driven Guides</h3>
-            <p className="text-[var(--color-text-secondary)] leading-relaxed">Built from extensive source research and regular updates.</p>
+            <h3 className="text-[var(--color-text-primary)] font-black text-2xl mb-4 uppercase italic">Baseado em Fontes Oficiais</h3>
+            <p className="text-[var(--color-text-secondary)] leading-relaxed">Todas as informações vêm de Gov.br, Receita Federal, SEBRAE e legislação vigente.</p>
           </div>
           <div className="p-10 md:p-16 bg-[var(--color-black)] hover:bg-[var(--color-black-soft)] transition-all">
             <div className="w-14 h-14 rounded-xl bg-[var(--color-black-elevated)] flex items-center justify-center mb-6 border border-[var(--color-border)] group-hover:border-[var(--color-blue)]/30 transition-colors">
-              <svg className="w-8 h-8" style={{ color: 'var(--color-blue-light)' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+              <svg className="w-8 h-8" style={{ color: 'var(--color-blue-light)' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
             </div>
-            <h3 className="text-[var(--color-text-primary)] font-black text-2xl mb-4 uppercase italic">Resident-First</h3>
-            <p className="text-[var(--color-text-secondary)] leading-relaxed">Built for people living in Singapore, not tourists passing through.</p>
+            <h3 className="text-[var(--color-text-primary)] font-black text-2xl mb-4 uppercase italic">MEI-First</h3>
+            <p className="text-[var(--color-text-secondary)] leading-relaxed">Construído para microempreendedores brasileiros, não para contadores ou burocratas.</p>
           </div>
           <div className="p-10 md:p-16 bg-[var(--color-black)] hover:bg-[var(--color-black-soft)] transition-all">
             <div className="w-14 h-14 rounded-xl bg-[var(--color-black-elevated)] flex items-center justify-center mb-6 border border-[var(--color-border)] group-hover:border-[var(--color-blue)]/30 transition-colors">
-              <svg className="w-8 h-8" style={{ color: 'var(--color-purple-light)' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg className="w-8 h-8" style={{ color: 'var(--color-purple-light)' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
             </div>
-            <h3 className="text-[var(--color-text-primary)] font-black text-2xl mb-4 uppercase italic">Partner Rates</h3>
-            <p className="text-[var(--color-text-secondary)] leading-relaxed">Integrated with Trip.com and Klook for the best booking rates available.</p>
+            <h3 className="text-[var(--color-text-primary)] font-black text-2xl mb-4 uppercase italic">Sempre Atualizado</h3>
+            <p className="text-[var(--color-text-secondary)] leading-relaxed">Acompanhamos mudanças na lei, prazos e valores para manter você em dia.</p>
           </div>
         </div>
       </div>
@@ -697,45 +589,27 @@ function TrustBannerSection({ playfairClass, monoClass, interClass }: { playfair
 }
 
 export default async function HomePage() {
-  // 1. TODAY'S SINGAPORE: 8 newest resident articles (non-travel, non-newsjack)
-  let todaysSingapore: any[] = [];
+  // 1. LATEST GUIDES: 8 newest published posts
+  let latestGuides: any[] = [];
   try {
-    todaysSingapore = await prisma.post.findMany({
+    latestGuides = await prisma.post.findMany({
       where: {
         status: 'PUBLISHED',
-        isNewsjack: false,
-        category: { not: 'TRAVEL_GUIDE' as any },
       },
       take: 8,
       orderBy: { createdAt: 'desc' },
       include: { author: true },
     });
   } catch (error) {
-    console.error("HomePage DB Error (todaysSingapore):", error);
+    console.error("HomePage DB Error (latestGuides):", error);
   }
 
-  // 2. NEIGHBORHOODS: with article counts
-  let neighborhoodsWithCounts: any[] = [];
-  try {
-    neighborhoodsWithCounts = await Promise.all(
-      neighborhoodData.map(async (n) => {
-        const count = await prisma.post.count({
-          where: { neighborhood: n.name, status: 'PUBLISHED' },
-        });
-        return { ...n, articleCount: count };
-      })
-    );
-  } catch (error) {
-    console.error("HomePage DB Error (neighborhoods):", error);
-    neighborhoodsWithCounts = neighborhoodData.map(n => ({ ...n, articleCount: 0 }));
-  }
-
-  // 3. TOPIC CATEGORIES: with article counts
+  // 2. TOPIC CATEGORIES: with article counts
   let topicsWithCounts: any[] = [];
   try {
     const categoryCounts = await prisma.post.groupBy({
       by: ['category'],
-      where: { status: 'PUBLISHED', category: { not: 'TRAVEL_GUIDE' as any } },
+      where: { status: 'PUBLISHED' },
       _count: { category: true },
     });
     const countsMap = new Map(categoryCounts.map(c => [c.category, c._count.category]));
@@ -745,19 +619,12 @@ export default async function HomePage() {
     topicsWithCounts = topicCategories.map(t => ({ ...t, count: 0 }));
   }
 
-  // 4. FEATURED GUIDES: High-quality evergreen (non-newsjack, non-travel, with insider data)
+  // 3. FEATURED GUIDES: High-quality evergreen (with insider data markers)
   let featuredGuides: any[] = [];
   try {
     featuredGuides = await prisma.post.findMany({
       where: {
         status: 'PUBLISHED',
-        isNewsjack: false,
-        category: { not: 'TRAVEL_GUIDE' },
-        OR: [
-          { insiderPrice: { not: null } },
-          { bestTime: { not: null } },
-          { secretTip: { not: null } },
-        ],
       },
       take: 4,
       orderBy: { createdAt: 'desc' },
@@ -767,40 +634,15 @@ export default async function HomePage() {
     console.error("HomePage DB Error (featured):", error);
   }
 
-  // 5. LATEST UPDATES: Newsjacked or travel guides only (3 items)
-  let latestUpdates: any[] = [];
-  try {
-    latestUpdates = await prisma.post.findMany({
-      where: {
-        status: 'PUBLISHED',
-        OR: [
-          { isNewsjack: true },
-          { category: 'TRAVEL_GUIDE' },
-        ],
-      },
-      take: 3,
-      orderBy: { createdAt: 'desc' },
-      include: { author: true },
-    });
-  } catch (error) {
-    console.error("HomePage DB Error (latestUpdates):", error);
-  }
-
   return (
     <main className={`${inter.className} min-h-screen bg-[var(--color-black)] text-[var(--color-text-primary)] selection:bg-[var(--color-blue)]/30 overflow-x-hidden`}>
       <HeroSection playfairClass={playfair.className} monoClass={mono.className} interClass={inter.className} />
-      <TodaysSingaporeSection 
-        todaysSingapore={todaysSingapore} 
+      <LatestGuidesSection 
+        latestGuides={latestGuides} 
         monoClass={mono.className} 
         playfairClass={playfair.className} 
         interClass={inter.className} 
         IMAGE_FALLBACK={IMAGE_FALLBACK} 
-      />
-      <NeighborhoodsSection 
-        neighborhoodsWithCounts={neighborhoodsWithCounts} 
-        monoClass={mono.className} 
-        playfairClass={playfair.className} 
-        interClass={inter.className} 
       />
       <TopicsSection 
         topicsWithCounts={topicsWithCounts} 
@@ -821,12 +663,10 @@ export default async function HomePage() {
         playfairClass={playfair.className} 
         interClass={inter.className} 
       />
-      <LatestUpdatesSection 
-        latestUpdates={latestUpdates} 
+      <KeyTopicsSection 
         monoClass={mono.className} 
         playfairClass={playfair.className} 
         interClass={inter.className} 
-        IMAGE_FALLBACK={IMAGE_FALLBACK} 
       />
       <NewsletterSection 
         playfairClass={playfair.className} 

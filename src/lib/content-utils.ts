@@ -57,19 +57,17 @@ export function extractHeadings(content: string): { id: string; text: string; le
 
 /**
  * Keywords that indicate a "decision point" for each category
- * Used to find the best place to inject a contextual resident tool
+ * Used to find the best place to inject a contextual MEI tool
  */
 const DECISION_POINT_KEYWORDS: Record<string, string[]> = {
-  HOUSING: ['affordability', 'budget', 'calculate', 'eligibility', 'loan', 'mortgage', 'down payment', 'price', 'cost', 'financial'],
-  MONEY: ['cpf', 'contribution', 'retirement', 'savings', 'payout', 'salary', 'income', 'tax', 'investment', 'budget'],
-  HEALTHCARE: ['clinic', 'hospital', 'doctor', 'medical', 'healthcare', 'insurance', 'medisave', 'subsidy', 'find', 'nearby'],
-  TRANSPORT: ['fare', 'cost', 'mrt', 'bus', 'transport', 'commute', 'travel', 'ride', 'grab', 'taxi', 'calculate'],
-  FOOD: ['hawker', 'price', 'food', 'eat', 'dining', 'centre', 'stall', 'meal', 'budget', 'affordable'],
-  WORK: ['salary', 'benchmark', 'pay', 'income', 'career', 'job', 'employment', 'industry', 'compare', 'market rate'],
-  LIFESTYLE: ['neighborhood', 'area', 'district', 'live', 'amenities', 'facilities', 'compare', 'choose'],
-  STUDY: ['school', 'distance', 'primary', 'secondary', 'education', 'enroll', 'admission', 'nearby', 'home'],
-  NEIGHBORHOOD: ['compare', 'neighborhood', 'district', 'area', 'versus', 'vs', 'choose', 'decide', 'which'],
-  TOOLS: ['calculate', 'plan', 'budget', 'affordability', 'cost', 'compare'],
+  MEI_DAS: ['das', 'pagamento', 'boleto', 'pix', 'vencimento', 'multa', 'atraso', 'débito', 'calcular', 'valor', 'inss', 'icms', 'iss'],
+  MEI_FATURAMENTO: ['faturamento', 'limite', 'receita', 'teto', 'desenquadramento', 'microempresa', 'calcular', 'controle', 'mensal', 'anual', '81000'],
+  DASN_SIMEI: ['dasn', 'simei', 'declaração', 'anual', 'prazo', 'maio', 'retificação', 'multa', 'atraso', 'entregar', 'preencher'],
+  NOTA_FISCAL: ['nota fiscal', 'nf-e', 'nfs-e', 'emitir', 'emissão', 'obrigatório', 'pj', 'pf', 'gratuita', 'portal', 'sefaz', 'prefeitura'],
+  MEI_OBRIGACOES: ['obrigações', 'mensal', 'checklist', 'documentos', 'guarda', 'conta pj', 'separar', 'finanças', 'funcionário', 'contratar', 'esocial'],
+  MEI_CADASTRO: ['abrir', 'formalizar', 'cnpj', 'cnae', 'atividade', 'permitida', 'documentos', 'cpf', 'título eleitor', 'endereço', 'gov.br'],
+  FERRAMENTAS: ['calculadora', 'verificador', 'checklist', 'simulador', 'planejar', 'calcular', 'controle', 'orçamento'],
+  GUIA_COMPLETO: ['guia', 'completo', 'tudo', 'passo a passo', 'como fazer', 'explicação', 'dúvidas', 'perguntas'],
 };
 
 /**
@@ -79,7 +77,7 @@ const DECISION_POINT_KEYWORDS: Record<string, string[]> = {
 export function findDecisionPointHeading(content: string, category: string): number {
   if (!content) return -1;
   
-  const keywords = DECISION_POINT_KEYWORDS[category] || DECISION_POINT_KEYWORDS.TOOLS;
+  const keywords = DECISION_POINT_KEYWORDS[category] || DECISION_POINT_KEYWORDS.FERRAMENTAS;
   const headings: { index: number; text: string; matchScore: number }[] = [];
   
   const h2Regex = /<h2[^>]*>(.*?)<\/h2>/gi;

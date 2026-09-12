@@ -6,6 +6,8 @@ import {
   CalculatorIcon, PlannerIcon, TransportCostIcon, SchoolIcon,
   HawkerIcon, ClinicIcon, SalaryIcon, MapIcon,
   DiamondIcon, HexagonIcon, SparkleIcon,
+  ReceiptIcon, ChecklistIcon, UserIcon, TagIcon,
+  CalendarIcon, BankIcon, GiftIcon, AlertIcon, InfoIcon, CheckIcon, XIcon,
 } from './Icons';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -21,13 +23,23 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   planner: PlannerIcon,
   transportCost: TransportCostIcon,
   school: SchoolIcon,
-  hawker: HawkerIcon,
   clinic: ClinicIcon,
   salary: SalaryIcon,
   map: MapIcon,
   diamond: DiamondIcon,
   hexagon: HexagonIcon,
   sparkle: SparkleIcon,
+  receipt: ReceiptIcon,
+  checklist: ChecklistIcon,
+  user: UserIcon,
+  tag: TagIcon,
+  calendar: CalendarIcon,
+  bank: BankIcon,
+  gift: GiftIcon,
+  alert: AlertIcon,
+  info: InfoIcon,
+  check: CheckIcon,
+  x: XIcon,
 };
 
 interface TopicIconProps {

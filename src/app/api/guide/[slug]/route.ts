@@ -44,8 +44,8 @@ function readStatic404(): string {
     return fs.readFileSync(filePath, 'utf-8');
   } catch {
     return `<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><title>404 - Not Found</title></head>
-<body><h1>Page Not Found</h1><p>The page you're looking for doesn't exist.</p><a href="/">Back to Homepage</a></body></html>`;
+<html lang="pt-BR"><head><meta charset="utf-8"><title>404 - Não Encontrado</title></head>
+<body><h1>Página Não Encontrada</h1><p>A página que você procura não existe.</p><a href="/">Voltar à Inicial</a></body></html>`;
   }
 }
 
@@ -66,11 +66,10 @@ export async function GET(
     if (!post) {
       if (wantsMd) {
         return NextResponse.json(
-          { error: 'Guide not found' },
+          { error: 'Guia não encontrado' },
           { status: 404, headers: { 'Vary': 'Accept' } }
         );
       }
-      // Return static HTML 404 for simple clients
       const html = readStatic404();
       return new NextResponse(html, {
         status: 404,
@@ -83,13 +82,13 @@ export async function GET(
 
     if (wantsMd) {
       const markdown = `# ${post.title}\n\n` +
-        `*${post.excerpt || 'Practical guide for living in Singapore.'}*\n\n` +
-        `**Category:** ${post.category}${post.neighborhood ? ` | **Neighborhood:** ${post.neighborhood}` : ''}\n\n` +
+        `*${post.excerpt || 'Guia prático para MEIs no Brasil.'}*\n\n` +
+        `**Categoria:** ${post.category}\n\n` +
         `---\n\n` +
         htmlToMarkdown(post.content) +
         `\n\n---\n\n` +
-        `*Published by ${post.author?.name || 'SG Events Hub'} on ${new Date(post.createdAt).toLocaleDateString('en-SG')}*\n` +
-        `*Source: [${post.title}](${request.nextUrl.origin}/guides/${post.slug})*`;
+        `*Publicado por ${post.author?.name || 'Brazil MEI'} em ${new Date(post.createdAt).toLocaleDateString('pt-BR')}*\n` +
+        `*Fonte: [${post.title}](${request.nextUrl.origin}/guias/${post.slug})*`;
 
       return new NextResponse(markdown, {
         status: 200,
@@ -101,15 +100,14 @@ export async function GET(
       });
     }
 
-    // For HTML requests, rewrite to the guide page so Next.js handles it properly
     const url = request.nextUrl.clone();
-    url.pathname = `/guides/${slug}`;
+    url.pathname = `/guias/${slug}`;
     return NextResponse.rewrite(url);
   } catch (error) {
     console.error('Guide API Error:', error);
     if (wantsMd) {
       return NextResponse.json(
-        { error: 'Internal server error' },
+        { error: 'Erro interno do servidor' },
         { status: 500, headers: { 'Vary': 'Accept' } }
       );
     }

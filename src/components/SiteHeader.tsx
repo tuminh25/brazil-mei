@@ -5,13 +5,16 @@ import { useState, useRef, useEffect } from 'react';
 import { Search, X, Menu } from 'lucide-react';
 
 const navigation = [
-  { name: "Home", href: "/" },
-  { name: "Guides", href: "/guides" },
-  { name: "Tools", href: "/tools" },
-  { name: "Neighborhoods", href: "/neighborhoods" },
-  { name: "Latest", href: "/latest" },
-  { name: "About", href: "/about" },
-  { name: "Contact", href: "/contact" },
+  { name: "Início", href: "/" },
+  { name: "Guias", href: "/guias" },
+  { name: "Ferramentas", href: "/ferramentas" },
+  { name: "DAS MEI", href: "/mei-das" },
+  { name: "Faturamento", href: "/mei-faturamento" },
+  { name: "DASN-SIMEI", href: "/dasn-simei" },
+  { name: "Nota Fiscal", href: "/nota-fiscal-mei" },
+  { name: "Obrigações", href: "/mei-obrigacoes" },
+  { name: "Sobre", href: "/sobre" },
+  { name: "Contato", href: "/contato" },
 ];
 
 export default function SiteHeader() {
@@ -39,7 +42,7 @@ export default function SiteHeader() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      window.location.href = `/guides?q=${encodeURIComponent(searchQuery.trim())}`;
+      window.location.href = `/guias?q=${encodeURIComponent(searchQuery.trim())}`;
     }
   };
 
@@ -51,8 +54,8 @@ export default function SiteHeader() {
   return (
     <header
       className={`sticky top-0 z-50 w-full border-b transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-[var(--color-black)]/95 backdrop-blur-xl border-[var(--color-border)] shadow-[0_1px_0_rgba(255,255,255,0.03)]' 
+        isScrolled
+          ? 'bg-[var(--color-black)]/95 backdrop-blur-xl border-[var(--color-border)] shadow-[0_1px_0_rgba(255,255,255,0.03)]'
           : 'bg-[var(--color-black)]/80 backdrop-blur-xl border-[var(--color-border)]'
       }`}
     >
@@ -62,10 +65,10 @@ export default function SiteHeader() {
           <Link
             href="/"
             className="flex flex-col items-start gap-0 text-[var(--color-text-primary)] font-black tracking-tighter uppercase hover:text-[var(--color-blue-light)] transition-colors z-10"
-            aria-label="SG Resident Intelligence Home"
+            aria-label="Brazil MEI Home"
           >
-            <span className="text-2xl md:text-3xl leading-[0.9]">SG</span>
-            <span className="text-[10px] md:text-[11px] font-medium uppercase tracking-[0.3em] text-[var(--color-text-tertiary)] leading-none">Resident Intelligence</span>
+            <span className="text-2xl md:text-3xl leading-[0.9]">Brazil MEI</span>
+            <span className="text-[10px] md:text-[11px] font-medium uppercase tracking-[0.3em] text-[var(--color-text-tertiary)] leading-none">Inteligência MEI</span>
           </Link>
 
           {/* Desktop Navigation - Centered, Reduced Spacing */}
@@ -87,7 +90,7 @@ export default function SiteHeader() {
             <button
               onClick={toggleSearch}
               className="p-2 rounded-full text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-white)]/5 transition-all duration-200"
-              aria-label="Open search"
+              aria-label="Abrir busca"
               aria-expanded={isSearchOpen}
             >
               <Search className="w-5 h-5" />
@@ -97,7 +100,7 @@ export default function SiteHeader() {
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="lg:hidden p-2 rounded-full text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-white)]/5 transition-all duration-200"
-              aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-label={isMobileMenuOpen ? 'Fechar menu' : 'Abrir menu'}
               aria-expanded={isMobileMenuOpen}
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -125,12 +128,12 @@ export default function SiteHeader() {
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-tertiary)]" aria-hidden="true" />
                     <input
                       type="text"
-                      placeholder="Search guides..."
+                      placeholder="Buscar guias..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="bg-transparent border-none outline-none text-[var(--color-text-primary)] placeholder-[var(--color-text-tertiary)] text-sm w-full pl-10 pr-10"
                       autoComplete="off"
-                      aria-label="Search guides"
+                      aria-label="Buscar guias"
                     />
                   </div>
                 </form>

@@ -149,6 +149,7 @@ import {
   Droplet,
   MessageSquare,
   GitBranch,
+  Gift,
 } from 'lucide-react';
 
 // Category Icons - Premium Lucide Icons
@@ -227,11 +228,35 @@ export function DiamondIcon({ className = 'w-6 h-6', style }: { className?: stri
 }
 
 export function HexagonIcon({ className = 'w-6 h-6', style }: { className?: string; style?: React.CSSProperties }) {
-  return <Shield className={className} style={style} aria-hidden="true" />;
+return <Shield className={className} style={style} aria-hidden="true" />;
+}
+
+export function ChecklistIcon({ className = 'w-6 h-6', style }: { className?: string; style?: React.CSSProperties }) {
+  return <FileText className={className} style={style} aria-hidden="true" />;
+}
+
+export function CalendarIcon({ className = 'w-6 h-6', style }: { className?: string; style?: React.CSSProperties }) {
+  return <CalendarDays className={className} style={style} aria-hidden="true" />;
+}
+
+export function BankIcon({ className = 'w-6 h-6', style }: { className?: string; style?: React.CSSProperties }) {
+  return <Building2 className={className} style={style} aria-hidden="true" />;
+}
+
+export function GiftIcon({ className = 'w-6 h-6', style }: { className?: string; style?: React.CSSProperties }) {
+  return <Gift className={className} style={style} aria-hidden="true" />;
 }
 
 export function ArrowRightIcon({ className = 'w-4 h-4', style }: { className?: string; style?: React.CSSProperties }) {
   return <ArrowRight className={className} style={style} aria-hidden="true" />;
+}
+
+export function AlertIcon({ className = 'w-6 h-6', style }: { className?: string; style?: React.CSSProperties }) {
+  return <AlertCircle className={className} style={style} aria-hidden="true" />;
+}
+
+export function XIcon({ className = 'w-6 h-6', style }: { className?: string; style?: React.CSSProperties }) {
+  return <X className={className} style={style} aria-hidden="true" />;
 }
 
 export function ExternalLinkIcon({ className = 'w-3 h-3', style }: { className?: string; style?: React.CSSProperties }) {

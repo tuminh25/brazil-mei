@@ -9,7 +9,7 @@ export async function GET(req: Request) {
     const slug = searchParams.get('slug');
 
     if (!slug) {
-      return NextResponse.json({ error: 'Missing slug parameter' }, { status: 400 });
+      return NextResponse.json({ error: 'Parâmetro slug ausente' }, { status: 400 });
     }
 
     const post = await prisma.post.findUnique({
@@ -18,13 +18,13 @@ export async function GET(req: Request) {
     });
 
     if (!post) {
-      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Post não encontrado' }, { status: 404 });
     }
 
     return NextResponse.json(post);
   } catch (error: any) {
     console.error('Fetch API Error:', error);
-    return NextResponse.json({ error: '❌ Server error while fetching post.' }, { status: 500 });
+    return NextResponse.json({ error: 'Erro no servidor ao buscar post.' }, { status: 500 });
   }
 }
 
@@ -41,18 +41,16 @@ export async function POST(req: Request) {
       insiderPrice,
       bestTime,
       secretTip,
-      tripUrl,
-      klookUrl,
     } = body;
 
     // Validate required fields
     if (!name || !slug || !description) {
-      return NextResponse.json({ error: 'Missing required fields: name, slug, description' }, { status: 400 });
+      return NextResponse.json({ error: 'Campos obrigatórios: name, slug, description' }, { status: 400 });
     }
 
     // Normalize category — use new PostCategory enum
-    const validCategories = ['HOUSING', 'MONEY', 'TRANSPORT', 'STUDY', 'FOOD', 'HEALTHCARE', 'WORK', 'LIFESTYLE', 'NEIGHBORHOOD', 'TOOLS', 'TRAVEL_GUIDE'];
-    const normalizedCategory = validCategories.includes(category) ? category : 'TRAVEL_GUIDE';
+    const validCategories = ['MEI_DAS', 'MEI_FATURAMENTO', 'DASN_SIMEI', 'NOTA_FISCAL', 'MEI_OBRIGACOES', 'MEI_CADASTRO', 'FERRAMENTAS', 'GUIA_COMPLETO'];
+    const normalizedCategory = validCategories.includes(category) ? category : 'GUIA_COMPLETO';
 
     // Auto-generate excerpt if not provided
     const cleanText = description.replace(/<[^>]*>/g, '');
@@ -64,17 +62,14 @@ export async function POST(req: Request) {
     const postData = {
       title: name,
       slug: slugToUse,
-      imageUrl: imageUrl || 'https://images.unsplash.com/photo-1525625239513-39bc131f9979?w=1200',
+      imageUrl: imageUrl || 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200',
       content: description,
       excerpt: autoExcerpt,
       category: normalizedCategory as any, // Prisma enum cast
       status: 'PUBLISHED' as any, // Prisma enum cast
-      isNewsjack: false, // Default to false, can be extended
       insiderPrice: insiderPrice || null,
       bestTime: bestTime || null,
       secretTip: secretTip || null,
-      tripUrl: tripUrl || null,
-      klookUrl: klookUrl || null,
     };
 
     const post = await prisma.post.upsert({
@@ -86,6 +81,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, slug: post.slug });
   } catch (error: any) {
     console.error('Submit API Error:', error);
-    return NextResponse.json({ error: '❌ Server error. Please try again.' }, { status: 500 });
+    return NextResponse.json({ error: 'Erro no servidor. Tente novamente.' }, { status: 500 });
   }
 }

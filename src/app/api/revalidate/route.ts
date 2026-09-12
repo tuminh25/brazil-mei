@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   }
 
   revalidatePath(path);
-  revalidatePath('/guides/[slug]', 'page');
+  revalidatePath('/guias/[slug]', 'page');
 
   return NextResponse.json({
     revalidated: true,
@@ -41,9 +41,8 @@ export async function POST(req: NextRequest) {
   for (const path of paths) {
     revalidatePath(path);
   }
-  // Always revalidate dynamic guide and neighbourhood routes
-  revalidatePath('/guides/[slug]', 'page');
-  revalidatePath('/neighborhoods/[slug]', 'page');
+  // Always revalidate dynamic guide routes
+  revalidatePath('/guias/[slug]', 'page');
 
   return NextResponse.json({
     revalidated: true,

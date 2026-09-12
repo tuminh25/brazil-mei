@@ -1,5 +1,5 @@
 {
-  "name": "sgeventshub-v2",
+  "name": "brazil-mei",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,11 +8,7 @@
     "start": "next start",
     "seed": "tsx prisma/seed.ts",
     "test:conn": "tsx tests/connection-lifecycle.test.ts",
-    "postinstall": "prisma generate",
-    "enrich-events": "node scripts/enrichEvents.js",
-    "enrich-events:retry": "node scripts/enrichEvents.js --retry",
-    "grind:news": "node scripts/autonomous-agent.js trend",
-    "grind:money": "node scripts/autonomous-agent.js money"
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@next/third-parties": "^16.1.1",
@@ -35,6 +31,8 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@cloudflare/next-on-pages": "^1.13.16",
+    "@opennextjs/cloudflare": "^1.20.6",
     "@tailwindcss/typography": "^0.5.19",
     "@types/leaflet": "^1.9.21",
     "@types/node": "^20.0.0",
@@ -47,6 +45,7 @@
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.21.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "wrangler": "^4.131.1"
   }
 }

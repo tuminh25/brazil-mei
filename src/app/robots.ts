@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/admin', '/api', '/submit', '/api/revalidate'],
     },
-    sitemap: 'https://www.sgeventshub.com/sitemap.xml',
-    host: 'https://www.sgeventshub.com',
+    sitemap: 'https://www.brazilmei.com/sitemap.xml',
+    host: 'https://www.brazilmei.com',
   };
 }

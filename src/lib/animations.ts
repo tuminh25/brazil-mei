@@ -466,7 +466,6 @@ export const progressBar = (
       start,
       end,
       scrub: true,
-      transformOrigin: 'left center',
     },
   });
 };

@@ -18,58 +18,9 @@ model Author {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   email       String?
-  events      Event[]
   posts       Post[]
 
   @@index([name])
-}
-
-model Event {
-  id                      Int         @id @default(autoincrement())
-  slug                    String      @unique
-  name                    String
-  description             String?
-  imageUrl                String?
-  startDate               DateTime?
-  endDate                 DateTime?
-  status                  EventStatus @default(DRAFT)
-  venue                   String?
-  venueAddress            String?
-  postalCode              String?
-  latitude                Float?
-  longitude               Float?
-  price                   String?
-  currency                String?     @default("SGD")
-  isFree                  Boolean?    @default(false)
-  category                String?
-  tags                    String[]    @default([])
-  metaTitle               String?
-  metaDescription         String?
-  sourceUrl               String?
-  sourceProvider          String?
-  aiSummary               String?
-  aiSmartTips             Json?
-  aiFullExperience        Json?
-  aiFaq                   Json?
-  aiBestFor               String?
-  aiVibe                  String?
-  aiDurationHint          String?
-  hotnessScore            Int?        @default(0)
-  affiliateSearchKeywords Json?
-  marketingPitch          String?
-  nearbyAttractions       Json?
-  createdAt               DateTime    @default(now())
-  updatedAt               DateTime    @updatedAt
-  enrichedContent         Json?
-  authorId                String?
-  author                  Author?     @relation(fields: [authorId], references: [id])
-
-  @@index([slug])
-  @@index([startDate])
-  @@index([category])
-  @@index([hotnessScore])
-  @@index([postalCode])
-  @@index([authorId])
 }
 
 model Post {
@@ -82,56 +33,28 @@ model Post {
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
   authorId        String?
-  bestTime        String?
-  insiderPrice    String?
-  isNewsjack      Boolean?     @default(false)
-  secretTip       String?
-  klookUrl        String?
-  tripUrl         String?
-  metaDescription String?
   metaTitle       String?
-  neighborhood    String?
+  metaDescription String?
   tags            String[]     @default([])
-  category        PostCategory @default(TRAVEL_GUIDE)
+  category        PostCategory @default(MEI_DAS)
   status          PostStatus   @default(PUBLISHED)
   author          Author?      @relation(fields: [authorId], references: [id])
 
   @@index([slug])
   @@index([authorId])
   @@index([category])
-  @@index([neighborhood])
-  @@index([isNewsjack])
   @@index([status])
 }
 
-model MrtStation {
-  id        Int     @id @default(autoincrement())
-  name      String  @unique
-  slug      String  @unique
-  latitude  Float
-  longitude Float
-  line      String?
-}
-
-enum EventStatus {
-  DRAFT
-  ENRICHING
-  PUBLISHED
-  ARCHIVED
-}
-
 enum PostCategory {
-  HOUSING
-  TRANSPORT
-  MONEY
-  STUDY
-  HEALTHCARE
-  FOOD
-  WORK
-  LIFESTYLE
-  NEIGHBORHOOD
-  TOOLS
-  TRAVEL_GUIDE
+  MEI_DAS
+  MEI_FATURAMENTO
+  DASN_SIMEI
+  NOTA_FISCAL
+  MEI_OBRIGACOES
+  MEI_CADASTRO
+  FERRAMENTAS
+  GUIA_COMPLETO
 }
 
 enum PostStatus {
