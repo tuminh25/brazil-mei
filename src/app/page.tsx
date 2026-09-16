@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/prisma";
 import { Playfair_Display, IBM_Plex_Mono, Inter } from 'next/font/google';
 import HomePageClient from './HomePageClient';
 import Link from "next/link";
@@ -16,14 +15,14 @@ export const revalidate = 3600;
 const IMAGE_FALLBACK = "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1600&auto=format&fit=crop";
 
 const topicCategories = [
-  { value: 'MEI_DAS', label: 'DAS MEI', icon: 'calculator', href: '/mei-das' },
-  { value: 'MEI_FATURAMENTO', label: 'Faturamento', icon: 'chart', href: '/mei-faturamento' },
-  { value: 'DASN_SIMEI', label: 'DASN-SIMEI', icon: 'file', href: '/dasn-simei' },
-  { value: 'NOTA_FISCAL', label: 'Nota Fiscal', icon: 'receipt', href: '/nota-fiscal-mei' },
-  { value: 'MEI_OBRIGACOES', label: 'Obrigações', icon: 'checklist', href: '/mei-obrigacoes' },
-  { value: 'MEI_CADASTRO', label: 'Cadastro MEI', icon: 'user', href: '/mei-cadastro' },
-  { value: 'FERRAMENTAS', label: 'Ferramentas', icon: 'tools', href: '/ferramentas' },
-  { value: 'GUIA_COMPLETO', label: 'Guia Completo', icon: 'book', href: '/guias' },
+  { value: 'MEI_DAS', label: 'DAS MEI', icon: 'calculator', href: '/mei-das', count: 2 },
+  { value: 'MEI_FATURAMENTO', label: 'Faturamento', icon: 'chart', href: '/mei-faturamento', count: 2 },
+  { value: 'DASN_SIMEI', label: 'DASN-SIMEI', icon: 'file', href: '/dasn-simei', count: 2 },
+  { value: 'NOTA_FISCAL', label: 'Nota Fiscal', icon: 'receipt', href: '/nota-fiscal-mei', count: 2 },
+  { value: 'MEI_OBRIGACOES', label: 'Obrigações', icon: 'checklist', href: '/mei-obrigacoes', count: 2 },
+  { value: 'MEI_CADASTRO', label: 'Cadastro MEI', icon: 'user', href: '/mei-cadastro', count: 2 },
+  { value: 'FERRAMENTAS', label: 'Ferramentas', icon: 'tools', href: '/ferramentas', count: 4 },
+  { value: 'GUIA_COMPLETO', label: 'Guia Completo', icon: 'book', href: '/guias', count: 1 },
 ];
 
 const tools = [
@@ -31,6 +30,171 @@ const tools = [
   { name: 'Verificador de Faturamento', category: 'Controle', icon: 'chart', status: 'Em breve', href: '/ferramentas/verificador-faturamento' },
   { name: 'Checklist Obrigações Mensais', category: 'Compliance', icon: 'checklist', status: 'Em breve', href: '/ferramentas/checklist-obrigacoes' },
   { name: 'Simulador de Contratação', category: 'RH', icon: 'user', status: 'Em breve', href: '/ferramentas/simulador-contratacao' },
+];
+
+const staticGuides = [
+  {
+    id: 1,
+    slug: 'o-que-e-das-mei-como-pagar',
+    title: 'O que é DAS MEI e como pagar em 2026',
+    excerpt: 'Guia completo sobre o Documento de Arrecadação do Simples Nacional para MEI: valores, vencimentos, formas de pagamento e o que acontece se atrasar.',
+    category: 'MEI_DAS',
+    imageUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2026-01-15',
+  },
+  {
+    id: 2,
+    slug: 'limite-faturamento-mei-2026',
+    title: 'Limite de faturamento MEI 2026: R$ 81.000 e o que muda',
+    excerpt: 'Entenda o teto de faturamento anual do MEI, como calcular seu faturamento mensal, o que acontece se ultrapassar e as regras de desenquadramento.',
+    category: 'MEI_FATURAMENTO',
+    imageUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2026-01-10',
+  },
+  {
+    id: 3,
+    slug: 'dasn-simei-2026-passo-a-passo',
+    title: 'DASN-SIMEI 2026: Passo a passo para declarar',
+    excerpt: 'Como fazer a Declaração Anual do Simples Nacional do MEI (DASN-SIMEI): prazo, documentos necessários, como preencher e evitar multa.',
+    category: 'DASN_SIMEI',
+    imageUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2026-01-05',
+  },
+  {
+    id: 4,
+    slug: 'nota-fiscal-mei-obrigatoriedade-como-emitir',
+    title: 'Nota Fiscal MEI: Quando é obrigatória e como emitir grátis',
+    excerpt: 'Entenda quando o MEI deve emitir nota fiscal, como emitir NF-e e NFS-e gratuitamente nos portais estaduais/municipais e erros comuns a evitar.',
+    category: 'NOTA_FISCAL',
+    imageUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2026-01-01',
+  },
+  {
+    id: 5,
+    slug: 'obrigacoes-mensais-mei-checklist',
+    title: 'Obrigações mensais do MEI: Checklist completo 2026',
+    excerpt: 'Tudo que o MEI deve fazer todo mês: pagar DAS, emitir notas, guardar documentos, controlar faturamento. Checklist para não esquecer nada.',
+    category: 'MEI_OBRIGACOES',
+    imageUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2025-12-28',
+  },
+  {
+    id: 6,
+    slug: 'como-abrir-mei-2026-passo-a-passo',
+    title: 'Como abrir MEI em 2026: Passo a passo gratuito no Gov.br',
+    excerpt: 'Guia completo para formalizar seu MEI grátis pelo Portal do Empreendedor: documentos, CNAEs permitidos, tempo de aprovação e primeiros passos depois do CNPJ.',
+    category: 'MEI_CADASTRO',
+    imageUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2025-12-20',
+  },
+  {
+    id: 7,
+    slug: 'mei-pode-contratar-funcionario-regras-2026',
+    title: 'MEI pode contratar funcionário? Regras, custos e como fazer em 2026',
+    excerpt: 'Sim, MEI pode contratar 1 funcionário. Entenda as regras, custos totais (salário + encargos), como registrar no eSocial e obrigações trabalhistas.',
+    category: 'MEI_OBRIGACOES',
+    imageUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2025-12-15',
+  },
+  {
+    id: 8,
+    slug: 'calculadora-das-mei-2026',
+    title: 'Calculadora DAS MEI 2026: Simule seu pagamento mensal',
+    excerpt: 'Ferramenta gratuita para calcular o valor exato do seu DAS MEI em 2026: INSS + ICMS/ISS conforme sua atividade. Valores oficiais atualizados.',
+    category: 'FERRAMENTAS',
+    imageUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2025-12-10',
+  },
+
+  // New articles from batch01.md
+  {
+    id: 9,
+    slug: 'como-pagar-das-mei-2026',
+    title: 'Como pagar o DAS do MEI em 2026: passo a passo rápido, canais e cuidados para não atrasar',
+    excerpt: 'Todo mês, o MEI precisa gerar e pagar uma guia chamada DAS. Parece simples, mas boa parte das dúvidas não é sobre "o que é o DAS" — é sobre onde emitir a guia, até quando pagar e o que fazer quando o ...',
+    category: 'MEI_DAS',
+    imageUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2026-01-20',
+  },
+  {
+    id: 10,
+    slug: 'das-mei-atrasado-multa-juros-parcelamento',
+    title: 'DAS MEI atrasado: multa, juros, parcelamento e como decidir',
+    excerpt: 'Um ou dois meses de DAS atrasados parecem inofensivos. Mas quando o atraso se acumula por muitos meses ou anos, o MEI enfrenta uma duvida concreta: vale mais a pena pagar tudo de uma vez, parcelar ou ...',
+    category: 'MEI_DAS',
+    imageUrl: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2026-01-20',
+  },
+  {
+    id: 11,
+    slug: 'dasn-simei-declaracao-anual-mei',
+    title: 'Declaraao Anual do MEI (DASN-SIMEI): como fazer e regularizar atrasos',
+    excerpt: 'Muitos MEIs sabem que precisam pagar o DAS todo mês, mas esquecem de uma segunda obrigaao, anual: a DASN-SIMEI. E um erro muito comum é pensar que, se nao faturou nada no ano, nao precisa declarar nad...',
+    category: 'DASN_SIMEI',
+    imageUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2026-01-20',
+  },
+  {
+    id: 12,
+    slug: 'limite-faturamento-mei-2026-desenquadramento',
+    title: 'Limite de faturamento do MEI em 2026: como controlar, evitar desenquadramento e se preparar',
+    excerpt: 'O MEI cresceu, as vendas aumentaram, e agora surge a pergunta: "sera que ja passei do limite permitido?" Entender esse limite — e o que acontece quando ele é ultrapassado — é essencial para nao ser pe...',
+    category: 'MEI_FATURAMENTO',
+    imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2026-01-20',
+  },
+  {
+    id: 13,
+    slug: 'nota-fiscal-mei-quando-obrigatoria-como-emitir',
+    title: 'Nota fiscal para MEI: quando é obrigatooria e como emitir graatis',
+    excerpt: '"Preciso mesmo emitir nota fiscal sendo MEI?" é uma das perguntas mais comuns — e a resposta certa depende de para quem você vendeu, o que vendeu e, em alguns casos, de onde e para onde. Nao existe um...',
+    category: 'NOTA_FISCAL',
+    imageUrl: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2026-01-20',
+  },
+  {
+    id: 14,
+    slug: 'mei-pode-contratar-funcionario-esocial',
+    title: 'MEI pode contratar funcionario? Veja quanto custa, quais sao as regras e como registrar no eSocial',
+    excerpt: 'O negocio cresceu e virou mais trabalho do que uma pessoa consegue dar conta. A pergunta natural é: da para contratar alguem formalmente ainda como MEI, ou isso exige virar outro tipo de empresa? E, s...',
+    category: 'MEI_OBRIGACOES',
+    imageUrl: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2026-01-20',
+  },
+  {
+    id: 15,
+    slug: 'abrir-alterar-encerrar-mei-portal-empreendedor',
+    title: 'Como abrir, alterar e encerrar seu MEI pelo Portal do Empreendedor',
+    excerpt: 'Formalizar um negocio, mudar de atividade ou fechar o CNPJ sao decisoes que geram duvidas parecidas: onde fazer isso oficialmente, o que é exigido e o que pode dar errado no processo....',
+    category: 'MEI_CADASTRO',
+    imageUrl: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2026-01-20',
+  },
+  {
+    id: 16,
+    slug: 'beneficios-inss-mei-aposentadoria-auxilio',
+    title: 'Beneficios do INSS para MEI: aposentadoria, auxilio e como planejar suas contribuiçııes',
+    excerpt: 'Pagar o DAS todo mês parece so uma obrigaao fiscal — mas parte desse valor é, na verdade, contribuiçııo previdenciaria. A pergunta que fica é: isso realmente garante algum beneficio no futuro, e o que...',
+    category: 'MEI_DAS',
+    imageUrl: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2026-01-20',
+  },
 ];
 
 function HeroSection({ playfairClass, monoClass, interClass }: { playfairClass: string; monoClass: string; interClass: string }) {
@@ -47,10 +211,7 @@ function HeroSection({ playfairClass, monoClass, interClass }: { playfairClass: 
       <div className="absolute inset-0 -z-10 noise-overlay" />
       <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-black)]/80 via-[var(--color-black)]/90 to-[var(--color-black)] -z-10" />
       <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-[var(--color-black)]/60 to-transparent -z-10" />
-
-      {/* Floating Particles Container - initialized by client component */}
       <div className="absolute inset-0 -z-5 particles-container" />
-
       <div className="hero-content relative z-10 max-w-7xl mx-auto px-6 text-center py-20">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass mb-8">
           <span className="w-1.5 h-1.5 bg-[var(--color-green)] rounded-full animate-pulse" />
@@ -58,21 +219,17 @@ function HeroSection({ playfairClass, monoClass, interClass }: { playfairClass: 
             Plataforma de Inteligência MEI
           </span>
         </div>
-
         <p className={`${monoClass} text-[var(--color-blue-light)] text-[10px] uppercase tracking-[0.5em] mb-6 font-black`}>
           Brasil • Microempreendedor Individual
         </p>
-
         <h1 className={`${playfairClass} hero-headline text-6xl md:text-[9.5rem] lg:text-[11rem] font-black leading-[0.82] tracking-tighter uppercase text-[var(--color-text-primary)] drop-shadow-[0_4px_30px_rgba(0,0,0,0.5)] mb-8 text-balance`}>
           MEI <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-green)] via-[var(--color-blue)] to-[var(--color-purple)]">
             Descomplicado
           </span>
         </h1>
-
         <p className="text-[var(--color-text-secondary)] text-lg md:text-xl max-w-3xl mx-auto mb-12 leading-relaxed font-light">
           Guias práticos para MEIs no Brasil — DAS, faturamento, DASN-SIMEI, nota fiscal, obrigações mensais, contratação e ferramentas de cálculo.
         </p>
-
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Link
             href="/guias"
@@ -89,7 +246,6 @@ function HeroSection({ playfairClass, monoClass, interClass }: { playfairClass: 
             <ArrowRightIcon className="w-3 h-3" />
           </Link>
         </div>
-
         <div className="mt-16 flex flex-wrap justify-center gap-8 md:gap-12 items-center text-[var(--color-text-tertiary)]">
           <div className="flex items-center gap-2">
             <span className={`${monoClass} text-[9px] font-black uppercase tracking-[0.1em] text-[var(--color-text-primary)]`}>8+</span>
@@ -117,26 +273,6 @@ function HeroSection({ playfairClass, monoClass, interClass }: { playfairClass: 
 }
 
 function LatestGuidesSection({ latestGuides, monoClass, playfairClass, interClass, IMAGE_FALLBACK }: { latestGuides: any[]; monoClass: string; playfairClass: string; interClass: string; IMAGE_FALLBACK: string }) {
-  if (latestGuides.length === 0) {
-    return (
-      <section className="section" data-section>
-        <div className="container">
-          <div className="section-header-left">
-            <p className="section-eyebrow">Publicados Recentemente</p>
-            <h2 className="section-title section-title-lg">
-              Últimos<br />Guias
-            </h2>
-            <div className="section-divider" />
-          </div>
-          <div className="text-center py-20 border border-dashed border-[var(--color-border)] rounded-[var(--radius-3xl)]">
-            <p className="text-[var(--color-text-tertiary)] font-bold uppercase tracking-widest text-xl mb-4">Nenhum guia publicado ainda</p>
-            <p className="text-[var(--color-text-muted)] max-w-md mx-auto">Execute o seed para popular o banco com guias iniciais.</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   return (
     <section className="section" data-section>
       <div className="container">
@@ -155,7 +291,7 @@ function LatestGuidesSection({ latestGuides, monoClass, playfairClass, interClas
           >
             <div className="card-media h-[400px] md:h-[500px] relative">
               <img
-                src={getVersionedImageUrl(latestGuides[0].imageUrl, latestGuides[0].updatedAt) || IMAGE_FALLBACK}
+                src={getVersionedImageUrl(latestGuides[0].imageUrl, latestGuides[0].createdAt) || IMAGE_FALLBACK}
                 alt={latestGuides[0].title}
                 className="absolute inset-0 object-cover"
                 sizes="(max-width: 1280px) 100vw, 66vw"
@@ -186,9 +322,6 @@ function LatestGuidesSection({ latestGuides, monoClass, playfairClass, interClas
               )}
               <div className="card-footer">
                 <div className="card-author">
-                  {latestGuides[0].author?.avatarUrl && (
-                    <img src={latestGuides[0].author.avatarUrl} className="card-author-avatar" alt={latestGuides[0].author.name} />
-                  )}
                   <span className="card-author-name">
                     {latestGuides[0].author?.name || 'Equipe Editorial'}
                   </span>
@@ -207,7 +340,7 @@ function LatestGuidesSection({ latestGuides, monoClass, playfairClass, interClas
               >
                 <div className="card-media h-48 md:h-56 relative">
                   <img
-                    src={getVersionedImageUrl(post.imageUrl, post.updatedAt) || IMAGE_FALLBACK}
+                    src={getVersionedImageUrl(post.imageUrl, post.createdAt) || IMAGE_FALLBACK}
                     alt={post.title}
                     className="absolute inset-0 object-cover"
                     sizes="(max-width: 1280px) 50vw, 33vw"
@@ -246,7 +379,7 @@ function LatestGuidesSection({ latestGuides, monoClass, playfairClass, interClas
                 >
                   <div className="card-media h-48 relative">
                     <img
-                      src={getVersionedImageUrl(post.imageUrl, post.updatedAt) || IMAGE_FALLBACK}
+                      src={getVersionedImageUrl(post.imageUrl, post.createdAt) || IMAGE_FALLBACK}
                       alt={post.title}
                       className="absolute inset-0 object-cover"
                       sizes="(max-width: 768px) 100vw, 50vw"
@@ -329,8 +462,6 @@ function TopicsSection({ topicsWithCounts, monoClass, playfairClass, interClass 
 }
 
 function FeaturedGuidesSection({ featuredGuides, monoClass, playfairClass, interClass, IMAGE_FALLBACK }: { featuredGuides: any[]; monoClass: string; playfairClass: string; interClass: string; IMAGE_FALLBACK: string }) {
-  if (featuredGuides.length === 0) return null;
-
   return (
     <section className="section bg-[var(--color-black-soft)] border-t border-[var(--color-border)]" data-section>
       <div className="container">
@@ -352,7 +483,7 @@ function FeaturedGuidesSection({ featuredGuides, monoClass, playfairClass, inter
             >
               <div className="card-media h-64 relative">
                 <img
-                  src={getVersionedImageUrl(post.imageUrl, post.updatedAt) || IMAGE_FALLBACK}
+                  src={getVersionedImageUrl(post.imageUrl, post.createdAt) || IMAGE_FALLBACK}
                   alt={post.title}
                   className="absolute inset-0 object-cover"
                   sizes="(max-width: 1280px) 50vw, 25vw"
@@ -377,7 +508,7 @@ function FeaturedGuidesSection({ featuredGuides, monoClass, playfairClass, inter
                   {post.title}
                 </h3>
                 <p className="card-excerpt line-clamp-2">
-                  {post.excerpt || post.content.slice(0, 150).replace(/<[^>]*>/g, '')}
+                  {post.excerpt}
                 </p>
                 <div className="card-footer">
                   <span className="card-author-name">
@@ -588,51 +719,10 @@ function TrustBannerSection({ playfairClass, monoClass, interClass }: { playfair
   );
 }
 
-export default async function HomePage() {
-  // 1. LATEST GUIDES: 8 newest published posts
-  let latestGuides: any[] = [];
-  try {
-    latestGuides = await prisma.post.findMany({
-      where: {
-        status: 'PUBLISHED',
-      },
-      take: 8,
-      orderBy: { createdAt: 'desc' },
-      include: { author: true },
-    });
-  } catch (error) {
-    console.error("HomePage DB Error (latestGuides):", error);
-  }
-
-  // 2. TOPIC CATEGORIES: with article counts
-  let topicsWithCounts: any[] = [];
-  try {
-    const categoryCounts = await prisma.post.groupBy({
-      by: ['category'],
-      where: { status: 'PUBLISHED' },
-      _count: { category: true },
-    });
-    const countsMap = new Map(categoryCounts.map(c => [c.category, c._count.category]));
-    topicsWithCounts = topicCategories.map(t => ({ ...t, count: countsMap.get(t.value as any) || 0 }));
-  } catch (error) {
-    console.error("HomePage DB Error (topics):", error);
-    topicsWithCounts = topicCategories.map(t => ({ ...t, count: 0 }));
-  }
-
-  // 3. FEATURED GUIDES: High-quality evergreen (with insider data markers)
-  let featuredGuides: any[] = [];
-  try {
-    featuredGuides = await prisma.post.findMany({
-      where: {
-        status: 'PUBLISHED',
-      },
-      take: 4,
-      orderBy: { createdAt: 'desc' },
-      include: { author: true },
-    });
-  } catch (error) {
-    console.error("HomePage DB Error (featured):", error);
-  }
+export default function HomePage() {
+  const latestGuides = staticGuides.slice(0, 8);
+  const featuredGuides = staticGuides.slice(0, 4);
+  const topicsWithCounts = topicCategories;
 
   return (
     <main className={`${inter.className} min-h-screen bg-[var(--color-black)] text-[var(--color-text-primary)] selection:bg-[var(--color-blue)]/30 overflow-x-hidden`}>
@@ -645,7 +735,7 @@ export default async function HomePage() {
         IMAGE_FALLBACK={IMAGE_FALLBACK} 
       />
       <TopicsSection 
-        topicsWithCounts={topicsWithCounts} 
+        topicsWithCounts={topicCategories} 
         monoClass={mono.className} 
         playfairClass={playfair.className} 
         interClass={inter.className} 
