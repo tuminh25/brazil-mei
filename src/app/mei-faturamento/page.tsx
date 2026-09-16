@@ -1,16 +1,15 @@
 // src/app/mei-faturamento/page.tsx
-import { prisma } from "@/lib/prisma";
 import { Playfair_Display, IBM_Plex_Mono, Inter } from 'next/font/google';
 import Link from "next/link";
 import type { Metadata } from "next";
 import { TopicIcon } from '@/components/ui/TopicIcon';
+import { ArrowRightIcon } from '@/components/ui/Icons';
 
 const playfair = Playfair_Display({ subsets: ['latin'], weight: ['700', '900'], style: 'italic' });
 const inter = Inter({ subsets: ['latin'], weight: ['400', '600', '800'] });
 const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '600'] });
 
 export const revalidate = 3600;
-export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "Limite Faturamento MEI 2026: R$ 81.000 | Brazil MEI",
@@ -29,18 +28,23 @@ const topicInfo = {
   color: 'green',
 };
 
-export default async function MeiFaturamentoPage() {
-  const posts = await prisma.post.findMany({
-    where: {
-      status: 'PUBLISHED',
-      category: 'MEI_FATURAMENTO' as any,
-    },
-    orderBy: { createdAt: 'desc' },
-    include: { author: true },
-  });
+const staticGuides = [
+  {
+    id: 2,
+    slug: 'limite-faturamento-mei-2026',
+    title: 'Limite de faturamento MEI 2026: R$ 81.000 e o que muda',
+    excerpt: 'Entenda o teto de faturamento anual do MEI, como calcular seu faturamento mensal, o que acontece se ultrapassar e as regras de desenquadramento.',
+    category: 'MEI_FATURAMENTO',
+    imageUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2026-01-10',
+  },
+];
 
-  const count = posts.length;
+const posts = staticGuides.filter(p => p.category === 'MEI_FATURAMENTO');
+const count = posts.length;
 
+export default function MeiFaturamentoPage() {
   return (
     <main className={`${inter.className} min-h-screen bg-[var(--color-black)] text-[var(--color-text-primary)] py-20 px-6`}>
       <div className="max-w-7xl mx-auto">
@@ -49,15 +53,15 @@ export default async function MeiFaturamentoPage() {
             Tema Principal
           </p>
           <h1 className={`${playfair.className} text-6xl md:text-8xl font-black mb-6 tracking-tighter uppercase italic`}>
-            {topicInfo.label}
+            Faturamento MEI
           </h1>
           <p className="text-[var(--color-text-secondary)] max-w-2xl mx-auto text-lg leading-relaxed mb-8">
-            {topicInfo.description}
+            Limite anual de R$ 81.000,00 (2026). Controle mensal (R$ 6.750/mês média), regras de ultrapassagem (20% tolerância), desenquadramento e transição para Microempresa (ME).
           </p>
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass">
             <span className="w-1.5 h-1.5 bg-[var(--color-green)] rounded-full animate-pulse" />
             <span className={`${mono.className} text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-text-tertiary)]`}>
-              {count} Guia{count !== 1 ? 's' : ''} Publicado{count !== 1 ? 's' : ''}
+              1 Guia Publicado
             </span>
           </div>
         </div>
@@ -106,71 +110,47 @@ export default async function MeiFaturamentoPage() {
             </Link>
           </div>
 
-          {posts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {posts.map((post) => (
-                <Link
-                  key={post.id}
-                  href={`/guias/${post.slug}`}
-                  className="group flex flex-col bg-[var(--color-black-elevated)] border border-[var(--color-border)] rounded-[var(--radius-3xl)] overflow-hidden hover:border-[var(--color-green)]/50 transition-all duration-500"
-                >
-                  <div className="h-64 overflow-hidden relative">
-                    <img
-                      src={post.imageUrl || 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800'}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      alt=""
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-black)] via-transparent to-transparent opacity-90" />
-                    <div className="absolute top-4 left-4 right-4 flex flex-wrap gap-2">
-                      <span className="px-3 py-1 text-[9px] font-bold uppercase tracking-widest bg-[var(--color-green)] text-white rounded-full">
-                        {post.category}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="p-8 -mt-10 relative z-10 flex-1 flex flex-col">
-                    <h3 className="text-xl md:text-2xl font-bold mb-4 text-[var(--color-text-primary)] group-hover:text-[var(--color-green-light)] transition-colors leading-tight">
-                      {post.title}
-                    </h3>
-                    <p className="text-[var(--color-text-secondary)] text-sm italic mb-8 line-clamp-3 flex-1">
-                      {post.excerpt || post.content.slice(0, 200).replace(/<[^>]*>/g, '')}
-                    </p>
-                    <div className="mt-auto pt-6 border-t border-[var(--color-border)] flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        {post.author?.avatarUrl && (
-                          <img
-                            src={post.author.avatarUrl}
-                            className="w-7 h-7 rounded-full border border-[var(--color-border)]"
-                            alt={post.author.name}
-                          />
-                        )}
-                        <span className={`${mono.className} text-[9px] text-[var(--color-text-tertiary)] uppercase tracking-widest`}>
-                          {post.author?.name || 'Equipe Editorial'}
-                        </span>
-                      </div>
-                      <span className={`${mono.className} text-[var(--color-green-light)] text-[10px] font-black uppercase tracking-widest`}>
-                        Ler Guia →
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-20 border border-dashed border-[var(--color-border)] rounded-[var(--radius-3xl)]">
-              <p className="text-[var(--color-text-tertiary)] font-bold uppercase tracking-widest text-xl mb-4">
-                Nenhum guia específico ainda
-              </p>
-              <p className="text-[var(--color-text-muted)] max-w-md mx-auto mb-6">
-                Estamos preparando guias detalhados sobre faturamento MEI. Volte em breve.
-              </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {posts.map((post) => (
               <Link
-                href="/guias"
-                className="inline-flex items-center gap-2 px-8 py-4 border border-[var(--color-border)] rounded-full font-black uppercase tracking-[0.3em] text-xs text-[var(--color-text-primary)] transition-all hover:border-[var(--color-green)] hover:text-[var(--color-green-light)]"
+                key={post.id}
+                href={`/guias/${post.slug}`}
+                className="group flex flex-col bg-[var(--color-black-elevated)] border border-[var(--color-border)] rounded-[var(--radius-3xl)] overflow-hidden hover:border-[var(--color-green)]/50 transition-all duration-500"
               >
-                Ver Todos os Guias →
+                <div className="h-64 overflow-hidden relative">
+                  <img
+                    src={post.imageUrl || 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800'}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    alt=""
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-black)] via-transparent to-transparent opacity-90" />
+                  <div className="absolute top-4 left-4 right-4 flex flex-wrap gap-2">
+                    <span className="px-3 py-1 text-[9px] font-bold uppercase tracking-widest bg-[var(--color-green)] text-white rounded-full">
+                      {post.category}
+                    </span>
+                  </div>
+                </div>
+                <div className="p-8 -mt-10 relative z-10 flex-1 flex flex-col">
+                  <h3 className="text-xl md:text-2xl font-bold mb-4 text-[var(--color-text-primary)] group-hover:text-[var(--color-green-light)] transition-colors leading-tight">
+                    {post.title}
+                  </h3>
+                  <p className="text-[var(--color-text-secondary)] text-sm italic mb-8 line-clamp-3 flex-1">
+                    {post.excerpt}
+                  </p>
+                  <div className="mt-auto pt-6 border-t border-[var(--color-border)] flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className={`${mono.className} text-[9px] text-[var(--color-text-tertiary)] uppercase tracking-widest`}>
+                        {post.author?.name || 'Equipe Editorial'}
+                      </span>
+                    </div>
+                    <span className={`${mono.className} text-[var(--color-green-light)] text-[10px] font-black uppercase tracking-widest`}>
+                      Ler Guia →
+                    </span>
+                  </div>
+                </div>
               </Link>
-            </div>
-          )}
+            ))}
+          </div>
         </div>
 
         <div className="pt-12 border-t border-[var(--color-border)]" data-animate>

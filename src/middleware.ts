@@ -35,25 +35,11 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
   // Markdown negotiation for real guides
-  if (wantsMarkdown(request) && pathname.startsWith('/guides/') && !pathname.startsWith('/guides?') && !pathname.includes('/api/')) {
-    const slug = pathname.replace('/guides/', '');
+  if (wantsMarkdown(request) && pathname.startsWith('/guias/') && !pathname.startsWith('/guias?') && !pathname.includes('/api/')) {
+    const slug = pathname.replace('/guias/', '');
     if (slug && !slug.includes('/')) {
       const url = request.nextUrl.clone();
-      url.pathname = `/api/markdown/guides/${slug}`;
-      return NextResponse.rewrite(url);
-    }
-  }
-  
-  if (isSimpleClient(request)) {
-    if (pathname === '/') {
-      const url = request.nextUrl.clone();
-      url.pathname = STATIC_HOMEPAGE_PATH;
-      return NextResponse.rewrite(url);
-    }
-    
-    if (pathname === '/_not-found' || pathname.startsWith('/_not-found')) {
-      const url = request.nextUrl.clone();
-      url.pathname = STATIC_404_PATH;
+      url.pathname = `/api/markdown/guias/${slug}`;
       return NextResponse.rewrite(url);
     }
   }
@@ -63,8 +49,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/',
-    '/guides/:slug*',
-    '/_not-found/:path*',
+    '/guias/:slug*',
   ],
 };

@@ -1,5 +1,4 @@
 // src/app/mei-obrigacoes/page.tsx
-import { prisma } from "@/lib/prisma";
 import { Playfair_Display, IBM_Plex_Mono, Inter } from 'next/font/google';
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -11,7 +10,6 @@ const inter = Inter({ subsets: ['latin'], weight: ['400', '600', '800'] });
 const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '600'] });
 
 export const revalidate = 3600;
-export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "Obrigações Mensais MEI 2026: Checklist Completo | Brazil MEI",
@@ -30,18 +28,33 @@ const topicInfo = {
   color: 'orange',
 };
 
-export default async function MeiObrigacoesPage() {
-  const posts = await prisma.post.findMany({
-    where: {
-      status: 'PUBLISHED',
-      category: 'MEI_OBRIGACOES' as any,
-    },
-    orderBy: { createdAt: 'desc' },
-    include: { author: true },
-  });
+const staticGuides = [
+  {
+    id: 5,
+    slug: 'obrigacoes-mensais-mei-checklist',
+    title: 'Obrigações mensais do MEI: Checklist completo 2026',
+    excerpt: 'Tudo que o MEI deve fazer todo mês: pagar DAS, emitir notas, guardar documentos, controlar faturamento. Checklist para não esquecer nada.',
+    category: 'MEI_OBRIGACOES',
+    imageUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2025-12-28',
+  },
+  {
+    id: 7,
+    slug: 'mei-pode-contratar-funcionario-regras-2026',
+    title: 'MEI pode contratar funcionário? Regras, custos e como fazer em 2026',
+    excerpt: 'Sim, MEI pode contratar 1 funcionário. Entenda as regras, custos totais (salário + encargos), como registrar no eSocial e obrigações trabalhistas.',
+    category: 'MEI_OBRIGACOES',
+    imageUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2025-12-15',
+  },
+];
 
-  const count = posts.length;
+const posts = staticGuides.filter(p => p.category === 'MEI_OBRIGACOES');
+const count = posts.length;
 
+export default function MeiObrigacoesPage() {
   return (
     <main className={`${inter.className} min-h-screen bg-[var(--color-black)] text-[var(--color-text-primary)] py-20 px-6`}>
       <div className="max-w-7xl mx-auto">
@@ -133,17 +146,10 @@ export default async function MeiObrigacoesPage() {
                       {post.title}
                     </h3>
                     <p className="text-[var(--color-text-secondary)] text-sm italic mb-8 line-clamp-3 flex-1">
-                      {post.excerpt || post.content.slice(0, 200).replace(/<[^>]*>/g, '')}
+                      {post.excerpt}
                     </p>
                     <div className="mt-auto pt-6 border-t border-[var(--color-border)] flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        {post.author?.avatarUrl && (
-                          <img
-                            src={post.author.avatarUrl}
-                            className="w-7 h-7 rounded-full border border-[var(--color-border)]"
-                            alt={post.author.name}
-                          />
-                        )}
                         <span className={`${mono.className} text-[9px] text-[var(--color-text-tertiary)] uppercase tracking-widest`}>
                           {post.author?.name || 'Equipe Editorial'}
                         </span>

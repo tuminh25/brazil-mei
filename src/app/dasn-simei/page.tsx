@@ -1,16 +1,15 @@
 // src/app/dasn-simei/page.tsx
-import { prisma } from "@/lib/prisma";
 import { Playfair_Display, IBM_Plex_Mono, Inter } from 'next/font/google';
 import Link from "next/link";
 import type { Metadata } from "next";
 import { TopicIcon } from '@/components/ui/TopicIcon';
+import { ArrowRightIcon } from '@/components/ui/Icons';
 
 const playfair = Playfair_Display({ subsets: ['latin'], weight: ['700', '900'], style: 'italic' });
 const inter = Inter({ subsets: ['latin'], weight: ['400', '600', '800'] });
 const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '600'] });
 
 export const revalidate = 3600;
-export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "DASN-SIMEI 2026: Como Declarar, Prazo e Multa | Brazil MEI",
@@ -29,18 +28,23 @@ const topicInfo = {
   color: 'blue',
 };
 
-export default async function DasnSimeiPage() {
-  const posts = await prisma.post.findMany({
-    where: {
-      status: 'PUBLISHED',
-      category: 'DASN_SIMEI' as any,
-    },
-    orderBy: { createdAt: 'desc' },
-    include: { author: true },
-  });
+const staticGuides = [
+  {
+    id: 3,
+    slug: 'dasn-simei-2026-passo-a-passo',
+    title: 'DASN-SIMEI 2026: Passo a passo para declarar',
+    excerpt: 'Como fazer a Declaração Anual do Simples Nacional do MEI (DASN-SIMEI): prazo, documentos necessários, como preencher e evitar multa.',
+    category: 'DASN_SIMEI',
+    imageUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2026-01-05',
+  },
+];
 
-  const count = posts.length;
+const posts = staticGuides.filter(p => p.category === 'DASN_SIMEI');
+const count = posts.length;
 
+export default function DasnSimeiPage() {
   return (
     <main className={`${inter.className} min-h-screen bg-[var(--color-black)] text-[var(--color-text-primary)] py-20 px-6`}>
       <div className="max-w-7xl mx-auto">
@@ -132,17 +136,10 @@ export default async function DasnSimeiPage() {
                       {post.title}
                     </h3>
                     <p className="text-[var(--color-text-secondary)] text-sm italic mb-8 line-clamp-3 flex-1">
-                      {post.excerpt || post.content.slice(0, 200).replace(/<[^>]*>/g, '')}
+                      {post.excerpt}
                     </p>
                     <div className="mt-auto pt-6 border-t border-[var(--color-border)] flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        {post.author?.avatarUrl && (
-                          <img
-                            src={post.author.avatarUrl}
-                            className="w-7 h-7 rounded-full border border-[var(--color-border)]"
-                            alt={post.author.name}
-                          />
-                        )}
                         <span className={`${mono.className} text-[9px] text-[var(--color-text-tertiary)] uppercase tracking-widest`}>
                           {post.author?.name || 'Equipe Editorial'}
                         </span>

@@ -3,16 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
     "build": "next build",
+    "dev": "next dev",
     "start": "next start",
-    "seed": "tsx prisma/seed.ts",
-    "test:conn": "tsx tests/connection-lifecycle.test.ts",
-    "postinstall": "prisma generate"
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
     "@next/third-parties": "^16.1.1",
-    "@prisma/client": "5.22.0",
     "@types/pdfkit": "^0.17.6",
     "@vercel/analytics": "^1.6.1",
     "axios": "^1.13.2",
@@ -22,16 +22,14 @@
     "gsap": "^3.15.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.28.0",
-    "next": "15.0.6",
+    "next": "^15.5.24",
     "openai": "^4.0.0",
     "pdfkit": "^0.20.2",
-    "prisma": "5.22.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "@cloudflare/next-on-pages": "^1.13.16",
     "@opennextjs/cloudflare": "^1.20.6",
     "@tailwindcss/typography": "^0.5.19",
     "@types/leaflet": "^1.9.21",

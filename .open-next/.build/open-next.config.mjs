@@ -212,22 +212,10 @@ function resolveCdnInvalidation(value = "dummy") {
 
 // open-next.config.ts
 var open_next_config_default = defineCloudflareConfig({
-  overrides: {
-    wrapper: "cloudflare-node",
-    converter: "edge",
-    incrementalCache: "dummy-queue",
-    tagCache: "dummy",
-    queue: "dummy-queue"
-  },
-  routes: [
-    {
-      pattern: "/api/**",
-      overrides: {
-        wrapper: "cloudflare-node",
-        converter: "node"
-      }
-    }
-  ]
+  incrementalCache: "dummy",
+  tagCache: "dummy",
+  queue: "direct",
+  cachePurge: "dummy"
 });
 export {
   open_next_config_default as default

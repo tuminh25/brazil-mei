@@ -1,5 +1,4 @@
 // src/app/mei-das/page.tsx
-import { prisma } from "@/lib/prisma";
 import { Playfair_Display, IBM_Plex_Mono, Inter } from 'next/font/google';
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -11,7 +10,6 @@ const inter = Inter({ subsets: ['latin'], weight: ['400', '600', '800'] });
 const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '600'] });
 
 export const revalidate = 3600;
-export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "DAS MEI 2026: Valor, Vencimento, Pagamento | Brazil MEI",
@@ -30,18 +28,33 @@ const topicInfo = {
   color: 'blue',
 };
 
-export default async function MeiDasPage() {
-  const posts = await prisma.post.findMany({
-    where: {
-      status: 'PUBLISHED',
-      category: 'MEI_DAS' as any,
-    },
-    orderBy: { createdAt: 'desc' },
-    include: { author: true },
-  });
+const staticGuides = [
+  {
+    id: 1,
+    slug: 'o-que-e-das-mei-como-pagar',
+    title: 'O que é DAS MEI e como pagar em 2026',
+    excerpt: 'Guia completo sobre o Documento de Arrecadação do Simples Nacional para MEI: valores, vencimentos, formas de pagamento e o que acontece se atrasar.',
+    category: 'MEI_DAS',
+    imageUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2026-01-15',
+  },
+  {
+    id: 8,
+    slug: 'calculadora-das-mei-2026',
+    title: 'Calculadora DAS MEI 2026: Simule seu pagamento mensal',
+    excerpt: 'Ferramenta gratuita para calcular o valor exato do seu DAS MEI em 2026: INSS + ICMS/ISS conforme sua atividade. Valores oficiais atualizados.',
+    category: 'FERRAMENTAS',
+    imageUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800',
+    author: { name: 'Equipe Editorial', avatarUrl: null },
+    createdAt: '2025-12-10',
+  },
+];
 
-  const count = posts.length;
+const posts = staticGuides.filter(p => p.category === 'MEI_DAS');
+const count = posts.length;
 
+export default function MeiDasPage() {
   return (
     <main className={`${inter.className} min-h-screen bg-[var(--color-black)] text-[var(--color-text-primary)] py-20 px-6`}>
       <div className="max-w-7xl mx-auto">
@@ -136,17 +149,10 @@ export default async function MeiDasPage() {
                       {post.title}
                     </h3>
                     <p className="text-[var(--color-text-secondary)] text-sm italic mb-8 line-clamp-3 flex-1">
-                      {post.excerpt || post.content.slice(0, 200).replace(/<[^>]*>/g, '')}
+                      {post.excerpt}
                     </p>
                     <div className="mt-auto pt-6 border-t border-[var(--color-border)] flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        {post.author?.avatarUrl && (
-                          <img
-                            src={post.author.avatarUrl}
-                            className="w-7 h-7 rounded-full border border-[var(--color-border)]"
-                            alt={post.author.name}
-                          />
-                        )}
                         <span className={`${mono.className} text-[9px] text-[var(--color-text-tertiary)] uppercase tracking-widest`}>
                           {post.author?.name || 'Equipe Editorial'}
                         </span>
